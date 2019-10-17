@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { ItemSelectionPage } from './item-selection.page';
+import { CustomOrderModalComponent } from '../../modals/custom-order-modal/custom-order-modal.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [ItemSelectionPage]
+  entryComponents: [CustomOrderModalComponent],
+  declarations: [ItemSelectionPage, CustomOrderModalComponent]
 })
 export class ItemSelectionPageModule {}
