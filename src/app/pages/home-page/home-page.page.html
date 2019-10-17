@@ -1,0 +1,36 @@
+<!-- <ion-header>
+  <ion-toolbar color="secondary">
+    <ion-title>Choose Your Shop</ion-title>
+  </ion-toolbar>
+</ion-header> -->
+
+<!-- <ion-content> -->
+  <!-- <ion-list>
+    <ion-item *ngFor="let shop of shopList" [routerLink]="['./', shop.shopId]">
+      <ion-avatar slot="start">
+        <ion-img [src]="shop.shopImageUrl"></ion-img>
+      </ion-avatar>
+      <ion-label>{{shop.shopName}}</ion-label>
+    </ion-item>
+  </ion-list> -->
+  <ion-tabs>
+    <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="selectShop">
+            <ion-label>Select</ion-label>
+            <ion-icon name="globe"></ion-icon>
+          </ion-tab-button>
+      <ion-tab-button tab="searchShop" color="tertiary">
+          <ion-label>Search</ion-label>
+          <ion-icon name="search"></ion-icon>
+      </ion-tab-button>
+      <ion-tab-button tab="cart" color="tertiary">
+          <ion-label>Cart</ion-label>
+          <ion-icon name="cart"></ion-icon>
+      </ion-tab-button>
+      <ion-tab-button tab="account" color="tertiary">
+          <ion-label>Account</ion-label>
+          <ion-icon name="person"></ion-icon>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+<!-- </ion-content> -->

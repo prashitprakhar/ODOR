@@ -1,0 +1,21 @@
+.extra_features_signup {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+// .custom_input_style {
+//     --placeholder-color : var(--ion-color-dark)
+// }
+
+// .label[floating],
+// .label[stacked],
+// .input-has-focus .label[floating] {
+//     color: blue ;
+// }
+
+// .item-has-focus.label-floating.sc-ion-label-md-h, .item-has-focus.label-stacked.sc-ion-label-md-h ion-label {
+//     --placeholder-color: var(--ion-color-dark) !important;
+// }

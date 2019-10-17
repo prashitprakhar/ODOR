@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Authentication</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <ion-list>
+      <ion-item>
+        <ion-label position="floating" color="dark">Email</ion-label>
+        <ion-input
+          type="email"
+          ngModel
+          name="email"
+          required
+          email
+          #emailCtrl="ngModel"
+        >
+        </ion-input>
+      </ion-item>
+      <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none">
+            <p style="color:red">
+              Please enter a valid email address
+            </p>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating" color="dark">Password</ion-label>
+        <ion-input
+          type="password"
+          ngModel
+          name="password"
+          required
+          minlength="8"
+          #passwordCtrl="ngModel"
+          class="custom_input_style"
+        ></ion-input>
+      </ion-item>
+      <ion-item *ngIf="!passwordCtrl.valid && passwordCtrl.touched" lines="none">
+          <p style="color:red">
+            Please enter your password
+          </p>
+    </ion-item>
+    </ion-list>
+    <ion-button
+      color="primary"
+      type="submit"
+      (click)="onLogin()"
+      expand="full"
+      [disabled]="!loginForm.valid"
+    ><!-- fill="outline" -->
+      <ion-label>Login</ion-label>
+    </ion-button>
+    <div class="extra_features_signup">
+      <ion-label>Forgot Password?</ion-label>
+      <ion-label>Join Now</ion-label>
+    </div>
+  </form>
+</ion-content>

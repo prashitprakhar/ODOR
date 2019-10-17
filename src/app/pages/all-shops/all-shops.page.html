@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Choose Your Shop</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-no-padding">
+    <ion-row
+      ><!-- class="ion-no-padding" -->
+      <ion-col size="12" size-sm="12" class="ion-text-center ion-no-padding"
+        ><!-- offset-sm="1" -->
+        <ion-list
+          ><!-- class="ion-no-padding" -->
+          <ion-item
+            *ngFor="let shop of shopList"
+            [routerLink]="['/', 'homepage', 'tabs', 'selectShop', shop.shopId]"
+            lines="full"
+            class="row_padding"
+            ><!-- detail lines="none" -->
+            <ion-thumbnail slot="start">
+              <ion-img [src]="shop.shopImageUrl"></ion-img>
+            </ion-thumbnail>
+            <ion-label>
+              <h5 class="shop_name">{{ shop.shopName }}</h5>
+              <p class="pre_shop_rating_section">
+                {{ shop.shopType }} . {{ shop.shopLocation }}
+              </p>
+              <ion-icon name="star" class="star_style"></ion-icon>
+              <ion-text class="space_left">{{ shop.shopRating }}</ion-text>
+              <ion-text class="space_dot">&#8226;</ion-text>
+              <ion-text class="space_left_delivery">{{currentDeliveryTimeSchedule.deliveryTimeWithin1K}} mins</ion-text>
+              <ion-text class="space_dot">&#8226;</ion-text>
+              <ion-text class="space_left_delivery">Min. order &#8377;150</ion-text><!--  class="space_left_delivery" -->
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!-- <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-card>
+          <ion-card-header>
+
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid> -->
+</ion-content>

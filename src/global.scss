@@ -24,3 +24,11 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+.ion-invalid.ion-touched ion-label {
+    color: var(--ion-color-danger);
+}
+
+// .item-has-focus.label-floating.sc-ion-label-md-h, .item-has-focus.label-stacked.sc-ion-label-md-h ion-item.ion-label {
+//     color: var(--ion-color-dark) !important;
+// }

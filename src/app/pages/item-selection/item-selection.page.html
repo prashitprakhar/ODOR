@@ -1,0 +1,83 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/homepage/tabs/selectShop"
+      ></ion-back-button>
+    </ion-buttons>
+    <ion-title>Select Items</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  
+  <!-- <ion-segment (ionChange)="onToggleItemSearchTypeButton($event)" color="tertiary">
+    <ion-segment-button value="ITEM_SELECTION" checked>Select Item</ion-segment-button>
+    <ion-segment-button value="ITEM_ADDITION">Search Item</ion-segment-button>
+    </ion-segment> -->
+    <!-- Top options bar -->
+    <!-- <ion-grid>
+      <ion-row>
+        <ion-col size-sm="6">
+          <ion-button (click)="showOrderDetails()">See Selections</ion-button>
+        </ion-col>
+        <ion-col size-sm="6" offset-sm="1">
+            <ion-button (click)="addCustomOrders()">Add Custom Order</ion-button>
+          </ion-col>
+      </ion-row>
+    </ion-grid> -->
+    <ion-fab horizontal="end" vertical="top" slot="fixed" edge>
+        <ion-fab-button color="danger" (click)="addCustomOrders()">
+          <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+        <!-- <ion-fab-list>
+          <ion-fab-button color="light">
+            <ion-icon name="logo-facebook"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-button color="light">
+            <ion-icon name="logo-twitter"></ion-icon>
+          </ion-fab-button>
+          <ion-fab-button color="light">
+            <ion-icon name="logo-vimeo"></ion-icon>
+          </ion-fab-button>
+        </ion-fab-list> -->
+      </ion-fab>
+    <!-- Main content area -->
+  <ion-grid class="ion-no-padding">
+    <ion-row>
+      <ion-col
+        size="12"
+        size-sm="10"
+        offset-sm="1"
+        class="ion-text-center ion-no-padding"
+      >
+      <ion-item>
+        <ion-thumbnail slot="start">
+          <ion-img [src]="selectedShopDetails.shopImageUrl"></ion-img>
+        </ion-thumbnail>
+        <ion-label>
+            <h5>{{ selectedShopDetails.shopName }}</h5>
+            <p>{{ selectedShopDetails.shopType }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-virtual-scroll [items]="selectedShopDetails.shopOfferedItemsList" approxItemHeight="70px">
+            <ion-item *virtualItem="let product">
+              <ion-avatar slot="start">
+                <ion-img [src]="product.itemImageUrl"></ion-img>
+              </ion-avatar>
+              <ion-label>{{ product.itemName }}</ion-label>
+              <div class="custom_add_sub_item_quantity_section">
+              <ion-icon name="add-circle-outline" (click)="increment()"></ion-icon>
+              Name
+              <ion-icon name="remove" (click)="decrement()"></ion-icon>
+            </div>
+            </ion-item>
+        </ion-virtual-scroll>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

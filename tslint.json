@@ -42,7 +42,7 @@
     ],
     "no-empty": false,
     "no-inferrable-types": [
-      true,
+      false,
       "ignore-params"
     ],
     "no-non-null-assertion": true,
@@ -57,8 +57,9 @@
     "object-literal-sort-keys": false,
     "ordered-imports": false,
     "quotemark": [
-      true,
-      "single"
+      false,
+      "single",
+      "double"
     ],
     "trailing-comma": false,
     "no-output-on-prefix": true,
@@ -71,6 +72,14 @@
     "one-variable-per-declaration": false,
     "component-class-suffix": [true, "Page", "Component"],
     "directive-class-suffix": true,
+    "variable-name": {
+      "options": [
+        "ban-keywords",
+        "check-format",
+        "allow-leading-underscore",
+        "allow-pascal-case"
+      ]
+    },
     "directive-selector": [
       true,
       "attribute",

@@ -1,0 +1,7 @@
+{
+  "appId": "com.odor.ionic",
+  "appName": "order-it",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}

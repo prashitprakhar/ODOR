@@ -1,5 +1,7 @@
 {
   "name": "order-it",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }
