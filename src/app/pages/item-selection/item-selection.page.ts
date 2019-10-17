@@ -1,9 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { ModalController } from '@ionic/angular';
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { IShopList } from "src/app/models/shop-list.model";
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
 import { SegmentChangeEventDetail } from "@ionic/core";
+import { CustomOrderModalComponent } from '../../modals/custom-order-modal/custom-order-modal.component';
 
 @Component({
   selector: "app-item-selection",
@@ -17,7 +19,8 @@ export class ItemSelectionPage implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private shopItemSelectionService: ShopItemSelectionService,
-    private router: Router
+    private router: Router,
+    private modalCtrl: ModalController
   ) {}
 
   ngOnInit() {
@@ -44,7 +47,23 @@ export class ItemSelectionPage implements OnInit {
   // }
 
   addCustomOrders() {
-    console.log("addCustomOrders")
+    this.modalCtrl.create({component: CustomOrderModalComponent, 
+      componentProps: {name: 'customItemModal'},
+      id: 'customItemModal'}
+    )
+      .then(modalEl => {
+        modalEl.present();
+        return modalEl.onDidDismiss();
+      })
+      .then(data => {
+        console.log("data, role",data.data, data.role);
+        // if(data.role === 'confirm'){
+        //   console.log("Save users data")
+        // }
+        // else if(data.role === 'cancel'){
+        //   console.log("Dont save users data")
+        // }
+      })
   }
 
   showOrderDetails() {
