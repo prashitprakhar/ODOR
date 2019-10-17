@@ -1,3 +1,38 @@
-<p>
-  custom-order-modal works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Add your custom orders
+    </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onClose()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+        <ion-col size-sm="6">
+      <ion-list>
+        <ion-item *ngFor="let customItem of customItemsArray">
+            <ion-input
+            type="text"
+            name="text"
+          >
+          </ion-input>
+          <ion-button (click)="increment(customItem.itemId)">
+            <ion-icon name="add"></ion-icon>
+          </ion-button> &nbsp;
+          <ion-label>Item Count{{customItem.itemCount}}</ion-label>
+        </ion-item>
+      </ion-list>
+      
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <h1>Add your items</h1>
+  <ion-button (click)="addNewItem()">Add Item</ion-button>
+  <ion-button color="primary" (click)="onComplete()">Done</ion-button>
+</ion-content>
