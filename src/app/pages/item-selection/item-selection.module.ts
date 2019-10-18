@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { ItemSelectionPage } from './item-selection.page';
 import { CustomOrderModalComponent } from '../../modals/custom-order-modal/custom-order-modal.component';
+import { ReactiveFormsModule } from '@angular/forms'
 
 const routes: Routes = [
   {
@@ -18,6 +19,7 @@ const routes: Routes = [
 @NgModule({
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes)

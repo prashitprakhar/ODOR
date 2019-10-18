@@ -6,6 +6,7 @@ import { IShopList } from "src/app/models/shop-list.model";
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
 import { SegmentChangeEventDetail } from "@ionic/core";
 import { CustomOrderModalComponent } from '../../modals/custom-order-modal/custom-order-modal.component';
+import { CustomOrderService } from 'src/app/services/custom-order.service';
 
 @Component({
   selector: "app-item-selection",
@@ -20,7 +21,8 @@ export class ItemSelectionPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private shopItemSelectionService: ShopItemSelectionService,
     private router: Router,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private customOrderService: CustomOrderService
   ) {}
 
   ngOnInit() {
@@ -29,9 +31,7 @@ export class ItemSelectionPage implements OnInit {
         return;
       }
       const shopId = paramMap.get("shopId");
-      this.selectedShopDetails = this.shopItemSelectionService.getShopOfferedItems(
-        shopId
-      );
+      this.selectedShopDetails = this.shopItemSelectionService.getShopOfferedItems(shopId);
       // this.shopOfferedItems = this.selectedShopDetails.shopOfferedItemsList;
     });
   }
@@ -57,13 +57,14 @@ export class ItemSelectionPage implements OnInit {
       })
       .then(data => {
         console.log("data, role",data.data, data.role);
+        console.log("this.customOrderService.customItemOrdersDetails",this.customOrderService.customItemOrdersDetails)
         // if(data.role === 'confirm'){
         //   console.log("Save users data")
         // }
         // else if(data.role === 'cancel'){
         //   console.log("Dont save users data")
         // }
-      })
+      });
   }
 
   showOrderDetails() {
