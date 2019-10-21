@@ -7,6 +7,7 @@ export interface ICustomItem {
   itemId: string;
   itemName: string;
   itemCount: number;
+  itemAmount: string;
 }
 
 @Component({
@@ -23,7 +24,8 @@ export class CustomOrderModalComponent implements OnInit {
     {
       itemId: 'Item' + (Math.random() * Math.random()),
       itemName: '',
-      itemCount: 0
+      itemCount: 0,
+      itemAmount: ''
     }
   ];
 
@@ -38,6 +40,7 @@ export class CustomOrderModalComponent implements OnInit {
   }
 
   onClose() {
+    this.customOrderService.customItemOrdersDetails = this.customItemsArray;
     this.modalCtrl.dismiss(null, 'closed', 'customItemModal');
   }
 
@@ -47,7 +50,8 @@ export class CustomOrderModalComponent implements OnInit {
     this.customItemsArray.push({
       itemId: 'Item' + (Math.random() * Math.random()),
     itemName: '',
-    itemCount: 0
+    itemCount: 0,
+    itemAmount: ''
   });
   // this.slidingItem.close();
   }
@@ -69,6 +73,7 @@ export class CustomOrderModalComponent implements OnInit {
     }
     const itemIdList = Object.entries(form.value);
     itemIdList.forEach(item => {
+      //console.log("Item while ")
       const searchedItem = this.customItemsArray.find(arrayItem => arrayItem.itemId === item[0]);
       searchedItem.itemName = item[1].toString();
     });
@@ -97,11 +102,17 @@ export class CustomOrderModalComponent implements OnInit {
   }
 
   onComplete(form: NgForm) {
+
     if (!form.valid) {
       return;
     }
     const itemIdList = Object.entries(form.value);
+
     console.log("ItemList",itemIdList)
+    itemIdList.forEach(element => {
+      
+    })
+
     itemIdList.forEach(item => {
       const searchedItem = this.customItemsArray.find(arrayItem => arrayItem.itemId === item[0]);
       searchedItem.itemName = item[1].toString();
