@@ -9,6 +9,15 @@ export class CustomOrderService {
 
    private _customItemOrders: any[];
 
+   private _customItemsPacksOrders: any[];
+
+  get customItemsPacksOrdersDetails(): any[] {
+    return this._customItemsPacksOrders;
+  }
+  set customItemsPacksOrdersDetails(value: any[]) {
+    this._customItemsPacksOrders = value;
+  }
+
    get customItemOrdersDetails() {
      return this._customItemOrders;
    }

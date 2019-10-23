@@ -10,37 +10,10 @@
 </ion-header>
 
 <ion-content>
-  
-  <!-- <ion-segment (ionChange)="onToggleItemSearchTypeButton($event)" color="tertiary">
-    <ion-segment-button value="ITEM_SELECTION" checked>Select Item</ion-segment-button>
-    <ion-segment-button value="ITEM_ADDITION">Search Item</ion-segment-button>
-    </ion-segment> -->
-    <!-- Top options bar -->
-    <!-- <ion-grid>
-      <ion-row>
-        <ion-col size-sm="6">
-          <ion-button (click)="showOrderDetails()">See Selections</ion-button>
-        </ion-col>
-        <ion-col size-sm="6" offset-sm="1">
-            <ion-button (click)="addCustomOrders()">Add Custom Order</ion-button>
-          </ion-col>
-      </ion-row>
-    </ion-grid> -->
     <ion-fab horizontal="end" vertical="top" slot="fixed" edge>
         <ion-fab-button color="danger" (click)="addCustomOrders()">
           <ion-icon name="add"></ion-icon>
         </ion-fab-button>
-        <!-- <ion-fab-list>
-          <ion-fab-button color="light">
-            <ion-icon name="logo-facebook"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button color="light">
-            <ion-icon name="logo-twitter"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-button color="light">
-            <ion-icon name="logo-vimeo"></ion-icon>
-          </ion-fab-button>
-        </ion-fab-list> -->
       </ion-fab>
     <!-- Main content area -->
   <ion-grid class="ion-no-padding">
@@ -56,24 +29,65 @@
           <ion-img [src]="selectedShopDetails.shopImageUrl"></ion-img>
         </ion-thumbnail>
         <ion-label>
-            <h5>{{ selectedShopDetails.shopName }}</h5>
-            <p>{{ selectedShopDetails.shopType }}</p>
+            <h5 >{{ selectedShopDetails.shopName }}</h5>
+            <p class="pre_item_rating_section">{{ selectedShopDetails.shopType }}</p>
           </ion-label>
+          <!--
+            <ion-label>
+              <h5 class="shop_name">{{ shop.shopName }}</h5>
+              <p class="pre_shop_rating_section">
+                {{ shop.shopType }} . {{ shop.shopLocation }}
+              </p>
+              <ion-icon name="star" class="star_style"></ion-icon>
+              <ion-text class="space_left">{{ shop.shopRating }}</ion-text>
+              <ion-text class="space_dot">&#8226;</ion-text>
+              <ion-text class="space_left_delivery">{{currentDeliveryTimeSchedule.deliveryTimeWithin1K}} mins</ion-text>
+              <ion-text class="space_dot">&#8226;</ion-text>
+              <ion-text class="space_left_delivery">Min. order &#8377;150</ion-text>
+            </ion-label>
+          -->
         </ion-item>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col>
+      <ion-col class="ion-no-padding">
         <ion-virtual-scroll [items]="selectedShopDetails.shopOfferedItemsList" approxItemHeight="70px">
             <ion-item *virtualItem="let product">
               <ion-avatar slot="start">
                 <ion-img [src]="product.itemImageUrl"></ion-img>
               </ion-avatar>
-              <ion-label>{{ product.itemName }}</ion-label>
+              <ion-label>
+                <h5 class="item_name">{{ product.itemName }}</h5>
+                <p class="pre_item_rate_section">{{ product.itemBrand }} . {{ product.itemCategory }}</p>
+                <ion-text class="space_left">&#8377;{{ product.itemDiscountedRate }}</ion-text>
+                <ion-text class="space_dot">&#8226;</ion-text>
+                <ion-text class="space_left_delivery">{{product.itemWeight}}</ion-text>
+                <!-- <p class="post_item_rate_section">{{product.itemWeight}}</p> -->
+              </ion-label>
               <div class="custom_add_sub_item_quantity_section">
               <ion-icon name="add-circle-outline" (click)="increment()"></ion-icon>
-              Name
+              0
               <ion-icon name="remove" (click)="decrement()"></ion-icon>
+              <!-- <ion-button
+                    (click)="incrementKG(customItem.itemId, customKGOrderForm)"
+                    [disabled]="customItem.itemName === '' || customItem.itemCount >4"
+                    style="color: #228B22;"
+                    fill="clear"
+                    strong
+                  >
+                    <ion-icon name="add" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  &nbsp;
+                  <ion-label>{{ customItem.itemCount }} kg</ion-label> &nbsp;
+                  <ion-button
+                    (click)="decrementKG(customItem.itemId, customKGOrderForm)"
+                    [disabled]="customItem.itemCount <= 1"
+                    style="color: #228B22;"
+                    fill="clear"
+                    strong
+                  >
+                    <ion-icon name="remove" slot="icon-only"></ion-icon>
+                  </ion-button> -->
             </div>
             </ion-item>
         </ion-virtual-scroll>

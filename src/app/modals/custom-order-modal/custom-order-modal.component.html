@@ -13,35 +13,36 @@
 
 <ion-content>
   <ion-grid class="ion-no-padding">
-    <!-- <ion-row text-center>
-        <ion-col size="12">
-            <ion-text text-center>Add your custom orders</ion-text>
-        </ion-col>
-    </ion-row> -->
+    <ion-row>
+      <ion-col class="custom_packs_header ion-no-padding">
+        <ion-item>
+          <ion-label>Add items in kilograms(5 kg max)</ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
     <ion-row class="ion-no-padding">
       <form
-        #customOrderForm="ngForm"
-        (ngSubmit)="onComplete(customOrderForm)"
+        #customKGOrderForm="ngForm"
         class="ion-no-padding"
         style="width: 100vw;"
       >
         <ion-list class="ion-no-padding">
           <ion-item-sliding
-            *ngFor="let customItem of customItemsArray"
+            *ngFor="let customItem of customKilogramItemsArray"
             lines="none"
             #ionItemSliding
           >
             <ion-item-options side="start">
               <ion-item-option
                 style="background: #3880ff;"
-                (click)="addNewItem(ionItemSliding)"
-                [disabled]="customItem.itemName === ''"
+                (click)="addNewItemKG(ionItemSliding)"
+                [disabled]="customItem.itemName === '' || customKilogramItemsArray.length >4"
               >
                 <ion-icon name="add" slot="icon-only"></ion-icon>
               </ion-item-option>
             </ion-item-options>
             <ion-item lines="none">
-              <ion-col class="ion-no-padding" size="8">
+              <ion-col class="ion-no-padding" size="7">
                 <ion-item lines="none" class="ion-no-padding">
                   <ion-label position="floating" color="dark"
                     >Item Name</ion-label
@@ -51,17 +52,17 @@
                     name="{{ customItem.itemId }}"
                     required
                     [(ngModel)]="customItem.itemName"
-                    (ionChange)="onItemNameChange($event, customItem.itemId)"
+                    (ionChange)="onItemNameChangeKG($event, customItem.itemId)"
                   >
                   </ion-input>
                 </ion-item>
               </ion-col>
 
-              <ion-col class="ion-no-padding" size="4">
+              <ion-col class="ion-no-padding" size="5">
                 <div class="custom_add_sub_style">
                   <ion-button
-                    (click)="increment(customItem.itemId, customOrderForm)"
-                    [disabled]="customItem.itemName === ''"
+                    (click)="incrementKG(customItem.itemId, customKGOrderForm)"
+                    [disabled]="customItem.itemName === '' || customItem.itemCount >4"
                     style="color: #228B22;"
                     fill="clear"
                     strong
@@ -69,9 +70,9 @@
                     <ion-icon name="add" slot="icon-only"></ion-icon>
                   </ion-button>
                   &nbsp;
-                  <ion-label>{{ customItem.itemCount }}</ion-label> &nbsp;
+                  <ion-label>{{ customItem.itemCount }} kg</ion-label> &nbsp;
                   <ion-button
-                    (click)="decrement(customItem.itemId, customOrderForm)"
+                    (click)="decrementKG(customItem.itemId, customKGOrderForm)"
                     [disabled]="customItem.itemCount <= 1"
                     style="color: #228B22;"
                     fill="clear"
@@ -81,13 +82,104 @@
                   </ion-button>
                 </div>
               </ion-col>
-              
             </ion-item>
             <ion-item-options side="end">
               <ion-item-option
                 color="danger"
-                (click)="removeItem(customItem.itemId, customOrderForm)"
-                [disabled]="customItemsArray.length === 1"
+                (click)="removeItemKG(customItem.itemId, customKGOrderForm)"
+                [disabled]="customKilogramItemsArray.length === 1"
+              >
+                <ion-icon name="close" slot="icon-only"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        </ion-list>
+      </form>
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="custom_packs_header ion-no-padding" size="12">
+        <ion-item style="background-color: black !important;">
+          <ion-text class="ion-no-padding" style="font-size: 18px;">Add Packet Items(5 packs max.)</ion-text>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row class="ion-no-padding">
+      <form
+        #customPacksOrderForm="ngForm"
+        class="ion-no-padding"
+        style="width: 100vw;"
+      >
+        <ion-list class="ion-no-padding">
+          <ion-item-sliding
+            *ngFor="let customItem of customPacketsItemsArray"
+            lines="none"
+            #ionItemSliding
+          >
+            <ion-item-options side="start">
+              <ion-item-option
+                style="background: #3880ff;"
+                (click)="addNewItemPacks(ionItemSliding)"
+                [disabled]="customItem.itemName === '' || customPacketsItemsArray.length >4"
+              >
+                <ion-icon name="add" slot="icon-only"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+            <ion-item lines="none">
+              <ion-col class="ion-no-padding" size="7">
+                <ion-item lines="none" class="ion-no-padding">
+                  <ion-label position="floating" color="dark"
+                    >Item Name</ion-label
+                  >
+                  <ion-input
+                    type="text"
+                    name="{{ customItem.itemId }}"
+                    required
+                    [(ngModel)]="customItem.itemName"
+                    (ionChange)="
+                      onItemNameChangePacks($event, customItem.itemId)
+                    "
+                  >
+                  </ion-input>
+                </ion-item>
+              </ion-col>
+
+              <ion-col class="ion-no-padding" size="5">
+                <div class="custom_add_sub_style">
+                  <ion-button
+                    (click)="
+                      incrementPacks(customItem.itemId, customPacksOrderForm)
+                    "
+                    [disabled]="customItem.itemName === '' || customItem.itemCount >4"
+                    style="color: #228B22;"
+                    fill="clear"
+                    strong
+                  >
+                    <ion-icon name="add" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  &nbsp;
+                  <ion-label>{{ customItem.itemCount }} pks</ion-label> &nbsp;
+                  <ion-button
+                    (click)="
+                      decrementPacks(customItem.itemId, customPacksOrderForm)
+                    "
+                    [disabled]="customItem.itemCount <= 1"
+                    style="color: #228B22;"
+                    fill="clear"
+                    strong
+                  >
+                    <ion-icon name="remove" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-col>
+            </ion-item>
+            <ion-item-options side="end">
+              <ion-item-option
+                color="danger"
+                (click)="
+                  removeItemPacks(customItem.itemId, customPacksOrderForm)
+                "
+                [disabled]="customPacketsItemsArray.length === 1"
               >
                 <ion-icon name="close" slot="icon-only"></ion-icon>
               </ion-item-option>
@@ -99,61 +191,12 @@
     <ion-row>
       <ion-col>
         <ion-button (click)="cancelCustomOrder()">Cancel Order</ion-button>
-        <ion-button color="primary" (click)="onComplete(customOrderForm)"
+        <ion-button
+          color="primary"
+          (click)="onComplete(customKGOrderForm, customPacksOrderForm)"
           >Add to Custom Orders</ion-button
         >
       </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
-
-<!-- <ion-col class="ion-no-padding">
-        <form
-          #customOrderForm="ngForm"
-          (ngSubmit)="onComplete(customOrderForm)"
-        >
-          <ion-list class="ion-no-padding">
-            <ion-item *ngFor="let customItem of customItemsArray" lines="none">
-              <ion-item lines="none" class="ion-no-padding">
-                <ion-label position="floating" color="dark">Item Name</ion-label>
-                <ion-input
-                  type="text"
-                  name="{{ customItem.itemId }}"
-                  required
-                  [(ngModel)]="customItem.itemName"
-                >
-                </ion-input>
-              </ion-item>
-              <div class="custom_add_sub_style">
-                <ion-button
-                  (click)="increment(customItem.itemId, customOrderForm)"
-                  [disabled]="customItem.itemName === ''"
-                  style="color: #228B22;"
-                  fill="clear"
-                  strong
-                >
-                <ion-icon name="add" slot="icon-only"></ion-icon>
-                </ion-button>
-                &nbsp; <ion-label>{{ customItem.itemCount }}</ion-label> &nbsp;
-                <ion-button
-                  (click)="decrement(customItem.itemId, customOrderForm)"
-                  [disabled]="customItem.itemCount === 0"
-                  style="color: #228B22;"
-                  fill="clear"
-                  strong
-                >
-                  <ion-icon name="remove" slot="icon-only"></ion-icon>
-                </ion-button>
-              </div>
-              <ion-button *ngIf="customItemsArray.length > 1"
-                (click)="removeItem(customItem.itemId, customOrderForm)"
-                shape="round"
-                slot="end"
-                color="danger"
-              >
-                <ion-icon name="close"></ion-icon>
-              </ion-button>
-            </ion-item>
-          </ion-list>
-        </form>
-      </ion-col> -->

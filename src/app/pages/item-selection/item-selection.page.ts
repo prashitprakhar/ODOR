@@ -3,10 +3,11 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController } from '@ionic/angular';
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { IShopList } from "src/app/models/shop-list.model";
-import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
-import { SegmentChangeEventDetail } from "@ionic/core";
+// import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
+// import { SegmentChangeEventDetail } from "@ionic/core";
 import { CustomOrderModalComponent } from '../../modals/custom-order-modal/custom-order-modal.component';
 import { CustomOrderService } from 'src/app/services/custom-order.service';
+import { ISelectableItemsOrder } from './../../models/selectable-items-orders.model';
 
 @Component({
   selector: "app-item-selection",
