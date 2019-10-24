@@ -28,7 +28,8 @@ export class ShopItemSelectionService {
           itemDiscountedRate: 10,
           discountAmount: 0,
           discountPercentage: 0,
-          itemWeight: '100 Gms',
+          itemWeight: '100 g',
+          itemCount: 0,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -42,7 +43,8 @@ export class ShopItemSelectionService {
           itemDiscountedRate: 10,
           discountAmount: 0,
           discountPercentage: 0,
-          itemWeight: '100 Gms',
+          itemCount: 0,
+          itemWeight: '100 g',
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -56,7 +58,8 @@ export class ShopItemSelectionService {
           itemDiscountedRate: 10,
           discountAmount: 0,
           discountPercentage: 0,
-          itemWeight: '100 Gms',
+          itemCount: 0,
+          itemWeight: '100 g',
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -70,7 +73,8 @@ export class ShopItemSelectionService {
           itemDiscountedRate: 10,
           discountAmount: 0,
           discountPercentage: 0,
-          itemWeight: '100 Gms',
+          itemCount: 0,
+          itemWeight: '100 g',
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         }
         // {
@@ -1520,11 +1524,12 @@ export class ShopItemSelectionService {
           itemDescription: 'Packaged Milk Tetra Pack',
           itemCategory: 'Packaged',
           itemUndiscountedRate: 10,
-          itemWeight: '100 Gms',
+          itemWeight: '100 g',
           isDiscountedAvailable: false,
           itemDiscountedRate: 10,
           discountAmount: 0,
           discountPercentage: 0,
+          itemCount: 0,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         }
       ]

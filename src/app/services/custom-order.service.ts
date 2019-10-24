@@ -11,6 +11,15 @@ export class CustomOrderService {
 
    private _customItemsPacksOrders: any[];
 
+   private _selectableItemsOrders: any[];
+
+  public get selectableItemsOrders(): any[] {
+    return this._selectableItemsOrders;
+  }
+  public set selectableItemsOrders(value: any[]) {
+    this._selectableItemsOrders = value;
+  }
+
   get customItemsPacksOrdersDetails(): any[] {
     return this._customItemsPacksOrders;
   }
@@ -18,11 +27,11 @@ export class CustomOrderService {
     this._customItemsPacksOrders = value;
   }
 
-   get customItemOrdersDetails() {
+   get customItemOrdersDetails(): any[] {
      return this._customItemOrders;
    }
 
-   set customItemOrdersDetails(orderDetails) {
+   set customItemOrdersDetails(orderDetails: any[]) {
     this._customItemOrders = orderDetails;
    }
 

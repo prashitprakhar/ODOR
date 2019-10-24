@@ -26,7 +26,7 @@ export class CustomOrderModalComponent implements OnInit {
       itemId: 'Item' + (Math.random() * Math.random()),
       itemName: '',
       itemCount: 0,
-      itemAmount: ''
+      itemUnit: 'KG'
     }
   ];
 
@@ -35,7 +35,7 @@ export class CustomOrderModalComponent implements OnInit {
       itemId: 'Item' + (Math.random() * Math.random()),
       itemName: '',
       itemCount: 0,
-      itemAmount: ''
+      itemUnit: 'PACKS'
     }
   ];
 
@@ -69,7 +69,7 @@ export class CustomOrderModalComponent implements OnInit {
       itemId: 'Item' + (Math.random() * Math.random()),
     itemName: '',
     itemCount: 0,
-    itemAmount: ''
+    itemUnit: ''
   });
   // this.slidingItem.close();
   }
@@ -81,7 +81,7 @@ export class CustomOrderModalComponent implements OnInit {
       itemId: 'Item' + (Math.random() * Math.random()),
     itemName: '',
     itemCount: 0,
-    itemAmount: ''
+    itemUnit: ''
   });
   // this.slidingItem.close();
   }
@@ -89,7 +89,7 @@ export class CustomOrderModalComponent implements OnInit {
   onItemNameChangeKG(event, itemId) {
     const itemValueChanged = this.customKilogramItemsArray.find(arrayItem => arrayItem.itemId === itemId);
     if (event.detail.value.length >= 1 && itemValueChanged.itemCount === 0) {
-      itemValueChanged.itemCount = 1;
+      itemValueChanged.itemCount = 0.5;
      }
 
     if (event.detail.value.length === 0) {
@@ -179,13 +179,13 @@ export class CustomOrderModalComponent implements OnInit {
   }
 
   onComplete(kgForm: NgForm, packsForm: NgForm) {
-    //console.log("kgForm, packsform",kgForm, packsForm)
+    // console.log("kgForm, packsform",kgForm, packsForm)
     if (!kgForm.valid && !packsForm.valid ) {
       return;
     }
     const itemIdListKG = Object.entries(kgForm.value);
 
-    //console.log("ItemList", itemIdListKG);
+    // console.log("ItemList", itemIdListKG);
 
     itemIdListKG.forEach(element => {
 
@@ -198,7 +198,7 @@ export class CustomOrderModalComponent implements OnInit {
 
     const itemIdListPacks = Object.entries(packsForm.value);
 
-    //console.log("ItemList", itemIdListPacks);
+    // console.log("ItemList", itemIdListPacks);
 
     itemIdListPacks.forEach(element => {
 

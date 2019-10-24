@@ -42,7 +42,7 @@
               </ion-item-option>
             </ion-item-options>
             <ion-item lines="none">
-              <ion-col class="ion-no-padding" size="7">
+              <ion-col class="ion-no-padding" size="6">
                 <ion-item lines="none" class="ion-no-padding">
                   <ion-label position="floating" color="dark"
                     >Item Name</ion-label
@@ -58,11 +58,11 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col class="ion-no-padding" size="5">
+              <ion-col class="ion-no-padding" size="6">
                 <div class="custom_add_sub_style">
                   <ion-button
                     (click)="incrementKG(customItem.itemId, customKGOrderForm)"
-                    [disabled]="customItem.itemName === '' || customItem.itemCount >4"
+                    [disabled]="customItem.itemName === '' || customItem.itemCount == 5"
                     style="color: #228B22;"
                     fill="clear"
                     strong
@@ -73,7 +73,7 @@
                   <ion-label>{{ customItem.itemCount }} kg</ion-label> &nbsp;
                   <ion-button
                     (click)="decrementKG(customItem.itemId, customKGOrderForm)"
-                    [disabled]="customItem.itemCount <= 1"
+                    [disabled]="customItem.itemCount <= 0.5"
                     style="color: #228B22;"
                     fill="clear"
                     strong
@@ -126,7 +126,7 @@
               </ion-item-option>
             </ion-item-options>
             <ion-item lines="none">
-              <ion-col class="ion-no-padding" size="7">
+              <ion-col class="ion-no-padding" size="6">
                 <ion-item lines="none" class="ion-no-padding">
                   <ion-label position="floating" color="dark"
                     >Item Name</ion-label
@@ -144,7 +144,7 @@
                 </ion-item>
               </ion-col>
 
-              <ion-col class="ion-no-padding" size="5">
+              <ion-col class="ion-no-padding" size="6">
                 <div class="custom_add_sub_style">
                   <ion-button
                     (click)="
