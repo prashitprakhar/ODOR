@@ -10,6 +10,7 @@ export interface IShopOfferedItems {
     discountAmount: number;
     discountPercentage: number;
     itemImageUrl: string;
-    itemWeight: string;
+    itemWeight: number;
     itemCount: number;
+    itemUnit: string;
 }

@@ -13,66 +13,62 @@ export class OrderDetailsPage implements OnInit {
   public customOrdersPacks: ICustomOrderItem[] = [];
   public customOrdersKG: ICustomOrderItem[] = [];
   public selectableOrders: ISelectableItemsOrder[] = [];
+  public allOrdersCombined: ICustomOrderItem[] = [];
   public grandTotal: number = 0;
 
   constructor(private customOrderService: CustomOrderService) { }
 
+  ngOnInit() {
+    this.selectableOrders = [];
+  }
+
   ionViewWillEnter() {
+    this.allOrdersCombined = [];
     this.customOrdersPacks = this.customOrderService.customItemsPacksOrdersDetails;
     this.customOrdersKG = this.customOrderService.customItemOrdersDetails;
     this.selectableOrders = this.customOrderService.selectableItemsOrders;
-    // tslint:disable-next-line: only-arrow-functions
-    if(this.selectableOrders){
+    if (this.customOrderService.customItemsPacksOrdersDetails) {
+      this.allOrdersCombined = [...this.allOrdersCombined, ...this.customOrderService.customItemsPacksOrdersDetails];
+    }
+    if (this.customOrderService.customItemOrdersDetails) {
+      this.allOrdersCombined = [...this.allOrdersCombined, ...this.customOrderService.customItemOrdersDetails];
+    }
+    if (this.customOrderService.selectableItemsOrders) {
+      this.allOrdersCombined = [...this.allOrdersCombined, ...this.selectableOrders];
+    }
+    // this.allOrdersCombined = [...this.customOrdersPacks, ...this.customOrdersKG, ...this.selectableOrders]
+    if (this.selectableOrders) {
+      // tslint:disable-next-line: only-arrow-functions
       this.grandTotal = this.selectableOrders.reduce(function(accumulator, item) {
         return accumulator + item.totalPrice;
       }, 0);
     }
-    //console.log("Grand Total *****", this.grandTotal);
-    /*
-    var totalYears = pilots.reduce(function (accumulator, pilot) {
-  return accumulator + pilot.years;
-}, 0);
-    */
-    //console.log("this.selectableOrders", this.selectableOrders);
   }
 
   ionViewDidEnter() {
+    this.allOrdersCombined = [];
     this.customOrdersPacks = this.customOrderService.customItemsPacksOrdersDetails;
     this.customOrdersKG = this.customOrderService.customItemOrdersDetails;
     this.selectableOrders = this.customOrderService.selectableItemsOrders;
-    // tslint:disable-next-line: only-arrow-functions
-    if(this.selectableOrders){
-    this.grandTotal = this.selectableOrders.reduce(function(accumulator, item) {
-      return accumulator + item.totalPrice;
-    }, 0);
-  }
-    //console.log("Grand Total *****", this.grandTotal);
-    /*
-    var totalYears = pilots.reduce(function (accumulator, pilot) {
-  return accumulator + pilot.years;
-}, 0);
-    */
-    //console.log("this.selectableOrders", this.selectableOrders);
-  }
-
-  ngOnInit() {
-//     this.customOrdersPacks = this.customOrderService.customItemsPacksOrdersDetails;
-//     this.customOrdersKG = this.customOrderService.customItemOrdersDetails;
-//     this.selectableOrders = this.customOrderService.selectableItemsOrders;
-//     // tslint:disable-next-line: only-arrow-functions
-//     this.grandTotal = this.selectableOrders.reduce(function(accumulator, item) {
-//       return accumulator + item.totalPrice;
-//     }, 0);
-
-//     console.log("Grand Total *****", this.grandTotal);
-//     /*
-//     var totalYears = pilots.reduce(function (accumulator, pilot) {
-//   return accumulator + pilot.years;
-// }, 0);
-//     */
-//     console.log("this.selectableOrders", this.selectableOrders);
+    if (this.customOrderService.customItemsPacksOrdersDetails) {
+      this.allOrdersCombined = [...this.allOrdersCombined, ...this.customOrderService.customItemsPacksOrdersDetails];
+    }
+    if (this.customOrderService.customItemOrdersDetails) {
+      this.allOrdersCombined = [...this.allOrdersCombined, ...this.customOrderService.customItemOrdersDetails];
+    }
+    if (this.customOrderService.selectableItemsOrders) {
+      this.allOrdersCombined = [...this.allOrdersCombined, ...this.selectableOrders];
+    }
+    // this.allOrdersCombined = [...this.customOrdersPacks, ...this.customOrdersKG, ...this.selectableOrders]
+    if (this.selectableOrders) {
+      // tslint:disable-next-line: only-arrow-functions
+      this.grandTotal = this.selectableOrders.reduce(function(accumulator, item) {
+        return accumulator + item.totalPrice;
+      }, 0);
+    }
   }
 
-  
+
+
 
 }

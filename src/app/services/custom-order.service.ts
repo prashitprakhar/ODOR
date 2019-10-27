@@ -13,6 +13,16 @@ export class CustomOrderService {
 
    private _selectableItemsOrders: any[];
 
+   private _isResetAllOrdersNeeded: boolean;
+
+   public get isResetAllOrdersNeeded(): boolean {
+    return this._isResetAllOrdersNeeded;
+  }
+
+   public set isResetAllOrdersNeeded(value: boolean) {
+    this._isResetAllOrdersNeeded = value;
+   }
+
   public get selectableItemsOrders(): any[] {
     return this._selectableItemsOrders;
   }

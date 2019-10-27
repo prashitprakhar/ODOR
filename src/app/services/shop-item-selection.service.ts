@@ -28,7 +28,8 @@ export class ShopItemSelectionService {
           itemDiscountedRate: 10,
           discountAmount: 0,
           discountPercentage: 0,
-          itemWeight: '100 g',
+          itemWeight: 100,
+          itemUnit: 'g',
           itemCount: 0,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
@@ -44,7 +45,8 @@ export class ShopItemSelectionService {
           discountAmount: 0,
           discountPercentage: 0,
           itemCount: 0,
-          itemWeight: '100 g',
+          itemWeight: 100,
+          itemUnit: 'g',
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -59,7 +61,8 @@ export class ShopItemSelectionService {
           discountAmount: 0,
           discountPercentage: 0,
           itemCount: 0,
-          itemWeight: '100 g',
+          itemWeight: 100,
+          itemUnit: 'g',
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -74,7 +77,8 @@ export class ShopItemSelectionService {
           discountAmount: 0,
           discountPercentage: 0,
           itemCount: 0,
-          itemWeight: '100 g',
+          itemWeight: 100,
+          itemUnit: 'g',
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         }
         // {
@@ -1524,7 +1528,8 @@ export class ShopItemSelectionService {
           itemDescription: 'Packaged Milk Tetra Pack',
           itemCategory: 'Packaged',
           itemUndiscountedRate: 10,
-          itemWeight: '100 g',
+          itemWeight: 100,
+          itemUnit: 'g',
           isDiscountedAvailable: false,
           itemDiscountedRate: 10,
           discountAmount: 0,
@@ -1539,12 +1544,14 @@ export class ShopItemSelectionService {
   constructor() { }
 
   getAllShopList() {
+    // return [...this.shopList];
     return [...this.shopList];
   }
 
   getShopOfferedItems(shopId: string) {
-    return {
-      ...this.shopList.find(shop => shop.shopId === shopId)
-    };
+    // return {
+    //   ...this.shopList.find(shop => shop.shopId === shopId)
+    // };
+    return this.shopList.find(shop => shop.shopId === shopId);
   }
 }

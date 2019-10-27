@@ -5,41 +5,44 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid *ngIf="selectableOrders">
-    <ion-row>
+  <ion-grid *ngIf="allOrdersCombined">
+    <!-- <ion-row *ngIf="customOrdersKG">
       <ion-col> </ion-col>
     </ion-row>
     <ion-row>
       <ion-col> </ion-col>
-    </ion-row>
+    </ion-row> -->
     <ion-row>
       <ion-col class="ordered_items">
-        <ion-virtual-scroll [items]="selectableOrders" approxItemHeight="70px">
+        <ion-virtual-scroll [items]="allOrdersCombined" approxItemHeight="70px">
           <ion-item *virtualItem="let product" lines="none">
             <ion-label style="font-family: fantasy;">
               <h5 class="item_name">{{ product.itemName }}</h5>
-              <ion-text class="space_left"
-                >&#8377;{{ product.itemDiscountedRate }}</ion-text
-              >
-              <ion-text class="space_dot">&#8226;</ion-text>
-              <ion-text class="space_left_delivery">{{
+              <ion-text *ngIf="product.orderType !== 'SELECT'">(Custom Order)</ion-text>
+              <ion-text class="space_left" *ngIf="product.orderType === 'SELECT'">
+                &#8377;{{ product.itemDiscountedRate }}</ion-text>
+              <ion-text class="space_dot" *ngIf="product.orderType === 'SELECT'">&#8226;</ion-text><!-- -->
+              <ion-text class="space_left_delivery" *ngIf="product.orderType === 'SELECT'">{{
                 product.itemWeight
               }}</ion-text>
+              <ion-text class="space_left_delivery" *ngIf="product.orderType !== 'SELECT'">
+                {{product.itemCount}}{{product.itemUnit}}</ion-text>
             </ion-label>
             <div class="custom_add_sub_item_quantity_section">
-              <ion-text
-                style="font-family: fantasy; font-weight: bold;font-size: 18px;"
-                >{{ product.itemCount }} X &#8377;
+              <ion-text style="font-family: fantasy; font-weight: bold;font-size: 18px;" *ngIf="product.orderType === 'SELECT'">{{ product.itemCount }} X &#8377;
                 {{ product.itemDiscountedRate }} = &#8377;
                 {{ product.totalPrice }}</ion-text
               >
+              <ion-text style="font-family: fantasy; font-weight: bold;font-size: 14px;" 
+              *ngIf="product.orderType !== 'SELECT'">Estimated Price to be sent
+                  </ion-text>
             </div>
           </ion-item>
         </ion-virtual-scroll>
       </ion-col>
     </ion-row>
   </ion-grid>
-  <ion-grid *ngIf="!selectableOrders">
+  <ion-grid *ngIf="allOrdersCombined.length === 0">
     <ion-row>
       <ion-col>
         <ion-text
@@ -49,10 +52,10 @@
     </ion-row>
   </ion-grid>
 </ion-content>
-<ion-footer>
+<ion-footer *ngIf="allOrdersCombined.length > 0">
   <ion-toolbar>
-    <ion-title>
-      <ion-grid *ngIf="selectableOrders">
+    <!-- <ion-title> -->
+      <ion-grid>
         <ion-row class="ion-no-padding" style="align-items: center;">
           <ion-col class="ion-no-padding" size="6">
             <ion-label>Grand Total : &#8377; {{ grandTotal }}</ion-label>
@@ -60,19 +63,13 @@
           <ion-col class="confirm_button_col" size="6">
             <ion-button
               color="success"
-              size="small"
-              [disabled]="
-                selectableOrders.length === 0 &&
-                customOrdersPacks.length === 0 &&
-                customOrdersKG.length === 0
-              "
-            >
+              size="small">
               <ion-label>Place Order</ion-label>
               <ion-icon name="checkmark-circle-outline" slot="end"></ion-icon>
             </ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
-    </ion-title>
+    <!-- </ion-title> -->
   </ion-toolbar>
 </ion-footer>

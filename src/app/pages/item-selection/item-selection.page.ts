@@ -1,15 +1,15 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from "@ionic/angular";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { IShopList } from "src/app/models/shop-list.model";
 // import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
 // import { SegmentChangeEventDetail } from "@ionic/core";
-import { CustomOrderModalComponent } from '../../modals/custom-order-modal/custom-order-modal.component';
-import { CustomOrderService } from 'src/app/services/custom-order.service';
-import { ISelectableItemsOrder } from './../../models/selectable-items-orders.model';
-import { NgForm } from '@angular/forms';
-import { IShopOfferedItems } from 'src/app/models/shop-offered-items.model';
+import { CustomOrderModalComponent } from "../../modals/custom-order-modal/custom-order-modal.component";
+import { CustomOrderService } from "src/app/services/custom-order.service";
+import { ISelectableItemsOrder } from "./../../models/selectable-items-orders.model";
+import { NgForm } from "@angular/forms";
+import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
 
 @Component({
   selector: "app-item-selection",
@@ -20,25 +20,76 @@ export class ItemSelectionPage implements OnInit {
   public selectedShopDetails: IShopList;
   public selectedItems: ISelectableItemsOrder[] = [];
   public shopOfferedItemsList: IShopOfferedItems[] = [];
+  public shopId: string = "";
+  public resetCart: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private shopItemSelectionService: ShopItemSelectionService,
     private router: Router,
     private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
     private customOrderService: CustomOrderService
   ) {}
 
   ngOnInit() {
+    // console.log("this.customOrderService.isResetAllOrdersNeeded", this.customOrderService.isResetAllOrdersNeeded);
     this.activatedRoute.paramMap.subscribe(paramMap => {
       if (!paramMap.has("shopId")) {
         return;
       }
-      const shopId = paramMap.get("shopId");
-      this.selectedShopDetails = this.shopItemSelectionService.getShopOfferedItems(shopId);
+      this.shopId = paramMap.get("shopId");
+      this.selectedShopDetails = this.shopItemSelectionService.getShopOfferedItems(
+        this.shopId
+      );
       this.shopOfferedItemsList = this.selectedShopDetails.shopOfferedItemsList;
-      // this.shopOfferedItems = this.selectedShopDetails.shopOfferedItemsList;
     });
+    const selectableOrders = this.customOrderService.selectableItemsOrders;
+    // const customOrdersKG = this.customOrderService.customItemOrdersDetails;
+    // const customOrdersPacks = this.customOrderService.customItemsPacksOrdersDetails;
+    if (selectableOrders || this.customOrderService.isResetAllOrdersNeeded) {
+      if (this.customOrderService.isResetAllOrdersNeeded) {
+      this.shopOfferedItemsList.forEach(element => {
+        element.itemCount = 0;
+      })
+      }
+      else {
+        let filteredSelectableOrders = [];
+        if (selectableOrders) {
+        filteredSelectableOrders = selectableOrders.filter(
+          element => element.shopId !== this.shopId
+        );
+      }
+        if (filteredSelectableOrders.length > 0) {
+        this.shopOfferedItemsList.forEach(element => {
+          element.itemCount = 0;
+        });
+      }
+      // }
+
+    }
+  }
+    // else {
+    //   console.log("Else part Oninit item selection",selectableOrders)
+    // }
+
+    // console.log("selectedItems", this.shopOfferedItemsList);
+  }
+
+  ionViewWillEnter() {
+    // console.log("ionViewWillEnter item selection", this.customOrderService.isResetAllOrdersNeeded);
+  }
+
+  ionViewDidEnter() {
+    // console.log("ionViewDidEnter item selection", this.customOrderService.isResetAllOrdersNeeded);
+  }
+
+  ionViewWillLeave() {
+    // console.log("ionViewWillLeave item selection", this.customOrderService.isResetAllOrdersNeeded);
+  }
+
+  ionViewDidLeave() {
+    // console.log("ionViewDidLeave item selection", this.customOrderService.isResetAllOrdersNeeded);
   }
 
   // onToggleItemSearchTypeButton(event: CustomEvent<SegmentChangeEventDetail>) {
@@ -52,17 +103,25 @@ export class ItemSelectionPage implements OnInit {
   // }
 
   addCustomOrders() {
-    this.modalCtrl.create({component: CustomOrderModalComponent,
-      componentProps: {name: 'customItemModal'},
-      id: 'customItemModal'}
-    )
+    // console.log("this.shopId this.shopId from page",this.shopId)
+    this.modalCtrl
+      .create({
+        component: CustomOrderModalComponent,
+        componentProps: {
+          name: "customItemModal",
+          selectedShopId: this.shopId
+        },
+        id: "customItemModal"
+      })
       .then(modalEl => {
         modalEl.present();
         return modalEl.onDidDismiss();
       })
       .then(data => {
-        console.log("data, role", data.data, data.role);
-        console.log("this.customOrderService.customItemOrdersDetails", this.customOrderService.customItemOrdersDetails);
+        // console.log(
+        //   "this.customOrderService.customItemOrdersDetails",
+        //   this.customOrderService.customItemOrdersDetails
+        // );
         // if(data.role === 'confirm'){
         //   console.log("Save users data")
         // }
@@ -72,68 +131,142 @@ export class ItemSelectionPage implements OnInit {
       });
   }
 
-  showOrderDetails() {
-    // console.log("showOrderDetails");
+  showOrderDetails() {}
+
+  checkForMultipleShopSelection(itemId, selectableItemsForm: NgForm) {
+    this.resetCart = false;
+    const customKGOrders = this.customOrderService.customItemOrdersDetails;
+    const customPacksOrders = this.customOrderService
+      .customItemsPacksOrdersDetails;
+    const selectableOrders = this.customOrderService.selectableItemsOrders;
+
+    if (customKGOrders || customPacksOrders || selectableOrders) {
+      let filteredCustomKGOrders = [];
+      let filteredCustomPacksOrders = [];
+      let filteredSelectableOrders = [];
+      if (customKGOrders) {
+        filteredCustomKGOrders = customKGOrders.filter(
+          element => element.shopId !== this.shopId
+        );
+      }
+      if (customPacksOrders) {
+        filteredCustomPacksOrders = customPacksOrders.filter(
+          element => element.shopId !== this.shopId
+        );
+      }
+      if (selectableOrders) {
+        filteredSelectableOrders = selectableOrders.filter(
+          element => element.shopId !== this.shopId
+        );
+      }
+
+      if (
+        filteredCustomKGOrders.length > 0 ||
+        filteredSelectableOrders.length > 0 ||
+        filteredCustomPacksOrders.length > 0
+      ) {
+       const alert = this.alertCtrl
+          .create({
+            header: "Items already in cart",
+            message:
+              "Your cart contains items from a different Shop. Would you like to reset your cart and add items from this shop ?",
+            buttons: [
+              {
+                text: "No",
+                role: "cancel",
+                cssClass: "secondary",
+                handler: cancel => {
+                  // console.log("cancel ***");
+                  this.resetCart = false;
+                }
+              },
+              {
+                text: "Yes",
+                handler: () => {
+                  this.resetCart = true;
+                  this.customOrderService.customItemOrdersDetails = [];
+                  this.customOrderService.customItemsPacksOrdersDetails = [];
+                  this.customOrderService.selectableItemsOrders = [];
+                  this.customOrderService.isResetAllOrdersNeeded = false;
+                  this.increment(itemId, selectableItemsForm);
+                }
+              }
+            ]
+          })
+          .then(alertEl => {
+            alertEl.present();
+          });
+      } else {
+        this.increment(itemId, selectableItemsForm);
+      }
+    } else {
+      this.increment(itemId, selectableItemsForm);
+    }
   }
 
   increment(itemId, selectableItemsForm: NgForm) {
-    const selectedItemFound = this.selectedItems.find(selectedItem => selectedItem.itemId === itemId);
+    // const checkMultiShopSelection = this.checkForMultipleShopSelection();
+    // checkMultiShopSelection.then(() => {
+      // if(!this.resetCart){
+        // console.log("came in if condition")
+    const selectedItemFound = this.selectedItems.find(
+          selectedItem => selectedItem.itemId === itemId
+        );
     if (selectedItemFound) {
-      const currentSelectedItem = this.shopOfferedItemsList.filter(item => item.itemId === itemId);
-      currentSelectedItem[0].itemCount++;
-      selectedItemFound.itemCount++;
-      selectedItemFound.totalPrice = selectedItemFound.itemCount * selectedItemFound.itemDiscountedRate;
-    } else {
-      const currentSelectedItem = this.shopOfferedItemsList.filter(item => item.itemId === itemId);
-      currentSelectedItem[0].itemCount++;
-      const selectedItem: ISelectableItemsOrder = {
-        itemId: currentSelectedItem[0].itemId,
-        itemName: currentSelectedItem[0].itemName,
-        itemUnit: 'PACKS',
-        itemCount: 1,
-        itemDiscountedRate: currentSelectedItem[0].itemDiscountedRate,
-        totalPrice: currentSelectedItem[0].itemDiscountedRate * 1,
-        itemWeight: currentSelectedItem[0].itemWeight
-      };
-      this.selectedItems.push(selectedItem);
-    }
-
+          const currentSelectedItem = this.shopOfferedItemsList.filter(
+            item => item.itemId === itemId
+          );
+          currentSelectedItem[0].itemCount++;
+          selectedItemFound.itemCount++;
+          selectedItemFound.totalPrice =
+            selectedItemFound.itemCount * selectedItemFound.itemDiscountedRate;
+        } else {
+          const currentSelectedItem = this.shopOfferedItemsList.filter(
+            item => item.itemId === itemId
+          );
+          currentSelectedItem[0].itemCount++;
+          const selectedItem: ISelectableItemsOrder = {
+            shopId: this.shopId,
+            itemId: currentSelectedItem[0].itemId,
+            itemName: currentSelectedItem[0].itemName,
+            itemUnit: "PACKS",
+            itemCount: 1,
+            itemDiscountedRate: currentSelectedItem[0].itemDiscountedRate,
+            totalPrice: currentSelectedItem[0].itemDiscountedRate * 1,
+            itemWeight: currentSelectedItem[0].itemWeight,
+            orderType: "SELECT"
+          };
+          this.selectedItems.push(selectedItem);
+        }
     this.customOrderService.selectableItemsOrders = this.selectedItems;
-    console.log("selectedItems", this.selectedItems);
+      // }
+    // })
+    // else {
+
+    // }
   }
 
   decrement(itemId, selectableItemsForm: NgForm) {
-    const selectedItemFound = this.selectedItems.find(selectedItem => selectedItem.itemId === itemId);
+    const selectedItemFound = this.selectedItems.find(
+      selectedItem => selectedItem.itemId === itemId
+    );
     if (selectedItemFound) {
       if (selectedItemFound.itemCount > 0) {
-        const currentSelectedItem = this.shopOfferedItemsList.filter(item => item.itemId === itemId);
+        const currentSelectedItem = this.shopOfferedItemsList.filter(
+          item => item.itemId === itemId
+        );
         currentSelectedItem[0].itemCount--;
         selectedItemFound.itemCount--;
-        selectedItemFound.totalPrice = selectedItemFound.itemCount * selectedItemFound.itemDiscountedRate;
+        selectedItemFound.totalPrice =
+          selectedItemFound.itemCount * selectedItemFound.itemDiscountedRate;
         if (selectedItemFound.itemCount === 0) {
-        this.selectedItems = this.selectedItems.filter(element => element.itemId !== itemId);
-      }
+          this.selectedItems = this.selectedItems.filter(
+            element => element.itemId !== itemId
+          );
+        }
       }
     }
 
     this.customOrderService.selectableItemsOrders = this.selectedItems;
-
-    console.log("this.selectedItems on decrement", this.selectedItems);
-    // if (selectedItemFound) {
-    //   const currentSelectedItem = this.shopOfferedItemsList.filter(item => item.itemId === itemId);
-    //   currentSelectedItem[0].itemCount--;
-    //   selectedItemFound.itemCount--;
-    // } else {
-    //   const currentSelectedItem = this.shopOfferedItemsList.filter(item => item.itemId === itemId);
-    //   currentSelectedItem[0].itemCount--;
-    //   // const selectedItem: ISelectableItemsOrder = {
-    //   //   itemId: currentSelectedItem[0].itemId,
-    //   //   itemName: currentSelectedItem[0].itemName,
-    //   //   itemAmount: '',
-    //   //   itemCount: 1
-    //   // };
-    //   //this.selectedItems.push(selectedItem);
-    // }
-    // console.log("decrement itemId, selectableItemsForm", itemId, selectableItemsForm);
   }
 }
