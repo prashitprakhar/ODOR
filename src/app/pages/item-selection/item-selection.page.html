@@ -34,20 +34,6 @@
               {{ selectedShopDetails.shopType }}
             </p>
           </ion-label>
-          <!--
-            <ion-label>
-              <h5 class="shop_name">{{ shop.shopName }}</h5>
-              <p class="pre_shop_rating_section">
-                {{ shop.shopType }} . {{ shop.shopLocation }}
-              </p>
-              <ion-icon name="star" class="star_style"></ion-icon>
-              <ion-text class="space_left">{{ shop.shopRating }}</ion-text>
-              <ion-text class="space_dot">&#8226;</ion-text>
-              <ion-text class="space_left_delivery">{{currentDeliveryTimeSchedule.deliveryTimeWithin1K}} mins</ion-text>
-              <ion-text class="space_dot">&#8226;</ion-text>
-              <ion-text class="space_left_delivery">Min. order &#8377;150</ion-text>
-            </ion-label>
-          -->
         </ion-item>
       </ion-col>
     </ion-row>
@@ -62,7 +48,7 @@
           [items]="shopOfferedItemsList"
           approxItemHeight="70px"
         >
-          <ion-item *virtualItem="let product">
+          <ion-item *virtualItem="let product" [ngClass]="product.itemAvailable ? 'item_in_stock' : 'item_out_stock'">
             <ion-avatar slot="start">
               <ion-img [src]="product.itemImageUrl"></ion-img>
             </ion-avatar>
@@ -75,7 +61,9 @@
                 >&#8377;{{ product.itemDiscountedRate }}</ion-text
               >
               <ion-text class="space_dot">&#8226;</ion-text>
-              <ion-text class="space_left_delivery">{{product.itemWeight}}</ion-text>
+              <ion-text class="space_left_delivery">{{product.itemWeight}} {{product.itemUnit}}</ion-text>
+              <ion-text class="space_dot" *ngIf="!product.itemAvailable">&#8226;</ion-text>
+              <ion-text class="space_left_delivery" *ngIf="!product.itemAvailable" style="color: #f04141;">Out Of Stock</ion-text>
             </ion-label>
             <div class="custom_add_sub_item_quantity_section">
               <ion-button
@@ -83,6 +71,7 @@
                 style="color: #228B22;"
                 fill="clear"
                 strong
+                [disabled]="!product.itemAvailable"
                 >
                 <ion-icon
                   name="add"
@@ -95,29 +84,10 @@
                 style="color: #228B22;"
                 fill="clear"
                 strong
+                [disabled]="!product.itemAvailable"
               >
                 <ion-icon name="remove" slot="icon-only"></ion-icon>
               </ion-button>
-              <!-- <ion-button
-                    (click)="incrementKG(customItem.itemId, customKGOrderForm)"
-                    [disabled]="customItem.itemName === '' || customItem.itemCount >4"
-                    style="color: #228B22;"
-                    fill="clear"
-                    strong
-                  >
-                    <ion-icon name="add" slot="icon-only"></ion-icon>
-                  </ion-button>
-                  &nbsp;
-                  <ion-label>{{ customItem.itemCount }} kg</ion-label> &nbsp;
-                  <ion-button
-                    (click)="decrementKG(customItem.itemId, customKGOrderForm)"
-                    [disabled]="customItem.itemCount <= 1"
-                    style="color: #228B22;"
-                    fill="clear"
-                    strong
-                  >
-                    <ion-icon name="remove" slot="icon-only"></ion-icon>
-                  </ion-button> -->
             </div>
           </ion-item>
         </ion-virtual-scroll>
@@ -126,4 +96,3 @@
     </ion-row>
   </ion-grid>
 </ion-content>
-<!-- <ion-alert-controller></ion-alert-controller> -->

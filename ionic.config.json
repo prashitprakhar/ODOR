@@ -1,7 +1,8 @@
 {
   "name": "order-it",
   "integrations": {
-    "capacitor": {}
+    "capacitor": {},
+    "cordova": {}
   },
   "type": "angular"
 }

@@ -5,7 +5,7 @@ export interface ICustomOrderItem {
   itemCount: number;
   itemUnit: string;
   totalPrice: number;
-    itemDiscountedRate: number;
-    itemWeight: number;
-    orderType: string;
+  itemDiscountedRate: number;
+  itemWeight: number;
+  orderType: string;
 }

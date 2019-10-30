@@ -8,5 +8,4 @@ export interface ISelectableItemsOrder {
     itemDiscountedRate: number;
     itemWeight: number;
     orderType: string;
-    //itemUnit: string;
   }

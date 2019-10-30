@@ -13,4 +13,5 @@ export interface IShopOfferedItems {
     itemWeight: number;
     itemCount: number;
     itemUnit: string;
+    itemAvailable: boolean;
 }

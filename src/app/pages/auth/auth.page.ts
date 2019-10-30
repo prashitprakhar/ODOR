@@ -4,6 +4,8 @@ import { Router } from "@angular/router";
 import { LoadingController } from "@ionic/angular";
 import { NgForm } from '@angular/forms';
 
+// import { Storage } from '@ionic/storage';
+
 @Component({
   selector: "app-auth",
   templateUrl: "./auth.page.html",
@@ -18,8 +20,23 @@ export class AuthPage implements OnInit {
 
   ngOnInit() {}
 
-  onLogin() {
-    this.authService.login();
+  async onLogin(loginForm: NgForm) {
+    // console.log("Login Form *****",loginForm);
+    if (!loginForm.valid) {
+      return;
+    }
+
+    const email = loginForm.value.email;
+    const password = loginForm.value.password;
+
+    await this.authService.login(email, password)
+    if (this.authService.userIsCustomer) {
+      this.router.navigateByUrl("/homepage/tabs");
+    } else if (this.authService.userIsEnterprisePartner) {
+
+
+      this.router.navigateByUrl("/partnerHomePage/partnerTabs");
+    }
     // this.loadingCtrl
     //   .create({ keyboardClose: true, message: "Logging in..." })
     //   .then(loadingEl => {
@@ -29,12 +46,11 @@ export class AuthPage implements OnInit {
     //       this.router.navigateByUrl("/homepage/tabs");
     //     }, 2000);
     //   });
-    this.router.navigateByUrl("/homepage/tabs");
+
   }
 
   onSubmit(form: NgForm) {
-    console.log("form Object",form)
-    if(!form.valid){
+    if (!form.valid) {
       return;
     }
     const email = form.value.email;

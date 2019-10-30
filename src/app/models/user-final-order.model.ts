@@ -8,6 +8,7 @@ export interface UserFinalOrder {
     customItemsEstimatedAmount: number;
     estimatedDeliveryTime: string;
     deliveryAddress: string;
+    deliveryDate: Date;
     deliveryTimeSlot: Date;
     deliveryCharge: string;
     distance: number;

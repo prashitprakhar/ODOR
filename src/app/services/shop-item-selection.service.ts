@@ -31,6 +31,7 @@ export class ShopItemSelectionService {
           itemWeight: 100,
           itemUnit: 'g',
           itemCount: 0,
+          itemAvailable: false,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -47,6 +48,7 @@ export class ShopItemSelectionService {
           itemCount: 0,
           itemWeight: 100,
           itemUnit: 'g',
+          itemAvailable: true,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -63,6 +65,7 @@ export class ShopItemSelectionService {
           itemCount: 0,
           itemWeight: 100,
           itemUnit: 'g',
+          itemAvailable: true,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         },
         {
@@ -79,6 +82,7 @@ export class ShopItemSelectionService {
           itemCount: 0,
           itemWeight: 100,
           itemUnit: 'g',
+          itemAvailable: true,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         }
         // {
@@ -1535,6 +1539,7 @@ export class ShopItemSelectionService {
           discountAmount: 0,
           discountPercentage: 0,
           itemCount: 0,
+          itemAvailable: true,
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
         }
       ]

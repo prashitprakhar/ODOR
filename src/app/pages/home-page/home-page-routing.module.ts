@@ -13,7 +13,6 @@ const routes: Routes = [
           {
             path: "",
             loadChildren: "./../all-shops/all-shops.module#AllShopsPageModule"
-            //./../all-shops/all-shops.module.ts#AllShopsPageModule
           },
           {
             path: ":shopId",
@@ -27,21 +26,21 @@ const routes: Routes = [
           }
         ]
       },
-      {
-        path: "searchShop",
-        children: [
-          {
-            path: "",
-            loadChildren:
-              "./../search-shop/search-shop.module#SearchShopPageModule"
-          },
-          {
-            path: ":shopId",
-            loadChildren:
-              "./../item-selection/item-selection.module#ItemSelectionPageModule"
-          }
-        ]
-      },
+      // {
+      //   path: "searchShop",
+      //   children: [
+      //     {
+      //       path: "",
+      //       loadChildren:
+      //         "./../search-shop/search-shop.module#SearchShopPageModule"
+      //     },
+      //     {
+      //       path: ":shopId",
+      //       loadChildren:
+      //         "./../item-selection/item-selection.module#ItemSelectionPageModule"
+      //     }
+      //   ]
+      // },
       {
         path: "cart",
         children: [

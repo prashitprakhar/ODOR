@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CustomOrderService } from 'src/app/services/custom-order.service';
 import { ICustomOrderItem } from 'src/app/models/custom-order-items.model';
 import { ISelectableItemsOrder } from 'src/app/models/selectable-items-orders.model';
+import { ActionSheetController } from '@ionic/angular';
 
 @Component({
   selector: 'app-order-details',
@@ -16,7 +17,8 @@ export class OrderDetailsPage implements OnInit {
   public allOrdersCombined: ICustomOrderItem[] = [];
   public grandTotal: number = 0;
 
-  constructor(private customOrderService: CustomOrderService) { }
+  constructor(private customOrderService: CustomOrderService,
+              private actionSheetCtrl: ActionSheetController) { }
 
   ngOnInit() {
     this.selectableOrders = [];
@@ -68,7 +70,31 @@ export class OrderDetailsPage implements OnInit {
     }
   }
 
+  placeOrder() {
+    console.log("Place Order");
+    this.actionSheetCtrl.create({
+      header: 'Place Order',
+      subHeader: 'You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.',
+      cssClass: 'title_class',
+      buttons: [
+        {
+          text: 'Ok. Got it. Order now.',
+          handler: () => {
+            this.confirmOrder();
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        }
+      ]
+    }).then(actionSheetEl => {
+      actionSheetEl.present();
+    })
+  }
 
-
+  confirmOrder() {
+    console.log("Order Confirmed")
+  }
 
 }
