@@ -11,9 +11,10 @@
         <ion-list>
           <ion-item
             *ngFor="let shop of shopList"
-            [routerLink]="['/', 'homepage', 'tabs', 'selectShop', shop.shopId]"
+            (click)="navigateToShopOfferedItemsPage(shop)"
             lines="full"
             class="row_padding"
+            [ngClass]="shop.isShopOpen ? 'shop_open' : 'shop_Closed'"
             >
             <ion-thumbnail slot="start">
               <ion-img [src]="shop.shopImageUrl"></ion-img>
@@ -27,9 +28,13 @@
               <ion-text class="space_left">{{ shop.shopRating }}</ion-text>
               <ion-text class="space_dot">&#8226;</ion-text>
               <ion-text class="space_left_delivery">{{currentDeliveryTimeSchedule.deliveryTimeWithin1K}} mins</ion-text>
-              <ion-text class="space_dot">&#8226;</ion-text>
-              <ion-text class="space_left_delivery">Min. order &#8377;150</ion-text>
+              <!-- <ion-text class="space_dot">&#8226;</ion-text> -->
+              <!-- <ion-text class="space_left_delivery">Min. order &#8377;100</ion-text> -->
+              <p *ngIf="!shop.isShopOpen" class="pre_shop_rating_section" style="color: red;">Shop is Currently Closed.</p>
             </ion-label>
+            <!-- <ion-label slot="end">
+                <ion-icon name="arrow-dropright"></ion-icon>
+              </ion-label> -->
           </ion-item>
         </ion-list>
       </ion-col>

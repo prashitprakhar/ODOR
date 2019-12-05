@@ -21,20 +21,16 @@ export class AuthPage implements OnInit {
   ngOnInit() {}
 
   async onLogin(loginForm: NgForm) {
-    // console.log("Login Form *****",loginForm);
     if (!loginForm.valid) {
       return;
     }
-
     const email = loginForm.value.email;
     const password = loginForm.value.password;
 
-    await this.authService.login(email, password)
+    await this.authService.login(email, password);
     if (this.authService.userIsCustomer) {
       this.router.navigateByUrl("/homepage/tabs");
     } else if (this.authService.userIsEnterprisePartner) {
-
-
       this.router.navigateByUrl("/partnerHomePage/partnerTabs");
     }
     // this.loadingCtrl

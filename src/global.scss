@@ -29,6 +29,31 @@
     color: var(--ion-color-danger);
 }
 
+// .title_class {
+//     --background: #C5C5C5;
+//     --min-height: 200px !important;
+//   }
+
+  .action-sheet-group.sc-ion-action-sheet-md:first-child {
+      min-height: 180px !important;
+  }
+
+  .action-sheet-title.sc-ion-action-sheet-md {
+      min-height: 125px !important;
+  }
+
+//   .confirm_button {
+//       --background: var(--ion-color-success);
+//   }
+
+  .action-sheet-button.sc-ion-action-sheet-md.actionsheet_confirm_button {
+    background: var(--ion-color-success);
+  }
+
+  .action-sheet-button.sc-ion-action-sheet-md.actionsheet_cancel_button {
+    background: var(--ion-color-danger);
+  }
+
 // .item-has-focus.label-floating.sc-ion-label-md-h, .item-has-focus.label-stacked.sc-ion-label-md-h ion-item.ion-label {
 //     color: var(--ion-color-dark) !important;
 // }

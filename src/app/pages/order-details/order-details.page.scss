@@ -1,7 +1,7 @@
-ion-content {
-  --background: #fff url("../../../assets/images/khata.jpg") no-repeat center
-    center / cover;
-}
+// ion-content {
+//   --background: #fff url("../../../assets/images/khata.jpg") no-repeat center
+//     center / cover;
+// }
 .ordered_items{
     ion-item {
         --background: transparent;
@@ -35,13 +35,13 @@ ion-content {
 }
 
 .space_left_delivery {
-  font-size: 14px;
-  vertical-align: middle;
+  font-size: 10px;
+  vertical-align: baseline;
 }
 
 .space_left {
   margin-left: 2px;
-  font-size: 14px;
+  font-size: 10px;
   vertical-align: middle;
   margin-right: 1px;
 }
@@ -69,7 +69,4 @@ ion-content {
  text-align: end;
 }
 
-.title_class {
-  --background: #C5C5C5;
-  --min-height: 100px;
-}
+

@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, AlertController } from "@ionic/angular";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
@@ -8,18 +8,20 @@ import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ISelectableItemsOrder } from "./../../models/selectable-items-orders.model";
 import { NgForm } from "@angular/forms";
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: "app-item-selection",
   templateUrl: "./item-selection.page.html",
   styleUrls: ["./item-selection.page.scss"]
 })
-export class ItemSelectionPage implements OnInit {
+export class ItemSelectionPage implements OnInit, OnDestroy {
   public selectedShopDetails: IShopList;
   public selectedItems: ISelectableItemsOrder[] = [];
   public shopOfferedItemsList: IShopOfferedItems[] = [];
   public shopId: string = "";
   public resetCart: boolean = false;
+  public shopOfferedItemsSubs: Subscription;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -31,23 +33,59 @@ export class ItemSelectionPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    // console.log("this.customOrderService.isResetAllOrdersNeeded", this.customOrderService.isResetAllOrdersNeeded);
     this.activatedRoute.paramMap.subscribe(paramMap => {
       if (!paramMap.has("shopId")) {
         return;
       }
       this.shopId = paramMap.get("shopId");
-      this.selectedShopDetails = this.shopItemSelectionService.getShopOfferedItems(
+      // this.selectedShopDetails = this.shopItemSelectionService.getShopOfferedItems(
+      //   this.shopId
+      // );
+      this.shopOfferedItemsSubs = this.shopItemSelectionService.getShopOfferedItems(
         this.shopId
-      );
+      ).subscribe(shop => {
+        this.selectedShopDetails = shop;
+      });
+      this.customOrderService.selectedShopDetails = this.selectedShopDetails;
       this.shopOfferedItemsList = this.selectedShopDetails.shopOfferedItemsList;
     });
+    this.customOrderService.currentSelectedShopName = this.selectedShopDetails.shopName;
+  //   const selectableOrders = this.customOrderService.selectableItemsOrders;
+  //   if (selectableOrders || this.customOrderService.isResetAllOrdersNeeded) {
+  //     if (this.customOrderService.isResetAllOrdersNeeded) {
+  //     this.shopOfferedItemsList.forEach(element => {
+  //       element.itemCount = 0;
+  //     });
+  //     } else {
+  //       let filteredSelectableOrders = [];
+  //       if (selectableOrders) {
+  //       filteredSelectableOrders = selectableOrders.filter(
+  //         element => element.shopId !== this.shopId
+  //       );
+  //     }
+  //       if (filteredSelectableOrders.length > 0) {
+  //       this.shopOfferedItemsList.forEach(element => {
+  //         element.itemCount = 0;
+  //       });
+  //     }
+  //   }
+  // }
+  }
+
+  ngOnDestroy() {
+    if(this.shopOfferedItemsSubs) {
+      this.shopOfferedItemsSubs.unsubscribe();
+    }
+  }
+
+  ionViewWillEnter() {
+    // console.log("*** Item List *** ViewWillEnter", this.customOrderService.selectableItemsOrders);
+
     const selectableOrders = this.customOrderService.selectableItemsOrders;
-    // const customOrdersKG = this.customOrderService.customItemOrdersDetails;
-    // const customOrdersPacks = this.customOrderService.customItemsPacksOrdersDetails;
     if (selectableOrders || this.customOrderService.isResetAllOrdersNeeded) {
       if (this.customOrderService.isResetAllOrdersNeeded) {
-      this.shopOfferedItemsList.forEach(element => {
+        this.selectedItems = [];
+        this.shopOfferedItemsList.forEach(element => {
         element.itemCount = 0;
       });
       } else {
@@ -62,18 +100,8 @@ export class ItemSelectionPage implements OnInit {
           element.itemCount = 0;
         });
       }
-      // }
-
     }
   }
-    // else {
-    //   console.log("Else part Oninit item selection",selectableOrders)
-    // }
-
-    // console.log("selectedItems", this.shopOfferedItemsList);
-  }
-
-  ionViewWillEnter() {
     // console.log("ionViewWillEnter item selection", this.customOrderService.isResetAllOrdersNeeded);
   }
 
@@ -132,6 +160,7 @@ export class ItemSelectionPage implements OnInit {
 
   checkForMultipleShopSelection(itemId, selectableItemsForm: NgForm) {
     this.resetCart = false;
+    this.customOrderService.isResetAllOrdersNeeded = false;
     const customKGOrders = this.customOrderService.customItemOrdersDetails;
     const customPacksOrders = this.customOrderService
       .customItemsPacksOrdersDetails;
@@ -157,10 +186,10 @@ export class ItemSelectionPage implements OnInit {
         );
       }
 
-      if (
+      if ( (
         filteredCustomKGOrders.length > 0 ||
         filteredSelectableOrders.length > 0 ||
-        filteredCustomPacksOrders.length > 0
+        filteredCustomPacksOrders.length > 0)
       ) {
        const alert = this.alertCtrl
           .create({
@@ -224,9 +253,10 @@ export class ItemSelectionPage implements OnInit {
           currentSelectedItem[0].itemCount++;
           const selectedItem: ISelectableItemsOrder = {
             shopId: this.shopId,
+            shopName: this.selectedShopDetails.shopName,
             itemId: currentSelectedItem[0].itemId,
             itemName: currentSelectedItem[0].itemName,
-            itemUnit: "PACKS",
+            itemUnit: currentSelectedItem[0].itemUnit,
             itemCount: 1,
             itemDiscountedRate: currentSelectedItem[0].itemDiscountedRate,
             totalPrice: currentSelectedItem[0].itemDiscountedRate * 1,
@@ -236,6 +266,7 @@ export class ItemSelectionPage implements OnInit {
           this.selectedItems.push(selectedItem);
         }
     this.customOrderService.selectableItemsOrders = this.selectedItems;
+    // console.log("this.customOrderService.selectableItemsOrders list view", this.customOrderService.selectableItemsOrders);
       // }
     // })
     // else {

@@ -18,12 +18,12 @@ const routes: Routes = [
             path: ":shopId",
             loadChildren:
               "./../item-selection/item-selection.module#ItemSelectionPageModule"
-          },
-          {
-            path: "customOrders",
-            loadChildren:
-              "./../add-custom-orders/add-custom-orders.module#AddCustomOrdersPageModule"
           }
+          // {
+          //   path: "customOrders",
+          //   loadChildren:
+          //     "./../add-custom-orders/add-custom-orders.module#AddCustomOrdersPageModule"
+          // }
         ]
       },
       // {
@@ -63,6 +63,11 @@ const routes: Routes = [
             path: "",
             loadChildren:
               "./../account-details/account-details.module#AccountDetailsPageModule"
+          },
+          {
+            path: "allOrders",
+            loadChildren:
+              "./../all-my-orders/all-my-orders.module#AllMyOrdersPageModule"
           }
         ]
       },

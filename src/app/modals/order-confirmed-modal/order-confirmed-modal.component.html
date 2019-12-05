@@ -1,3 +1,137 @@
-<p>
-  order-confirmed-modal works!
-</p>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Order Confirmed
+    </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onClose()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid class="ion-no-padding">
+    <ion-row>
+      <ion-col
+        size="8"
+        offset="2"
+        style="text-align: center;border-bottom: 1px solid #000000;"
+      >
+        <ion-label style="font-size: 20px;">Order Summary</ion-label>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-item >
+          <!-- <ion-thumbnail slot="start">
+            <ion-img [src]="currentOrderDetails[0].shopImageUrl"></ion-img>
+          </ion-thumbnail> -->
+          <ion-label>
+            <h5 style="font-weight: bold;">{{ currentOrderDetails[0].shopName }}</h5>
+            <p class="pre_item_rating_section">
+              Delivery Charge : {{ currentOrderDetails[0].deliveryCharge }}
+            </p>
+            <p>
+              Estimated Delivery Time : {{currentOrderDetails[0].estimatedDeliveryDateTimeFull}}
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <ion-item lines="none">
+          <ion-label
+            *ngIf="currentOrderDetails[0].orderConfirmationStatus === 'WAITING'"
+          >
+            <h2>Order Status : Waiting for Confirmation from Shop</h2>
+          </ion-label>
+          <ion-label
+            *ngIf="
+              currentOrderDetails[0].orderConfirmationStatus === 'CONFIRMED'
+            "
+          >
+            <h5>Order Status : Order Confirmed By Shop</h5>
+            <h5>Delivery Status : {{ currentOrderDetails[0].orderStatus }}</h5>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row style="align-items: center;">
+      <ion-col>
+        <ion-item>
+          <ion-label>
+            <h5 style="font-size: 18px;font-weight: bold;">Order Details</h5>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row style="border-bottom: 1px solid #c5c5c5;">
+      <ion-col>
+        <ion-virtual-scroll
+          [items]="currentOrderDetails[0].ordersList"
+          approxItemHeight="70px"
+        >
+          <ion-item *virtualItem="let product" lines="none">
+            <ion-label style="font-family: fantasy;">
+              <h5 class="item_name">{{ product.itemName }}</h5>
+              <ion-text
+                *ngIf="product.orderType !== 'SELECT'"
+                style="font-size: 10px;"
+                >(Custom Order)</ion-text
+              >
+              <ion-text
+                class="space_left"
+                *ngIf="product.orderType === 'SELECT'"
+              >
+                &#8377;{{ product.itemDiscountedRate }}</ion-text
+              >
+              <ion-text class="space_dot" *ngIf="product.orderType === 'SELECT'"
+                >&#8226;</ion-text
+              >
+              <ion-text
+                class="space_left_delivery"
+                *ngIf="product.orderType === 'SELECT'"
+                >{{ product.itemWeight }} {{ product.itemUnit }}</ion-text
+              >
+              <ion-text
+                class="space_left_delivery"
+                *ngIf="product.orderType !== 'SELECT'"
+              >
+                {{ product.itemCount }} {{ product.itemUnit }}</ion-text
+              >
+            </ion-label>
+            <div class="custom_add_sub_item_quantity_section">
+              <ion-text
+                style="font-family: fantasy; font-weight: bold;font-size: 18px;"
+                *ngIf="product.orderType === 'SELECT'"
+                >{{ product.itemCount }} X &#8377;
+                {{ product.itemDiscountedRate }} = &#8377;
+                {{ product.totalPrice }}</ion-text
+              >
+              <ion-text
+                style="font-family: fantasy; font-weight: bold;font-size: 10px;"
+                *ngIf="product.orderType !== 'SELECT'"
+                >Estimated Price to be sent
+              </ion-text>
+            </div>
+          </ion-item>
+        </ion-virtual-scroll>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+      <ion-grid>
+        <ion-row class="ion-no-padding" style="align-items: center;">
+          <ion-col size="12" style="text-align: right; font-size: 18px;">
+            <ion-label *ngIf="hasCustomItems">Estimated Total : &#8377; {{ currentOrderDetails[0].selectedItemsTotalPrice }}</ion-label>
+            <ion-label *ngIf="!hasCustomItems">Grand Total : &#8377; {{ currentOrderDetails[0].selectedItemsTotalPrice }}</ion-label>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+  </ion-toolbar>
+</ion-footer>

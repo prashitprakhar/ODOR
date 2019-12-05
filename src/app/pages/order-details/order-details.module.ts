@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { OrderDetailsPage } from './order-details.page';
+import { OrderConfirmedModalComponent } from 'src/app/modals/order-confirmed-modal/order-confirmed-modal.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [OrderDetailsPage]
+  declarations: [OrderDetailsPage, OrderConfirmedModalComponent],
+  entryComponents: [OrderConfirmedModalComponent]
 })
 export class OrderDetailsPageModule {}

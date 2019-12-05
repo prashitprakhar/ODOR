@@ -17,7 +17,7 @@ const routes: Routes = [
     path: "homepage",
     loadChildren: "./pages/home-page/home-page.module#HomePagePageModule",
     canLoad: [AuthGuard]
-  },
+  }
   //{ path: 'partner-my-shop', loadChildren: './enterprise-partner-pages/partner-my-shop/partner-my-shop.module#PartnerMyShopPageModule' }
   // { path: 'partner-home', loadChildren: './enterprise-partner-pages/partner-home/partner-home.module#PartnerHomePageModule' },
   // { path: 'partner-add-products', loadChildren: 

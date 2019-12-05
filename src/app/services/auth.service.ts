@@ -9,6 +9,7 @@ export class AuthService {
 
   private _userIsEnterprisePartner: boolean = false;
   private _userIsCustomer: boolean = false;
+  private _userId: string = 'testUser';
 
   get userIsEnterprisePartner() {
     return this._userIsEnterprisePartner;
@@ -20,6 +21,10 @@ export class AuthService {
 
   get userIsAuthenticated() {
     return this._userIsAuthenticated;
+  }
+
+  get userId() {
+    return this._userId;
   }
 
   constructor() {

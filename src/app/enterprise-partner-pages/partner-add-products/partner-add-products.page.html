@@ -1,9 +1,177 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>partner-add-products</ion-title>
+    <ion-title>Add New Product</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen>
+  <form
+    #itemDetailsForm="ngForm"
+    (ngSubmit)="onSubmitItemDetails(itemDetailsForm)"
+  >
+    <ion-grid>
+      <ion-row>
+        <ion-col style="text-align: center;border-bottom: 1px solid #000000;">
+          Item Details
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating" color="dark">Item Name</ion-label>
+            <ion-input
+              type="text"
+              ngModel
+              name="itemName"
+              required
+              itemName
+              #itemNameCtrl="ngModel"
+            >
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating" color="dark">Brand</ion-label>
+            <ion-input
+              type="text"
+              ngModel
+              name="itemBrand"
+              required
+              itemBrand
+              #itemBrandCtrl="ngModel"
+            >
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
 
+      <ion-row>
+        <ion-col size="12" size-sm="10" offset-sm="1">
+          <ion-item>
+            <ion-label position="floating" color="dark">Type</ion-label>
+            <ion-select
+              ngModel
+              name="itemCategory"
+              required
+              itemCategory
+              #itemCategoryCtrl="ngModel"
+            >
+              <ion-select-option value="Packaged">Packaged</ion-select-option>
+              <ion-select-option value="Locally Packaged"
+                >Locally Packaged</ion-select-option
+              >
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+          <ion-col size="12" size-sm="10" offset-sm="1">
+            <ion-item>
+              <ion-label position="floating" color="dark">Rate</ion-label>
+              <ion-input
+              type="number"
+                ngModel
+                name="itemUndiscountedRate"
+                required
+                itemUndiscountedRate
+                #itemUndiscountedRateCtrl="ngModel"
+              >
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+            <ion-col size="12" size-sm="10" offset-sm="1">
+              <ion-item>
+                <ion-label position="floating" color="dark">Discount Percentage</ion-label>
+                <ion-select
+                  ngModel
+                  name="discountPercentage"
+                  required
+                  itemDiscountPercentage
+                  #itemDiscountPercentageCtrl="ngModel"
+                >
+                <ion-select-option value="0">0 %</ion-select-option>
+                <ion-select-option value="1">1 %</ion-select-option>
+                <ion-select-option value="2">2 %</ion-select-option>
+                <ion-select-option value="3">3 %</ion-select-option>
+                <ion-select-option value="4">4 %</ion-select-option>
+                <ion-select-option value="5">5 %</ion-select-option>
+              <ion-select-option value="10"
+                >10 %</ion-select-option
+              >
+              <ion-select-option value="15"
+                >15 %</ion-select-option
+              >
+              <ion-select-option value="20"
+                >20 %</ion-select-option
+              >
+                </ion-select>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+              <ion-col size="12" size-sm="10" offset-sm="1">
+                <ion-item>
+                  <ion-label position="floating" color="dark">Item Weight (in grams)</ion-label>
+                  <ion-input
+                    type="number"
+                    ngModel
+                    name="itemWeight"
+                    required
+                    itemWeight
+                    #itemWeightCtrl="ngModel"
+                  >
+                  </ion-input>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
+      <ion-row>
+        <ion-col>
+          <ion-button
+            color="primary"
+            type="submit"
+            expand="full"
+            [disabled]="!itemDetailsForm.valid"
+          >
+            <ion-label>Add</ion-label>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
 </ion-content>
+<!-- itemUndiscountedRate: number;
+    isDiscountedAvailable: boolean;
+    itemDiscountedRate: number;
+    discountAmount: number;
+    discountPercentage: number;
+    itemImageUrl: string;
+    itemWeight: number;
+    itemCount: number;
+    itemUnit: string;
+    itemAvailable: boolean;
+
+    itemId: 'MILK1',
+          itemName: 'Mother Dairy Milk',
+          itemBrand: 'Mother Dairy',
+          itemDescription: 'Packaged Milk Tetra Pack',
+          itemCategory: 'Packaged',
+          itemUndiscountedRate: 10,
+          itemWeight: 100,
+          itemUnit: 'g',
+          isDiscountedAvailable: false,
+          itemDiscountedRate: 10,
+          discountAmount: 0,
+          discountPercentage: 0,
+          itemCount: 0,
+          itemAvailable: true,
+          itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
+  -->

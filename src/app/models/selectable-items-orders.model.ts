@@ -1,5 +1,6 @@
 export interface ISelectableItemsOrder {
     shopId: string;
+    shopName: string;
     itemId: string;
     itemName: string;
     itemCount: number;

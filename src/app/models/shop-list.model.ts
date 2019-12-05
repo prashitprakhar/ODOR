@@ -10,4 +10,8 @@ export interface IShopList {
     shopPostalCode: number;
     shopImageUrl: string;
     shopRating: number;
+    userId: string;
+    firstOrderTime: string;
+    lastOrderTime: string;
+    isShopOpen: boolean;
 }

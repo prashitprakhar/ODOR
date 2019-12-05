@@ -11,7 +11,7 @@ export class IsEnterprisePartnerGuard implements CanLoad {
   constructor(private authService: AuthService, private router: Router) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean {
-    console.log("this.authService.userIsEnterprisePartner",this.authService.userIsEnterprisePartner)
+    // console.log("this.authService.userIsEnterprisePartner",this.authService.userIsEnterprisePartner)
     return this.authService.userIsEnterprisePartner;
   }
 }

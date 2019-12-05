@@ -1,9 +1,11 @@
-import { Component, OnInit, Input } from "@angular/core";
-import { ModalController, IonItemSliding, AlertController } from "@ionic/angular";
+import { Component, OnDestroy, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
+import { AlertController, IonItemSliding, ModalController, NavParams } from "@ionic/angular";
+import { Subscription } from 'rxjs';
 import { CustomOrderService } from "src/app/services/custom-order.service";
+import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 import { ICustomOrderItem } from "./../../models/custom-order-items.model";
-import { NavParams } from '@ionic/angular';
 // import { ModalController, AlertController } from "@ionic/angular";
 
 @Component({
@@ -11,7 +13,7 @@ import { NavParams } from '@ionic/angular';
   templateUrl: "./custom-order-modal.component.html",
   styleUrls: ["./custom-order-modal.component.scss"]
 })
-export class CustomOrderModalComponent implements OnInit {
+export class CustomOrderModalComponent implements OnInit, OnDestroy {
 
   public selectedShopId: string;
 
@@ -48,18 +50,27 @@ export class CustomOrderModalComponent implements OnInit {
   public customKilogramItemsArray: ICustomOrderItem[] = [];
 
   public customPacketsItemsArray: ICustomOrderItem[] = [];
+  public shopName: string;
+  public shopOfferedItemsSubs: Subscription;
 
   constructor(
     private modalCtrl: ModalController,
     private customOrderService: CustomOrderService,
     private navParams: NavParams,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private userProfileService: UserProfileService,
+    private shopItemSelectionService: ShopItemSelectionService
   ) {
     this.selectedShopId = navParams.get('selectedShopId');
+    this.shopOfferedItemsSubs = this.shopItemSelectionService.getShopOfferedItems(this.selectedShopId).subscribe(shop => {
+      this.shopName = shop.shopName;
+    });
+
     // // console.log("constructor loaded",);
     this.customKilogramItemsArray = [
       {
         shopId: this.selectedShopId,
+        shopName: this.shopName,
         itemId: "Item" + Math.random() * Math.random(),
         itemName: "",
         itemCount: 0,
@@ -74,6 +85,7 @@ export class CustomOrderModalComponent implements OnInit {
     this.customPacketsItemsArray = [
       {
         shopId: this.selectedShopId,
+        shopName: this.shopName,
         itemId: "Item" + Math.random() * Math.random(),
         itemName: "",
         itemCount: 0,
@@ -87,7 +99,11 @@ export class CustomOrderModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    if ((this.customOrderService.customItemsPacksOrdersDetails &&
+    // let checkOpenOrders = false;
+    // if(this.userProfileService.getUserOrder().length > 0) {
+    //   this.userProfileService.getUserOrder().filter(element => element.orderPlaced )
+    // }
+    if (this.userProfileService.getUserOrder().find && (this.customOrderService.customItemsPacksOrdersDetails &&
       this.customOrderService.customItemsPacksOrdersDetails.length > 0 &&
       this.customOrderService.customItemsPacksOrdersDetails[0].shopId !== this.selectedShopId) ||
       (this.customOrderService.customItemOrdersDetails &&
@@ -144,6 +160,12 @@ export class CustomOrderModalComponent implements OnInit {
         // // console.log("oninit Modal this.customPacketsItemsArray",this.customPacketsItemsArray);
   }
 
+  ngOnDestroy() {
+    if (this.shopOfferedItemsSubs) {
+      this.shopOfferedItemsSubs.unsubscribe();
+    }
+  }
+
   onClose() {
     this.customKilogramItemsArray = this.customKilogramItemsArray.filter(
       element => element.itemName !== ""
@@ -160,6 +182,7 @@ export class CustomOrderModalComponent implements OnInit {
     slidingItem.close();
     this.customKilogramItemsArray.push({
       shopId: this.selectedShopId,
+      shopName: this.shopName,
       itemId: "Item" + Math.random() * Math.random(),
       itemName: "",
       itemCount: 0,
@@ -175,6 +198,7 @@ export class CustomOrderModalComponent implements OnInit {
     slidingItem.close();
     this.customPacketsItemsArray.push({
       shopId: this.selectedShopId,
+      shopName: this.shopName,
       itemId: "Item" + Math.random() * Math.random(),
       itemName: "",
       itemCount: 0,

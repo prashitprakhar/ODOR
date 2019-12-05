@@ -37,6 +37,10 @@
   
   .pre_item_rate_section {
     font-size: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .post_item_rate_section {

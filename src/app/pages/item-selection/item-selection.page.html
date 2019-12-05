@@ -33,6 +33,12 @@
             <p class="pre_item_rating_section">
               {{ selectedShopDetails.shopType }}
             </p>
+            <p *ngIf="selectedShopDetails.isShopOpen">
+              Shop is open.
+            </p>
+            <p *ngIf="!selectedShopDetails.isShopOpen">
+                Shop is closed.
+              </p>
           </ion-label>
         </ion-item>
       </ion-col>
@@ -55,7 +61,7 @@
             <ion-label>
               <h5 class="item_name">{{ product.itemName }}</h5>
               <p class="pre_item_rate_section">
-                {{ product.itemBrand }} . {{ product.itemCategory }}
+                {{ product.itemBrand | titlecase}} . {{ product.itemCategory | titlecase}}
               </p>
               <ion-text class="space_left"
                 >&#8377;{{ product.itemDiscountedRate }}</ion-text
@@ -63,7 +69,7 @@
               <ion-text class="space_dot">&#8226;</ion-text>
               <ion-text class="space_left_delivery">{{product.itemWeight}} {{product.itemUnit}}</ion-text>
               <ion-text class="space_dot" *ngIf="!product.itemAvailable">&#8226;</ion-text>
-              <ion-text class="space_left_delivery" *ngIf="!product.itemAvailable" style="color: #f04141;">Out Of Stock</ion-text>
+              <ion-text class="space_left_delivery" *ngIf="!product.itemAvailable" style="color: #f04141; font-size: 10px;">Out Of Stock</ion-text>
             </ion-label>
             <div class="custom_add_sub_item_quantity_section">
               <ion-button

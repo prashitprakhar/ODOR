@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
   selector: 'app-all-my-orders',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AllMyOrdersPage implements OnInit {
 
-  constructor() { }
+  constructor(private userProfileService: UserProfileService) { }
 
   ngOnInit() {
+    const userOrders = this.userProfileService.getUserOrder();
+    console.log("User Orders *********",userOrders)
   }
 
 }

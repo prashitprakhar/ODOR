@@ -1,0 +1,137 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-title>
+        Edit Item Details
+      </ion-title>
+      <ion-buttons slot="primary">
+        <ion-button (click)="onClose()">
+          <ion-icon name="close"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+
+<ion-content fullscreen>
+    <form [formGroup]="editForm">
+      <ion-grid>
+        <ion-row>
+          <ion-col style="text-align: center;border-bottom: 1px solid #000000;">
+            Item Details
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="12" size-sm="10" offset-sm="1">
+            <ion-item>
+              <ion-label position="floating" color="dark">Item Name</ion-label>
+              <ion-input
+              formControlName="itemName"
+              value="{{product.itemName}}"
+              >
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="12" size-sm="10" offset-sm="1">
+            <ion-item>
+              <ion-label position="floating" color="dark">Brand</ion-label>
+              <ion-input
+                formControlName="itemBrand"
+                value="{{product.itemBrand}}"
+              >
+              </ion-input>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+  
+        <ion-row>
+          <ion-col size="12" size-sm="10" offset-sm="1">
+            <ion-item>
+              <ion-label position="floating" color="dark">Type</ion-label>
+              <ion-select
+                formControlName="itemCategory"
+                value="{{product.itemCategory}}"
+              >
+                <ion-select-option value="Packaged">Packaged</ion-select-option>
+                <ion-select-option value="local"
+                  >Locally Packaged</ion-select-option
+                >
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+  
+        <ion-row>
+            <ion-col size="12" size-sm="10" offset-sm="1">
+              <ion-item>
+                <ion-label position="floating" color="dark">Rate</ion-label>
+                <ion-input
+                  formControlName="itemUndiscountedRate"
+                  value="{{product.itemUndiscountedRate}}"
+                >
+                </ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+  
+          <ion-row>
+              <ion-col size="12" size-sm="10" offset-sm="1">
+                <ion-item>
+                  <ion-label position="floating" color="dark">Discount Percentage</ion-label>
+                  <ion-select
+                    formControlName="discountPercentage"
+                    value="{{product.discountPercentage}}"
+                  >
+                  <ion-select-option value="0">0 %</ion-select-option>
+                  <ion-select-option value="1">1 %</ion-select-option>
+                  <ion-select-option value="2">2 %</ion-select-option>
+                  <ion-select-option value="3">3 %</ion-select-option>
+                  <ion-select-option value="4">4 %</ion-select-option>
+                  <ion-select-option value="5">5 %</ion-select-option>
+                <ion-select-option value="10"
+                  >10 %</ion-select-option
+                >
+                <ion-select-option value="15"
+                  >15 %</ion-select-option
+                >
+                <ion-select-option value="20"
+                  >20 %</ion-select-option
+                >
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+  
+            <ion-row>
+                <ion-col size="12" size-sm="10" offset-sm="1">
+                  <ion-item>
+                    <ion-label position="floating" color="dark">Item Weight (in grams)</ion-label>
+                    <ion-input
+                      formControlName="itemWeight"
+                      value="{{product.itemWeight}}"
+                    >
+                    </ion-input>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+  
+        <ion-row>
+          <ion-col style="text-align: center;">
+            <ion-button
+              (click)="onSubmitItemDetails()"
+              style="width: 50%;"
+            >
+            <!--
+              color="primary"
+              type="submit"
+              expand="full"
+              [disabled]="!itemDetailsForm.valid"
+            -->
+              <ion-label>Update</ion-label>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </form>
+  </ion-content>

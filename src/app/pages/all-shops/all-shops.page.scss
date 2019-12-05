@@ -1,12 +1,12 @@
 .space_left {
     margin-left: 2px;
-    font-size: 14px;
+    font-size: 12px;
     vertical-align: text-top;
     margin-right: 1px;
 }
 
 .space_left_delivery {
-    font-size: 14px;
+    font-size: 12px;
     vertical-align: text-top;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .star_style {
-    font-size: 14px;
+    font-size: 12px;
     vertical-align: text-top;
 }
 
@@ -27,4 +27,8 @@
 
 .pre_shop_rating_section {
     font-size: 10px;
+}
+
+.shop_Closed {
+    opacity: 0.5;
 }

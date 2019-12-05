@@ -11,7 +11,7 @@ export class IsCustomerGuard implements CanLoad {
   constructor(private authService: AuthService, private router: Router) {}
 
   canLoad(route: Route, segments: UrlSegment[]): Observable<boolean> | Promise<boolean> | boolean {
-    console.log("this.authService.userIsCustomer",this.authService.userIsCustomer)
+    // console.log("this.authService.userIsCustomer",this.authService.userIsCustomer)
     return this.authService.userIsCustomer;
   }
 

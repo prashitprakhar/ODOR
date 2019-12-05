@@ -16,7 +16,13 @@
     <ion-row>
       <ion-col class="custom_packs_header ion-no-padding">
         <ion-item>
-          <ion-label>Add items in kilograms(5 kg max)</ion-label>
+          <!-- <ion-label>Add items in kilograms(5 kg max)</ion-label> -->
+          <ion-label>
+            <h5>Add items in kilograms(5 items each 5 kg max.)</h5>
+            <p style="font-size: 12px; color: #FFFFFF;">
+              (Slide any Item Right to add new Items)
+            </p>
+          </ion-label>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -36,7 +42,10 @@
               <ion-item-option
                 style="background: #3880ff;"
                 (click)="addNewItemKG(ionItemSliding)"
-                [disabled]="customItem.itemName === '' || customKilogramItemsArray.length >4"
+                [disabled]="
+                  customItem.itemName === '' ||
+                  customKilogramItemsArray.length > 4
+                "
               >
                 <ion-icon name="add" slot="icon-only"></ion-icon>
               </ion-item-option>
@@ -62,7 +71,9 @@
                 <div class="custom_add_sub_style">
                   <ion-button
                     (click)="incrementKG(customItem.itemId, customKGOrderForm)"
-                    [disabled]="customItem.itemName === '' || customItem.itemCount == 5"
+                    [disabled]="
+                      customItem.itemName === '' || customItem.itemCount == 5
+                    "
                     style="color: #228B22;"
                     fill="clear"
                     strong
@@ -100,7 +111,13 @@
     <ion-row>
       <ion-col class="custom_packs_header ion-no-padding" size="12">
         <ion-item style="background-color: black !important;">
-          <ion-text class="ion-no-padding" style="font-size: 18px;">Add Packet Items(5 packs max.)</ion-text>
+          <!-- <ion-text class="ion-no-padding" style="font-size: 18px;">Add Packet Items(5 packs max.)</ion-text> -->
+          <ion-label>
+            <h5>Add Packet Items(5 items each 5 packs max.)</h5>
+            <p style="font-size: 12px; color: #FFFFFF;">
+              (Slide any Item Right to add new Items)
+            </p>
+          </ion-label>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -120,7 +137,10 @@
               <ion-item-option
                 style="background: #3880ff;"
                 (click)="addNewItemPacks(ionItemSliding)"
-                [disabled]="customItem.itemName === '' || customPacketsItemsArray.length >4"
+                [disabled]="
+                  customItem.itemName === '' ||
+                  customPacketsItemsArray.length > 4
+                "
               >
                 <ion-icon name="add" slot="icon-only"></ion-icon>
               </ion-item-option>
@@ -150,7 +170,9 @@
                     (click)="
                       incrementPacks(customItem.itemId, customPacksOrderForm)
                     "
-                    [disabled]="customItem.itemName === '' || customItem.itemCount >4"
+                    [disabled]="
+                      customItem.itemName === '' || customItem.itemCount > 4
+                    "
                     style="color: #228B22;"
                     fill="clear"
                     strong

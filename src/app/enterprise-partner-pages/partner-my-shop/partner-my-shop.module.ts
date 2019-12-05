@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
 import { PartnerMyShopPage } from './partner-my-shop.page';
+import { EditItemDetailsModalComponent } from 'src/app/enterprise-partner-modals/edit-item-details-modal/edit-item-details-modal.component';
 
 const routes: Routes = [
   {
@@ -19,8 +20,11 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    FormsModule,
+    ReactiveFormsModule
   ],
-  declarations: [PartnerMyShopPage]
+  entryComponents : [EditItemDetailsModalComponent],
+  declarations: [PartnerMyShopPage, EditItemDetailsModalComponent]
 })
 export class PartnerMyShopPageModule {}

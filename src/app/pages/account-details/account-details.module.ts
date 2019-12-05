@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AccountDetailsPage } from './account-details.page';
+import { AllMyOrdersModalComponent } from 'src/app/modals/all-my-orders-modal/all-my-orders-modal.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [AccountDetailsPage]
+  entryComponents: [AllMyOrdersModalComponent],
+  declarations: [AccountDetailsPage, AllMyOrdersModalComponent]
 })
 export class AccountDetailsPageModule {}

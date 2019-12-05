@@ -1,15 +1,20 @@
 import { ICustomOrderItem } from './custom-order-items.model';
 
-export interface UserFinalOrder {
+export interface IUserFinalOrder {
+    orderId: string;
     shopId: string;
     shopName: string;
     ordersList: Array<ICustomOrderItem>;
-    selectedItemsTotalAmount: number;
-    customItemsEstimatedAmount: number;
+    selectedItemsTotalPrice: number;
+    customItemsEstimatedPrice: number;
     estimatedDeliveryTime: string;
+    estimatedDeliveryDateTimeFull: string;
     deliveryAddress: string;
     deliveryDate: Date;
-    deliveryTimeSlot: Date;
+    deliveryTimeSlot: string;
     deliveryCharge: string;
-    distance: number;
+    maxDistance: string;
+    orderPlaced: boolean;
+    orderStatus: string;
+    orderConfirmationStatus: string;
 }
