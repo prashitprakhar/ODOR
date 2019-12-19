@@ -1,0 +1,55 @@
+.custom_add_sub_item_quantity_section {
+    display: flex;
+    flex-direction: row;
+    // justify-content: flex-end;
+    border: 1px solid;
+    //min-height: 25px;
+    align-items: center;
+    border-radius: 20px;
+    justify-content: space-between;
+  }
+  .space_left {
+    margin-left: 2px;
+    font-size: 10px;
+    vertical-align: text-top;
+    margin-right: 1px;
+  }
+  
+  .space_left_delivery {
+    font-size: 10px;
+    vertical-align: text-top;
+  }
+  
+  .space_dot {
+    margin-left: 5px;
+    margin-right: 7px;
+    font-size: 10px;
+    vertical-align: text-top;
+  }
+  
+  .star_style {
+    font-size: 14px;
+    vertical-align: text-top;
+  }
+  
+  .item_name {
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  
+  .pre_item_rate_section {
+    font-size: 12px;
+  }
+  
+  .post_item_rate_section {
+    font-size: 12px;
+  }
+  
+  .item_out_stock {
+    opacity: 0.5;
+  }
+  
+  .item_in_stock {
+    opacity: 1;
+  }
+  

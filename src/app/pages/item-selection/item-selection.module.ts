@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { ItemSelectionPage } from './item-selection.page';
 import { CustomOrderModalComponent } from '../../modals/custom-order-modal/custom-order-modal.component';
 import { ReactiveFormsModule } from '@angular/forms'
+import { SearchItemModalComponent } from 'src/app/modals/search-item-modal/search-item-modal.component';
 
 const routes: Routes = [
   {
@@ -24,7 +25,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  entryComponents: [CustomOrderModalComponent],
-  declarations: [ItemSelectionPage, CustomOrderModalComponent]
+  entryComponents: [CustomOrderModalComponent, SearchItemModalComponent],
+  declarations: [ItemSelectionPage, CustomOrderModalComponent, SearchItemModalComponent]
 })
 export class ItemSelectionPageModule {}

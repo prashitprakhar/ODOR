@@ -101,6 +101,7 @@
       "page",
       "kebab-case"
     ],
-    "only-arrow-functions": [false, "allow-declarations", "allow-named-functions"]
+    "only-arrow-functions": [false, "allow-declarations", "allow-named-functions"],
+    "no-string-literal": false
   }
 }

@@ -1,0 +1,103 @@
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col style="display: flex;flex-direction: row;justify-content: center;">
+        <ion-label style="font-size: 20px;font-weight: 700;">OrderIt</ion-label>
+      </ion-col>
+      
+    </ion-row>
+    <ion-row>
+        <ion-col style="display: flex;flex-direction: row;justify-content: center;">
+          <ion-label style="font-size:14px;font-weight: 700;">Join and start getting you wishes delivered.</ion-label>
+        </ion-col>
+      </ion-row>
+  </ion-grid>
+    <form #loginForm="ngForm">
+      <ion-list>
+        <ion-item>
+          <ion-label position="floating" color="dark">Email</ion-label>
+          <ion-input
+            type="email"
+            ngModel
+            name="email"
+            required
+            email
+            #emailCtrl="ngModel"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none">
+              <p style="color:red">
+                Please enter a valid email address
+              </p>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating" color="dark">Password</ion-label>
+          <ion-input
+            type="password"
+            ngModel
+            name="password"
+            required
+            minlength="8"
+            #passwordCtrl="ngModel"
+            class="custom_input_style"
+          ></ion-input>
+        </ion-item>
+        <ion-item *ngIf="!passwordCtrl.valid && passwordCtrl.touched" lines="none">
+            <p style="color:red">
+              Please enter your password
+            </p>
+      </ion-item>
+        <ion-item>
+            <ion-label position="floating" color="dark">Confirm Password</ion-label>
+            <ion-input
+              type="password"
+              ngModel
+              name="confirmPassword"
+              required
+              minlength="8"
+              #confirmPasswordCtrl="ngModel"
+              class="custom_input_style"
+            ></ion-input>
+          </ion-item>
+        <ion-item *ngIf="!confirmPasswordCtrl.valid && confirmPasswordCtrl.touched && !(passwordCtrl.value === confirmPasswordCtrl.value)" lines="none">
+            <p style="color:red">
+              Please confirm your password
+            </p>
+      </ion-item>
+      </ion-list>
+      <ion-button
+        color="primary"
+        type="submit"
+        (click)="onSignup(loginForm)"
+        expand="full"
+        [disabled]="!loginForm.valid"
+      >
+        <ion-label>Register</ion-label>
+      </ion-button>
+      
+    </form>
+  </ion-content>
+
+<!-- <ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col> </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content> -->
+<ion-footer>
+  <ion-toolbar
+    style="display: flex; flex-direction: row; justify-content: center;"
+  >
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" offset="2">
+          <ion-button (click)="onClose()">
+            <ion-label>Already a member ? Log In</ion-label>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-footer>

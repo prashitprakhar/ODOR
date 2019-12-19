@@ -39,7 +39,6 @@ export class OrderDetailsPage implements OnInit {
               private actionSheetCtrl: ActionSheetController,
               private deliveryTimeService: DeliveryTimeService,
               private userProfileService: UserProfileService,
-              // private router: Router,
               private orderConfModalCtrl: ModalController) { }
 
   ngOnInit() {
@@ -62,6 +61,7 @@ export class OrderDetailsPage implements OnInit {
     this.deliveryDateTime = `${this.deliveryHour}:${this.currentMin} ${this.amPmTracker()}, ${this.currentDate} ${this.currentMonth} ${this.currentYear}`;
 
     this.allOrdersCombined = [];
+    // console.log("allOrdersCombined allOrdersCombined *******", this.allOrdersCombined);
     this.selectedShopName = this.customOrderService.currentSelectedShopName;
     const allOrders = this.userProfileService.getUserOrder();
     const openOrder = allOrders.length > 0 ? allOrders.find(element => element.orderPlaced === false) : true;
@@ -79,9 +79,13 @@ export class OrderDetailsPage implements OnInit {
       this.allOrdersCombined = [...this.allOrdersCombined, ...this.customOrderService.customItemsPacksOrdersDetails];
     }
     if (this.customOrderService.selectableItemsOrders) {
-      this.allOrdersCombined = [...this.allOrdersCombined, ...this.selectableOrders];
+      // console.log("this.customOrderService.selectableItemsOrders *******", this.customOrderService.selectableItemsOrders);
+      const relevantSelectableOrders = this.customOrderService.selectableItemsOrders.filter(element => element.itemCount > 0);
+      // console.log("relevantSelectableOrders *******", relevantSelectableOrders);
+      this.allOrdersCombined = [...this.allOrdersCombined, ...relevantSelectableOrders];
     }
     const checkCustomItems = this.allOrdersCombined.find(element => element.orderType === 'CUSTOM');
+    // console.log("allOrdersCombined allOrdersCombined *******", this.allOrdersCombined);
     if (checkCustomItems) {
       this.hasCustomOrders = true;
     } else {
@@ -161,36 +165,6 @@ export class OrderDetailsPage implements OnInit {
     }
     return monthText;
   }
-
-  // ionViewDidEnter() {
-  //   console.log("ionViewDidEnter");
-  //   const allOrders = this.userProfileService.getUserOrder();
-  //   const openOrder = allOrders.length > 0 ? allOrders.find(element => element.orderPlaced === false) : true;
-  //   // if (openOrder) {
-  //   this.allOrdersCombined = [];
-  //   this.customOrdersPacks = this.customOrderService.customItemsPacksOrdersDetails;
-  //   this.customOrdersKG = this.customOrderService.customItemOrdersDetails;
-  //   this.selectableOrders = this.customOrderService.selectableItemsOrders;
-  //   if (this.customOrderService.customItemOrdersDetails) {
-  //     this.allOrdersCombined = [...this.allOrdersCombined, ...this.customOrderService.customItemOrdersDetails];
-  //   }
-  //   if (this.customOrderService.customItemsPacksOrdersDetails) {
-  //     this.allOrdersCombined = [...this.allOrdersCombined, ...this.customOrderService.customItemsPacksOrdersDetails];
-  //   }
-  //   if (this.customOrderService.selectableItemsOrders) {
-  //     this.allOrdersCombined = [...this.allOrdersCombined, ...this.selectableOrders];
-  //   }
-  //   // this.allOrdersCombined = [...this.customOrdersPacks, ...this.customOrdersKG, ...this.selectableOrders]
-  //   if (this.selectableOrders) {
-  //     // tslint:disable-next-line: only-arrow-functions
-  //     this.grandTotal = this.selectableOrders.reduce(function(accumulator, item) {
-  //       return accumulator + item.totalPrice;
-  //     }, 0);
-  //   }
-  // // } else {
-  // //   this.isOrderUnplaced = false;
-  // // }
-  // }
 
   placeOrder() {
     if (this.customOrderService.customItemOrdersDetails && this.customOrderService.customItemsPacksOrdersDetails) {

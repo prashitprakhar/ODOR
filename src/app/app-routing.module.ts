@@ -10,13 +10,13 @@ const routes: Routes = [
   {
     path: "partnerHomePage",
     loadChildren: "./enterprise-partner-pages/partner-home/partner-home.module#PartnerHomePageModule",
-    canLoad: [AuthGuard]
+    canLoad: [AuthGuard] // Need to find a way out with role
   },
   // { path: 'home', loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)},
   {
     path: "homepage",
     loadChildren: "./pages/home-page/home-page.module#HomePagePageModule",
-    canLoad: [AuthGuard]
+    canLoad: [AuthGuard] // Need to find a way out with role
   }
   //{ path: 'partner-my-shop', loadChildren: './enterprise-partner-pages/partner-my-shop/partner-my-shop.module#PartnerMyShopPageModule' }
   // { path: 'partner-home', loadChildren: './enterprise-partner-pages/partner-home/partner-home.module#PartnerHomePageModule' },

@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+  <form #loginForm="ngForm"><!-- (ngSubmit)="onSubmit(loginForm)" -->
     <ion-list>
       <ion-item>
         <ion-label position="floating" color="dark">Email</ion-label>
@@ -52,8 +52,9 @@
       <ion-label>Login</ion-label>
     </ion-button>
     <div class="extra_features_signup">
-      <ion-label>Forgot Password?</ion-label>
-      <ion-label>Join Now</ion-label>
+      <!-- <ion-label>Forgot Password?</ion-label> -->
+      <ion-button fill="clear" (click)="signupSuccess()">Forgot Password?</ion-button>
+      <ion-button fill="clear" (click)="signup()">Join Now</ion-button>
     </div>
   </form>
 </ion-content>

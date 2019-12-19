@@ -23,10 +23,15 @@
           <ion-label>Search</ion-label>
           <ion-icon name="search"></ion-icon>
       </ion-tab-button> -->
-      <ion-tab-button tab="cart" color="tertiary">
+      <!-- <ion-tab-button tab="cart" color="tertiary" *ngIf="!isItemSelected"> -->
+      <ion-tab-button tab="cart" color="tertiary" >
+          <ion-label [ngClass]="isItemSelected ? 'item_in_cart_style' : 'cart_empty_style'">Cart</ion-label>
+          <ion-icon name="cart" [ngClass]="isItemSelected ? 'item_in_cart_style' : 'cart_empty_style'"></ion-icon>
+      </ion-tab-button>
+      <!-- <ion-tab-button tab="cart" color="success" *ngIf="isItemSelected">
           <ion-label>Cart</ion-label>
           <ion-icon name="cart"></ion-icon>
-      </ion-tab-button>
+      </ion-tab-button> -->
       <ion-tab-button tab="account" color="tertiary">
           <ion-label>Account</ion-label>
           <ion-icon name="person"></ion-icon>

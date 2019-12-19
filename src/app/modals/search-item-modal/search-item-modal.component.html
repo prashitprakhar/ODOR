@@ -1,0 +1,105 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Search Item
+    </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onClose()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-searchbar
+          debounce="500"
+          showCancelButton="focus"
+          cancelButtonText="Custom Cancel"
+          animated
+          inputmode="search"
+          placeholder="What are you looking for ?"
+          [(ngModel)]="searchText"
+          (ionChange)="searchItems()"
+        ></ion-searchbar>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <form
+        #selectableItemsForm="ngForm"
+        class="ion-no-padding"
+        style="width: 100vw;"
+      >
+        <ion-col class="ion-no-padding">
+          <ion-virtual-scroll
+            [items]="searchableShopOfferedItemsList"
+            approxItemHeight="70px"
+          >
+            <ion-item
+              *virtualItem="let product"
+              [ngClass]="
+                product.itemAvailable ? 'item_in_stock' : 'item_out_stock'
+              "
+            >
+              <ion-avatar slot="start">
+                <ion-img [src]="product.itemImageUrl"></ion-img>
+              </ion-avatar>
+              <ion-label>
+                <h5 class="item_name">{{ product.itemName }}</h5>
+                <p class="pre_item_rate_section">
+                  {{ product.itemBrand | titlecase }} .
+                  {{ product.itemCategory | titlecase }}
+                </p>
+                <ion-text class="space_left"
+                  >&#8377;{{ product.itemDiscountedRate }}</ion-text
+                >
+                <ion-text class="space_dot">&#8226;</ion-text>
+                <ion-text class="space_left_delivery"
+                  >{{ product.itemWeight }} {{ product.itemUnit }}</ion-text
+                >
+                <ion-text class="space_dot" *ngIf="!product.itemAvailable"
+                  >&#8226;</ion-text
+                >
+                <ion-text
+                  class="space_left_delivery"
+                  *ngIf="!product.itemAvailable"
+                  style="color: #f04141; font-size: 10px;"
+                  >Out Of Stock</ion-text
+                >
+              </ion-label>
+              <div class="custom_add_sub_item_quantity_section">
+                <ion-button
+                  (click)="
+                    checkForMultipleShopSelection(
+                      product.itemId,
+                      selectableItemsForm
+                    )
+                  "
+                  style="color: #228B22;"
+                  fill="clear"
+                  strong
+                  [disabled]="!product.itemAvailable"
+                >
+                  <ion-icon name="add" slot="icon-only"></ion-icon>
+                </ion-button>
+                <ion-label>{{ product.itemCount }}</ion-label> &nbsp;
+                <ion-button
+                  (click)="decrement(product.itemId, selectableItemsForm)"
+                  style="color: #228B22;"
+                  fill="clear"
+                  strong
+                  [disabled]="!product.itemAvailable"
+                >
+                  <ion-icon name="remove" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+            </ion-item>
+          </ion-virtual-scroll>
+        </ion-col>
+      </form>
+    </ion-row>
+  </ion-grid>
+</ion-content>

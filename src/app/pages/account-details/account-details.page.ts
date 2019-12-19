@@ -19,18 +19,13 @@ export class AccountDetailsPage implements OnInit {
 
   onLogout() {
     this.authService.logout();
-    this.router.navigateByUrl('/auth');
+    // this.router.navigateByUrl('/auth');
   }
 
   myAllOrders() {
-    //this.router.navigateByUrl('/homepage/tabs/account/allOrders');
     this.allOrdersModalCtrl
       .create({
         component: AllMyOrdersModalComponent,
-        // componentProps: {
-        //   name: "customItemModal",
-        //   selectedShopId: this.shopId
-        // },
         id: "allOrdersModal"
       })
       .then(modalEl => {
@@ -38,16 +33,6 @@ export class AccountDetailsPage implements OnInit {
         return modalEl.onDidDismiss();
       })
       .then(data => {
-        // console.log(
-        //   "this.customOrderService.customItemOrdersDetails",
-        //   this.customOrderService.customItemOrdersDetails
-        // );
-        // if(data.role === 'confirm'){
-        //   console.log("Save users data")
-        // }
-        // else if(data.role === 'cancel'){
-        //   console.log("Dont save users data")
-        // }
       });
   }
 
