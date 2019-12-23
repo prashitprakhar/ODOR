@@ -29,11 +29,26 @@ ion-list {
 .input_field {
   border-radius: 25px;
   margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  max-height: 28px;
 }
 
 .error_message {
   background-color: #000000;
   --background: #000000;
+}
+
+//   .sc-ion-input-md-h {
+//       --padding-top: 0 !important;
+//       --padding-bottom: 0 !important;
+//       font-size: 18px;
+//   }
+
+.ion_input_style {
+  --padding-top: 0 !important;
+  --padding-bottom: 0 !important;
+  font-size: 18px;
 }
 // .custom_input_style {
 //     --placeholder-color : var(--ion-color-dark)

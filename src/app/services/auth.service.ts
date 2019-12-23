@@ -6,12 +6,17 @@ import { map, tap, take } from "rxjs/operators";
 import { IAuththenticationResponse } from "./../shared/models/authentication-response.model";
 import { environment } from "./../../environments/environment";
 import { UserClass } from "./../shared/models/user.model";
+import { AngularFireAuth } from "@angular/fire/auth";
 
 @Injectable({
   providedIn: "root"
 })
 export class AuthService implements OnDestroy {
-  // private _userIsAuthenticated: boolean = true;
+
+  constructor(
+    private http: HttpClient,
+    private angularFireAuth: AngularFireAuth
+  ) {}
 
   private _userIsEnterprisePartner: boolean = false;
   private _userIsCustomer: boolean = false;
@@ -51,10 +56,9 @@ export class AuthService implements OnDestroy {
     );
   }
 
-  constructor(private http: HttpClient) {}
-
   autoLogin() {
-    return from(Plugins.Storage.get({ key: "authData" })).pipe( // 'from' converts any Promise to Observable
+    return from(Plugins.Storage.get({ key: "authData" })).pipe(
+      // 'from' converts any Promise to Observable
       map(storedData => {
         if (!storedData || !storedData.value) {
           return null;
@@ -71,13 +75,19 @@ export class AuthService implements OnDestroy {
           return null;
         }
 
-        const user = new UserClass(parsedAuthData.userId, parsedAuthData.email, parsedAuthData.token, expirationTime);
+        const user = new UserClass(
+          parsedAuthData.userId,
+          parsedAuthData.email,
+          parsedAuthData.token,
+          expirationTime
+        );
         return user;
       }),
       tap(user => {
         if (user) {
           this._user.next(user);
-          this.autoLogout(user.tokenDuration)
+          const tokenExpirationDuration: number = new Date(user.tokenDuration).getTime();
+          this.autoLogout(tokenExpirationDuration);
         }
       }),
       map(user => {
@@ -87,16 +97,22 @@ export class AuthService implements OnDestroy {
   }
 
   login(email: string, password: string) {
-    return this.http
-      .post<IAuththenticationResponse>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`,
-        {
-          email,
-          password,
-          returnSecureToken: true
-        }
-      )
-      .pipe(tap(this.setUserData.bind(this)));
+    return from(
+      this.angularFireAuth.auth.signInWithEmailAndPassword(email, password)
+    ).pipe(take(1), tap(this.setUserData.bind(this)));
+    // .subscribe(loginData => {
+    //   console.log("Login Data ********",loginData)
+    // })
+    // return this.http
+    //   .post<IAuththenticationResponse>(
+    //     `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.firebaseAPIKey}`,
+    //     {
+    //       email,
+    //       password,
+    //       returnSecureToken: true
+    //     }
+    //   )
+    //   .pipe(tap(this.setUserData.bind(this)));
   }
 
   logout() {
@@ -104,7 +120,10 @@ export class AuthService implements OnDestroy {
       clearTimeout(this.activeLogoutTimer);
     }
     this._user.next(null);
-    Plugins.Storage.remove({key: 'authData'});
+    from(this.angularFireAuth.auth.signOut()).pipe(take(1)).subscribe(signoutResData => {
+      Plugins.Storage.remove({ key: "authData" });
+    }, error => {
+    });
   }
 
   private autoLogout(duration: number) {
@@ -113,7 +132,8 @@ export class AuthService implements OnDestroy {
     }
     this.activeLogoutTimer = setTimeout(() => {
       this.logout();
-    } , duration);
+    }, duration);
+    // 2147483647 is the limit
   }
 
   ngOnDestroy() {
@@ -123,39 +143,82 @@ export class AuthService implements OnDestroy {
   }
 
   signup(email: string, password: string) {
-    return this.http
-      .post<IAuththenticationResponse>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseAPIKey}`,
-        {
-          email,
-          password,
-          returnSecureToken: true
-        }
-      )
-      .pipe(take(1), tap(this.setUserData.bind(this)));
+    return from(
+      this.angularFireAuth.auth.createUserWithEmailAndPassword(email, password)
+    ).pipe(take(1), tap(this.setUserData.bind(this)));
+    // return this.http
+    //   .post<IAuththenticationResponse>(
+    //     `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${environment.firebaseAPIKey}`,
+    //     {
+    //       email,
+    //       password,
+    //       returnSecureToken: true
+    //     }
+    //   )
+    //   .pipe(take(1), tap(this.setUserData.bind(this)));
   }
 
-  private setUserData(userData: IAuththenticationResponse) {
-    const expirationTime = new Date(
-      new Date().getTime() + +userData.expiresIn * 1000
-    );
-    const user = new UserClass(
-      userData.localId,
-      userData.email,
-      userData.idToken,
-      expirationTime
-    );
+  // private setUserData(userData: IAuththenticationResponse) {
+  private setUserData(userData) {
+    this.getAuthState().subscribe(
+      authStateData => {
+        const userAuthStateInfo = authStateData.toJSON();
+        const email = userAuthStateInfo['email'];
+        const userId = userAuthStateInfo['uid'];
+        const refreshToken = userAuthStateInfo["stsTokenManager"].refreshToken;
+        const expirationTime = userAuthStateInfo["stsTokenManager"].expirationTime;
+        const user = new UserClass(userId, email, refreshToken, expirationTime);
 
-    this._user.next(user);
+        this._user.next(user);
+        const tokenExpirationDuration: number = new Date(user.tokenDuration).getTime();
+        this.autoLogout(tokenExpirationDuration);
 
-    this.autoLogout(user.tokenDuration);
+        this.storeAuthData(
+          userId,
+          refreshToken,
+          new Date(expirationTime).toISOString(),
+          email
+        );
+      },
+      error => {});
 
-    this.storeAuthData(
-      userData.localId,
-      userData.idToken,
-      expirationTime.toISOString(),
-      userData.email
-    );
+          // const email = userData["user"].email;
+          // const userId = userData["user"].uid;
+          // const refreshToken = userData["user"].refreshToken;
+          // const expirationTime = new Date(new Date().getTime() + 604800000);
+          // const user = new UserClass(userId, email, refreshToken, expirationTime);
+
+          // this._user.next(user);
+
+          // this.autoLogout(user.tokenDuration);
+
+          // this.storeAuthData(
+          //   userId,
+          //   refreshToken,
+          //   expirationTime.toISOString(),
+          //   email
+          // );
+
+    // const expirationTime = new Date(
+    //   new Date().getTime() + +userData.expiresIn * 1000
+    // );
+    // const user = new UserClass(
+    //   userData.localId,
+    //   userData.email,
+    //   userData.idToken,
+    //   expirationTime
+    // );
+
+    // this._user.next(user);
+
+    // this.autoLogout(user.tokenDuration);
+
+    // this.storeAuthData(
+    //   userData.localId,
+    //   userData.idToken,
+    //   expirationTime.toISOString(),
+    //   userData.email
+    // );
   }
 
   private storeAuthData(
@@ -171,5 +234,9 @@ export class AuthService implements OnDestroy {
       email
     });
     Plugins.Storage.set({ key: "authData", value: authData });
+  }
+
+  getAuthState() {
+    return this.angularFireAuth.authState.pipe(take(1));
   }
 }

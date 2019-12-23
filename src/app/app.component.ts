@@ -29,6 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.authSubscription = this.authService.userIsAuthenticated.subscribe(isAuth => {
+      console.log("IS Auth *******", isAuth);
       if (!isAuth && this.previousAuthState !== isAuth) {
         this.router.navigateByUrl('/auth');
       }
@@ -47,5 +48,16 @@ export class AppComponent implements OnInit, OnDestroy {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
+    // this.getAuthState();
   }
+
+  // getAuthState() {
+  //   this.authService.getAuthState()
+  //     .subscribe(authData => {
+  //       const authStateData = authData.toJSON();
+  //       // console.log("ExpirationTime ********", new Date(authStateData['stsTokenManager'].expirationTime));
+  //     }, error => {
+  //       // console.log("Error in Auth State ******", error);
+  //     });
+  // }
 }

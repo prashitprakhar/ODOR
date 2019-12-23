@@ -1,11 +1,26 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-title>My Account Details</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content>
   <ion-grid class="ion-no-padding">
+    <ion-row class="profile_section_row">
+        <div class="header_section">
+          <div class="icon_section">
+      <ion-icon name="basket" color="light" class="left_logo"></ion-icon>
+    </div>
+    <div class="profile_details_section">
+      <div class="profile_details_header_section">
+      <ion-label style="color: #FFFFFF;font-size: 14px;">Logged in as : {{userProfile.email}}</ion-label>
+    </div>
+    <!-- <div class="profile_details_desc_section">
+      <ion-label style="color: #FFFFFF;font-size: 14px;">Hello</ion-label>
+    </div> -->
+    </div>
+    </div>
+    </ion-row>
     <ion-row class="ion-no-padding">
       <ion-row>
         <ion-col>

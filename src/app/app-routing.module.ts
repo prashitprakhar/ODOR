@@ -17,7 +17,19 @@ const routes: Routes = [
     path: "homepage",
     loadChildren: "./pages/home-page/home-page.module#HomePagePageModule",
     canLoad: [AuthGuard] // Need to find a way out with role
-  }
+  },
+  {
+    path: "adminHomePage",
+    loadChildren: "./admin/pages/admin-home/admin-home.module#AdminHomePageModule",
+    canLoad: [AuthGuard] // Need to find a way out with role
+  },
+  { path: 'registered-shops-list', loadChildren: './admin/pages/registered-shops-list/registered-shops-list.module#RegisteredShopsListPageModule' },
+  // { path: 'admin-home', loadChildren: './admin/pages/admin-home/admin-home.module#AdminHomePageModule' },
+  // { path: 'add-new-shop', loadChildren: './admin/pages/add-new-shop/add-new-shop.module#AddNewShopPageModule' },
+  // { path: 'admin-account', loadChildren: './admin/pages/admin-account/admin-account.module#AdminAccountPageModule' },
+  // tslint:disable-next-line: max-line-length
+  // { path: 'admin-account-details', loadChildren: './admin/pages/admin-account-details/admin-account-details.module#AdminAccountDetailsPageModule' }
+  // tslint:disable-next-line: comment-format
   //{ path: 'partner-my-shop', loadChildren: './enterprise-partner-pages/partner-my-shop/partner-my-shop.module#PartnerMyShopPageModule' }
   // { path: 'partner-home', loadChildren: './enterprise-partner-pages/partner-home/partner-home.module#PartnerHomePageModule' },
   // { path: 'partner-add-products', loadChildren: 

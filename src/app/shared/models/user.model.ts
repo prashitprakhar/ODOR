@@ -16,9 +16,12 @@ export class UserClass {
 
   get tokenDuration() {
     if (!this.token) {
+      console.log("***No Token ***");
       return 0;
     }
-    return this.tokenExpirationDate.getTime() - new Date().getTime();
+    return this.tokenExpirationDate;
+    // .getTime();
+    // - new Date().getTime();
   }
 
 }

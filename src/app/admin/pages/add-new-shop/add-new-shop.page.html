@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>New Shop Registration</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #newShopRegistrationForm="ngForm"></form>
+  <ion-list>
+    <ion-item class="input_field">
+      <!-- <ion-label position="floating" color="dark">Email</ion-label> -->
+      <!-- <ion-icon name="mail" color="dark"></ion-icon> -->
+      <ion-input
+        type="email"
+        ngModel
+        name="email"
+        required
+        email
+        #emailCtrl="ngModel"
+        placeholder="Partner Email ID"
+        class="ion_input_style"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none" class="error_message">
+      <ion-label style="color:white; background-color: #000000; font-size: 12px;">
+        Please enter a valid email address
+      </ion-label>
+</ion-item>
+    </ion-list>
+</ion-content>

@@ -4,8 +4,10 @@ import { Router } from "@angular/router";
 import {
   AlertController,
   LoadingController,
-  ModalController
+  ModalController,
+  ToastController
 } from "@ionic/angular";
+import { Plugins } from "@capacitor/core";
 import { Observable, Subscription } from "rxjs";
 import { AuthService } from "src/app/services/auth.service";
 import { SignupModalComponent } from "src/app/shared/modals/signup-modal/signup-modal.component";
@@ -18,7 +20,8 @@ import { SignupSuccessModalComponent } from "src/app/shared/modals/signup-succes
   styleUrls: ["./auth.page.scss"]
 })
 export class AuthPage implements OnInit, OnDestroy {
-  public authObjObservable: Observable<IAuththenticationResponse>;
+  // public authObjObservable: Observable<IAuththenticationResponse>;
+  public authObjObservable: Observable<any>;
   public authObjObsSubs: Subscription;
 
   constructor(
@@ -27,7 +30,8 @@ export class AuthPage implements OnInit, OnDestroy {
     private loadingCtrl: LoadingController,
     private signupModalCtrl: ModalController,
     private alertCtrl: AlertController,
-    private signupSuccessModalCtrl: ModalController
+    private signupSuccessModalCtrl: ModalController,
+    private loginSuccessToastCtrl: ToastController
   ) {}
 
   ngOnInit() {}
@@ -51,17 +55,24 @@ export class AuthPage implements OnInit, OnDestroy {
         this.authObjObservable = this.authService.login(email, password);
         this.authObjObsSubs = this.authObjObservable.subscribe(
           async resData => {
+            const loginData = resData.user.toJSON();
             await loadingEl.dismiss();
-            if (resData.email === "mahalakshmikiranastore@gmail.com") {
+            if (loginData.email === "mahalakshmikiranastore@gmail.com") {
+              // Qwerty123!
+              this.loginSuccessToastControllerMessage();
               this.router.navigateByUrl("/partnerHomePage/partnerTabs");
+            } else if (loginData.email === "orderitservice@gmail.com") {
+              this.loginSuccessToastControllerMessage()
+              this.router.navigateByUrl("/adminHomePage/adminTab");
             } else {
               await this.authObjObsSubs.unsubscribe();
+              this.loginSuccessToastControllerMessage()
               this.router.navigateByUrl("/homepage/tabs");
             }
           },
           errResponse => {
             loadingEl.dismiss();
-            const errorCode = errResponse.error.error.message;
+            const errorCode = errResponse.code;
             let errorMessage = "";
             let errorHeader = "";
             if (errorCode === "EMAIL_NOT_FOUND") {
@@ -73,7 +84,7 @@ export class AuthPage implements OnInit, OnDestroy {
                 errorMessage,
                 loginForm
               );
-            } else if (errorCode === "INVALID_PASSWORD") {
+            } else if (errorCode === "auth/wrong-password") {
               errorMessage = "Please verify your email/password and try again.";
               errorHeader = "Incorrect email/password.";
               this.incorrectPasswordErrorAlertMessage(
@@ -81,6 +92,15 @@ export class AuthPage implements OnInit, OnDestroy {
                 errorMessage,
                 loginForm
               );
+            } else if (errorCode === 'auth/user-not-found') {
+              errorMessage =
+              "Please create account with the email you have provided.";
+              errorHeader = "Email address not registered.";
+              this.emailNotFoundErrorAlertMessage(
+              errorHeader,
+              errorMessage,
+              loginForm
+            );
             } else {
               errorMessage = "Something went wrong. Please try again.";
               errorHeader = "OOPS...";
@@ -94,6 +114,20 @@ export class AuthPage implements OnInit, OnDestroy {
         );
         loginForm.reset();
       });
+  }
+
+  async loginSuccessToastControllerMessage() {
+    const authData = Plugins.Storage.get({key: 'authData'});
+    authData.then(async data => {
+      const loginDetails = JSON.parse(data.value);
+      const loginSuccessToast = await this.loginSuccessToastCtrl.create({
+        message : `Successfully logged in as ${loginDetails.email}`,
+        duration: 3000,
+        position: 'bottom',
+        color: 'success'
+      });
+      loginSuccessToast.present();
+    });
   }
 
   emailNotFoundErrorAlertMessage(headerLabel, errorMessage, loginForm: NgForm) {
@@ -185,7 +219,7 @@ export class AuthPage implements OnInit, OnDestroy {
         return signupModalEl.onDidDismiss();
       })
       .then(data => {
-        console.log("DATA DATSSAAAA *",data)
+        console.log("DATA DATSSAAAA *", data);
         if (data.role !== "ALL_READY_MEMBER") {
           this.signupSuccessModalCtrl
             .create({
@@ -198,7 +232,7 @@ export class AuthPage implements OnInit, OnDestroy {
             });
         }
         // else {
-          
+
         // }
       });
   }

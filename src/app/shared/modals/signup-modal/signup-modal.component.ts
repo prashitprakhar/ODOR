@@ -20,7 +20,8 @@ export class SignupModalComponent implements OnInit {
     private signupModalCtrl: ModalController,
     private authService: AuthService,
     private loadingCtrl: LoadingController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private signupSuccessAlertCtrl: AlertController
   ) {}
 
   ngOnInit() {}
@@ -43,15 +44,28 @@ export class SignupModalComponent implements OnInit {
         signupEl.present();
         this.authService.signup(email, password).subscribe(
           resData => {
+            // console.log("resdatd.json",resData.toJson())
             signupEl.dismiss();
+            // console.log("Signup response data", resData);
             this.signupModalCtrl.dismiss(null, "closed", "signupModal");
           },
           errRes => {
+            console.log("Signup errRes response data", errRes);
             signupEl.dismiss();
-            const errorCode = errRes.error.error.message;
+            // const errorCode = errRes.error.error.message;
             let errorMessage = "";
             let headerLabel = "";
-            if (errorCode === "EMAIL_EXISTS") {
+            // if (errorCode === "EMAIL_EXISTS") {
+            if (errRes.code === "EMAIL_EXISTS") {
+              errorMessage =
+                "Do you want to create account with a different email ?";
+              headerLabel = "Email already exists.";
+              this.emailAlreadyExistsAlertMessage(
+                headerLabel,
+                errorMessage,
+                signupForm
+              );
+            } else if (errRes.code === 'auth/email-already-in-use') {
               errorMessage =
                 "Do you want to create account with a different email ?";
               headerLabel = "Email already exists.";
