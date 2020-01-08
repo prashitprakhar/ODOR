@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { IShopOfferedItems } from 'src/app/models/shop-offered-items.model';
 import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
+import { Plugins } from "@capacitor/core";
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-partner-add-products',
@@ -13,12 +15,25 @@ import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.s
 export class PartnerAddProductsPage implements OnInit {
 
   public newItem: IShopOfferedItems;
+  public userId: string;
 
   constructor(private shopItemSelectionService: ShopItemSelectionService,
-              private router: Router, private failureAlertCtrl: AlertController,
-              private addingItemLoadingCtrl: LoadingController) { }
+              private router: Router,
+              private failureAlertCtrl: AlertController,
+              private addingItemLoadingCtrl: LoadingController,
+              private authService: AuthService) { }
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ionViewWillEnter() {
+    // Plugins.storage.get({ key: "authData" }).then(userStoredData => {
+    //   const userDataJSON = JSON.parse(userStoredData.value);
+    //   this.userId = userDataJSON.userId;
+    //   console.log("User Id ********", this.userId)
+    // });
+    this.authService.userId.subscribe(userId => {
+      this.userId = userId;
+    });
   }
 
   onSubmitItemDetails(itemDetailsForm: NgForm) {
@@ -55,11 +70,25 @@ export class PartnerAddProductsPage implements OnInit {
           itemImageUrl: 'https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y'
     };
 
-      this.shopItemSelectionService.addNewItem(this.newItem).subscribe(() => {
-        loadingEl.dismiss();
-        itemDetailsForm.reset();
-        this.router.navigate(['/partnerHomePage/partnerTabs']) ;
+      this.shopItemSelectionService.getProductDoc('ENTERPRISE_PARTNER_PRODUCTS', this.userId)
+      .subscribe(newItemAdd => {
+        const docId = newItemAdd.map(data => data.payload.doc.id);
+        const doc = newItemAdd.map(element => element.payload.doc.data());
+
+        doc[0]["shopOfferedItems"].push(this.newItem);
+        this.shopItemSelectionService.updateDocument('ENTERPRISE_PARTNER_PRODUCTS', doc[0], docId[0])
+        .subscribe(updatedDoc => {
+            loadingEl.dismiss();
+            itemDetailsForm.reset();
+            this.router.navigate(['/partnerHomePage/partnerTabs']) ;
+        });
     });
+
+    //   this.shopItemSelectionService.addNewItem(this.newItem).subscribe(() => {
+    //     loadingEl.dismiss();
+    //     itemDetailsForm.reset();
+    //     this.router.navigate(['/partnerHomePage/partnerTabs']) ;
+    // });
     });
     // const itemName = itemDetailsForm.value.itemName;
     // const itemBrand = itemDetailsForm.value.itemBrand;

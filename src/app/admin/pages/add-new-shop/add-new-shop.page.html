@@ -4,28 +4,210 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <form #newShopRegistrationForm="ngForm"></form>
-  <ion-list>
+<ion-content class="ion-padding">
+  <form #newShopRegistrationForm="ngForm">
+  <ion-list class="ion_list_style">
     <ion-item class="input_field">
-      <!-- <ion-label position="floating" color="dark">Email</ion-label> -->
-      <!-- <ion-icon name="mail" color="dark"></ion-icon> -->
       <ion-input
         type="email"
         ngModel
         name="email"
         required
-        email
         #emailCtrl="ngModel"
+        email
         placeholder="Partner Email ID"
         class="ion_input_style"
       >
       </ion-input>
     </ion-item>
-    <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none" class="error_message">
-      <ion-label style="color:white; background-color: #000000; font-size: 12px;">
+    <ion-item
+      *ngIf="!emailCtrl.valid && emailCtrl.touched"
+      lines="none"
+      class="error_message"
+    >
+      <ion-label
+        style="color:white; background-color: #000000; font-size: 12px;"
+      >
         Please enter a valid email address
       </ion-label>
-</ion-item>
-    </ion-list>
+    </ion-item>
+    <ion-item class="input_field">
+      <ion-input
+        type="text"
+        ngModel
+        name="shopName"
+        required
+        text
+        #shopNameCtrl="ngModel"
+        placeholder="Shop Name"
+        class="ion_input_style"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item
+      *ngIf="!shopNameCtrl.valid && shopNameCtrl.touched"
+      lines="none"
+      class="error_message"
+    >
+      <ion-label
+        style="color:white; background-color: #000000; font-size: 12px;"
+      >
+        Please enter the shop name
+      </ion-label>
+    </ion-item>
+
+    <ion-item class="input_field">
+      <ion-input
+        type="text"
+        ngModel
+        name="shopAddressLineOne"
+        text
+        required
+        #shopAddressLineOneCtrl="ngModel"
+        placeholder="Shop Address Line 1"
+        class="ion_input_style"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item
+      *ngIf="!shopAddressLineOneCtrl.valid && shopAddressLineOneCtrl.touched"
+      lines="none"
+      class="error_message"
+    >
+      <ion-label
+        style="color:white; background-color: #000000; font-size: 12px;"
+      >
+        Please enter the Shop Address Line 1
+      </ion-label>
+    </ion-item>
+
+    <ion-item class="input_field">
+      <ion-input
+        type="text"
+        ngModel
+        name="shopAddressLineTwo"
+        text
+        #shopAddressLineTwoCtrl="ngModel"
+        placeholder="Shop Address Line 2"
+        class="ion_input_style"
+      >
+      </ion-input>
+    </ion-item>
+
+    <ion-item class="input_field">
+      <ion-input
+        type="tel"
+        ngModel
+        name="shopPincode"
+        tel
+        required
+        minlength="6"
+        maxlength="6"
+        #shopPincodeCtrl="ngModel"
+        placeholder="PINCODE"
+        class="ion_input_style"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item
+      *ngIf="!shopPincodeCtrl.valid && shopPincodeCtrl.touched"
+      lines="none"
+      class="error_message"
+    >
+      <ion-label
+        style="color:white; background-color: #000000; font-size: 12px;">
+        Please enter PINCODE
+      </ion-label>
+    </ion-item>
+
+    <ion-item style="border-radius: 25px;margin-bottom: 10px;">
+      <ion-label position="floating" color="dark">City</ion-label>
+      <ion-select
+        ngModel
+        name="shopCity"
+        required
+        shopCity
+        #shopCityCtrl="ngModel"
+      >
+      <ion-select-option value="HYD">Hyderabad</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item
+      *ngIf="!shopCityCtrl.valid && shopCityCtrl.touched"
+      lines="none"
+      class="error_message"
+    >
+      <ion-label
+        style="color:white; background-color: #000000; font-size: 12px;"
+      >
+        Please select City
+      </ion-label>
+    </ion-item>
+
+    <ion-item style="border-radius: 25px;margin-bottom: 10px;">
+      <ion-label position="floating" color="dark">State</ion-label>
+      <ion-select
+        ngModel
+        name="shopState"
+        required
+        shopState
+        #shopStateCtrl="ngModel"
+      >
+      <ion-select-option value="HYD">Telangana</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item
+      *ngIf="!shopStateCtrl.valid && shopStateCtrl.touched"
+      lines="none"
+      class="error_message"
+    >
+      <ion-label
+        style="color:white; background-color: #000000; font-size: 12px;"
+      >
+        Please select State
+      </ion-label>
+    </ion-item>
+
+    <ion-item class="input_field">
+      <ion-input
+        type="tel"
+        ngModel
+        name="shopMobileNumber"
+        tel
+        required
+        minlength="10"
+        maxlength="10"
+        #shopMobileNumberCtrl="ngModel"
+        placeholder="Mobile Number"
+        class="ion_input_style"
+      >
+      </ion-input>
+    </ion-item>
+    <ion-item
+      *ngIf="!shopMobileNumberCtrl.valid && shopMobileNumberCtrl.touched"
+      lines="none"
+      class="error_message"
+    >
+      <ion-label
+        style="color:white; background-color: #000000; font-size: 12px;"
+      >
+        Please enter Mobile Number
+      </ion-label>
+    </ion-item>
+    
+    <!-- <ion-item> -->
+      <ion-button
+    fill="outline"
+      color="secondary"
+      type="submit"
+      expand="block"
+      shape="round"
+      (click)="onSubmit(newShopRegistrationForm)"
+      [disabled]="!newShopRegistrationForm.valid"
+    ><!-- fill="outline" (click)="onLogin(loginForm)"  [disabled]="!loginForm.valid"-->
+      <ion-label style="color: #FFFFFF;">Add Shop Profile</ion-label>
+    </ion-button>
+    <!-- </ion-item> -->
+  </ion-list>
+  </form>
 </ion-content>

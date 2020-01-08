@@ -1,42 +1,44 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NgForm } from "@angular/forms";
-import { Router } from "@angular/router";
-import {
-  AlertController,
-  LoadingController,
-  ModalController,
-  ToastController
-} from "@ionic/angular";
+import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
+import { LoadingController, ModalController, AlertController, ToastController } from '@ionic/angular';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 import { Plugins } from "@capacitor/core";
 import { Observable, Subscription } from "rxjs";
-import { AuthService } from "src/app/services/auth.service";
-import { SignupModalComponent } from "src/app/shared/modals/signup-modal/signup-modal.component";
-import { IAuththenticationResponse } from "src/app/shared/models/authentication-response.model";
-import { SignupSuccessModalComponent } from "src/app/shared/modals/signup-success-modal/signup-success-modal.component";
-import { UserProfileService } from 'src/app/services/user-profile.service';
+import { SignupModalComponent } from '../signup-modal/signup-modal.component';
+import { SignupSuccessModalComponent } from '../signup-success-modal/signup-success-modal.component';
 
 @Component({
-  selector: "app-auth",
-  templateUrl: "./auth.page.html",
-  styleUrls: ["./auth.page.scss"]
+  selector: 'app-login-modal',
+  templateUrl: './login-modal.component.html',
+  styleUrls: ['./login-modal.component.scss'],
 })
-export class AuthPage implements OnInit, OnDestroy {
-  // public authObjObservable: Observable<IAuththenticationResponse>;
+export class LoginModalComponent implements OnInit, OnDestroy {
+
   public authObjObservable: Observable<any>;
   public authObjObsSubs: Subscription;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private loadingCtrl: LoadingController,
-    private signupModalCtrl: ModalController,
-    private alertCtrl: AlertController,
-    private signupSuccessModalCtrl: ModalController,
-    private loginSuccessToastCtrl: ToastController,
-    private userProfileService: UserProfileService
-  ) {}
+  constructor(private authService: AuthService,
+              private router: Router,
+              private loadingCtrl: LoadingController,
+              private signupModalCtrl: ModalController,
+              private alertCtrl: AlertController,
+              private signupSuccessModalCtrl: ModalController,
+              private loginSuccessToastCtrl: ToastController,
+              private userProfileService: UserProfileService,
+              private loginModalCtrl: ModalController) { }
 
   ngOnInit() {}
+
+  onClose() {
+      this.loginModalCtrl.dismiss(null, "closed", "loginModal");
+  }
+
+  onCloseLoginSuccess() {
+    console.log("Called on close");
+    this.loginModalCtrl.dismiss(null, "LOGIN_SUCCESS", "loginModal");
+  }
 
   ngOnDestroy() {
     if (this.authObjObsSubs) {
@@ -74,7 +76,8 @@ export class AuthPage implements OnInit, OnDestroy {
               await this.authObjObsSubs.unsubscribe();
               this.loginSuccessToastControllerMessage();
               // this.router.navigateByUrl("/homepage/tabs");
-              this.router.navigateByUrl("/homepage/tabs/account");
+              this.onCloseLoginSuccess();
+              // this.router.navigateByUrl("/homepage/tabs/account");
             }
             }, errorFetchingUserProfile => {
               loadingEl.dismiss();
@@ -154,7 +157,7 @@ export class AuthPage implements OnInit, OnDestroy {
       const loginDetails = JSON.parse(data.value);
       const loginSuccessToast = await this.loginSuccessToastCtrl.create({
         message : `Successfully logged in as ${loginDetails.email}`,
-        duration: 3000,
+        duration: 1500,
         position: 'bottom',
         color: 'success'
       });
@@ -268,4 +271,5 @@ export class AuthPage implements OnInit, OnDestroy {
         // }
       });
   }
+
 }

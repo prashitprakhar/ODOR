@@ -36,6 +36,7 @@ export class SignupModalComponent implements OnInit {
     }
     const email = signupForm.value.email;
     const password = signupForm.value.password;
+    const role = 'CUSTOMER';
     // const confirmPasword = signupForm.value.confirmPasword;
 
     this.loadingCtrl
@@ -50,7 +51,6 @@ export class SignupModalComponent implements OnInit {
             this.signupModalCtrl.dismiss(null, "closed", "signupModal");
           },
           errRes => {
-            console.log("Signup errRes response data", errRes);
             signupEl.dismiss();
             // const errorCode = errRes.error.error.message;
             let errorMessage = "";

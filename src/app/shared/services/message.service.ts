@@ -10,6 +10,7 @@ export class MessageService {
   constructor() { }
 
   private subject = new Subject<any>();
+  private networkSubject = new Subject<any>();
 
     sendMessage(message: string) {
         this.subject.next({ text: message });
@@ -21,5 +22,17 @@ export class MessageService {
 
     getMessage(): Observable<any> {
         return this.subject.asObservable();
+    }
+
+    sendNetworkStatusMessage(message) {
+      this.networkSubject.next({networkMessage : message});
+    }
+
+    clearNetworkStatusMessage() {
+      this.networkSubject.next();
+    }
+
+    getNetworkStatusMessage(): Observable<any> {
+      return this.networkSubject.asObservable();
     }
 }

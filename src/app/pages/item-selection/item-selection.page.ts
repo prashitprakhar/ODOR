@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy} from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, AlertController } from "@ionic/angular";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
-import { IShopList } from "src/app/models/shop-list.model";
+// import { IShopList } from "src/app/models/shop-list.model";
 import { CustomOrderModalComponent } from "../../modals/custom-order-modal/custom-order-modal.component";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ISelectableItemsOrder } from "./../../models/selectable-items-orders.model";
@@ -10,7 +10,10 @@ import { NgForm } from "@angular/forms";
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
 import { Subscription } from "rxjs";
 import { SearchItemModalComponent } from "src/app/modals/search-item-modal/search-item-modal.component";
-import { MessageService } from 'src/app/shared/services/message.service';
+import { MessageService } from "src/app/shared/services/message.service";
+import { IShopData } from "src/app/models/shop-data.model";
+import { NetworkService } from "src/app/shared/services/network.service";
+// import { take, map, tap, delay, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-item-selection",
@@ -18,13 +21,19 @@ import { MessageService } from 'src/app/shared/services/message.service';
   styleUrls: ["./item-selection.page.scss"]
 })
 export class ItemSelectionPage implements OnInit, OnDestroy {
-  public selectedShopDetails: IShopList;
+  // public selectedShopDetails: IShopList;
+  public selectedShopDetails: IShopData;
   public selectedItems: ISelectableItemsOrder[] = [];
   public shopOfferedItemsList: IShopOfferedItems[] = [];
   public shopId: string = "";
   public resetCart: boolean = false;
   public shopOfferedItemsSubs: Subscription;
   public searchText: string = "";
+  public networkStatusSubs: Subscription;
+  public networkStatus: boolean = true;
+  public userSelectionsFromLocalStorage;
+  public userCustomItemsFromLocalStorage;
+  public userSelectionsLocalStorageSub: Subscription;
 
   // @Output() selectableItemUpdateEvent = new EventEmitter<any>();
 
@@ -36,12 +45,21 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
     private searchItemModalCtrl: ModalController,
     private alertCtrl: AlertController,
     private customOrderService: CustomOrderService,
-    private messageService: MessageService
-    // private selectableItemUpdateEvent: Events,
+    private messageService: MessageService,
+    private networkService: NetworkService
   ) {}
 
-  ngOnInit() {
-    console.log("ONINIT this.customOrderService", this.customOrderService.selectableItemsOrders);
+  // doRefresh(event) {
+  //   // console.log('Begin async operation');
+
+  //   // setTimeout(() => {
+  //   //   console.log('Async operation has ended');
+  //   //   event.target.complete();
+  //   // }, 2000);
+  //   this.getInitialData(event);
+  // }
+
+  getInitialData(event = null) {
     if (this.customOrderService.selectableItemsOrders) {
       this.selectedItems = this.customOrderService.selectableItemsOrders;
     }
@@ -51,17 +69,85 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
       }
       this.shopId = paramMap.get("shopId");
       this.shopOfferedItemsSubs = this.shopItemSelectionService
-        .getShopOfferedItems(this.shopId)
+        // .getShopOfferedItems("ENTERPRISE_PARTNER_PRODUCTS", this.shopId)
+        // .pipe(take(1))
+        .getShopOfferedItemsForCustomer(this.shopId)
         .subscribe(shop => {
-          this.selectedShopDetails = shop;
+          // console.log("<<<<<<<<< Selected Shop >>>>>>>>>>", shop);
+          if (shop) {
+            this.selectedShopDetails = shop;
+            this.customOrderService.selectedShopDetails = this.selectedShopDetails;
+            this.shopOfferedItemsList = [
+              ...this.selectedShopDetails.shopOfferedItems
+            ];
+            // this.handleRefresher(event);
+          } else {
+            this.shopItemSelectionService.getAllShopList.subscribe(shops => {
+              if (shops) {
+                this.selectedShopDetails = shops.find(
+                  element => element.shopId === this.shopId
+                );
+                this.customOrderService.selectedShopDetails = this.selectedShopDetails;
+                this.shopOfferedItemsList = [
+                  ...this.selectedShopDetails.shopOfferedItems
+                ];
+              }
+              this.userSelectionsLocalStorageSub = this.shopItemSelectionService
+                .getOrderedItemsFromLocalStorage()
+                .subscribe(localStorageUserSelection => {
+                  this.userSelectionsFromLocalStorage = JSON.parse(
+                    localStorageUserSelection.value
+                  );
+                  // console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage)
+                  if (this.userSelectionsFromLocalStorage && this.userSelectionsFromLocalStorage.selectableItems
+                    && this.userSelectionsFromLocalStorage.selectableItems.length > 0
+                    && (this.shopOfferedItemsList.length > 0)) {
+                    console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage)
+                    this.userSelectionsFromLocalStorage.selectableItems.forEach(selectableStorageItem => {
+                      const storedItem = this.shopOfferedItemsList
+                                          .find(eachItem => eachItem.itemId === selectableStorageItem["itemId"]);
+                      storedItem.itemCount = selectableStorageItem.itemCount;
+                    });
+                    this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
+                    this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+                  }
+                  // this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
+                });
+              // this.handleRefresher(event);
+            });
+          }
         });
-      this.customOrderService.selectedShopDetails = this.selectedShopDetails;
-      this.shopOfferedItemsList = [
-        ...this.selectedShopDetails.shopOfferedItemsList
-      ];
+      if (this.selectedShopDetails) {
+        this.customOrderService.currentSelectedShopName = this.selectedShopDetails.shopName;
+      }
     });
-    console.log("ONINIT this.shopOfferedItemsList", this.shopOfferedItemsList);
-    this.customOrderService.currentSelectedShopName = this.selectedShopDetails.shopName;
+  }
+
+  // handleRefresher(event) {
+  //   if (event) {
+  //     setTimeout(() => {
+  //       event.target.complete();
+  //     }, 2000);
+  //   }
+  // }
+
+  ngOnInit() {
+    this.networkStatusSubs = this.networkService
+      .checkNetworkStatus()
+      .subscribe(networkData => {
+        if (!networkData.connected) {
+          this.networkStatus = false;
+          this.messageService.sendNetworkStatusMessage({
+            NETWORK_CONNECTION: false
+          });
+        } else {
+          this.networkStatus = true;
+          this.messageService.sendNetworkStatusMessage({
+            NETWORK_CONNECTION: true
+          });
+          this.getInitialData();
+        }
+      });
   }
 
   ngOnDestroy() {
@@ -71,7 +157,25 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
-    console.log("ionViewWillEnter this.customOrderService", this.customOrderService.selectableItemsOrders);
+    this.userSelectionsLocalStorageSub = this.shopItemSelectionService
+                .getOrderedItemsFromLocalStorage()
+                .subscribe(localStorageUserSelection => {
+                  this.userSelectionsFromLocalStorage = JSON.parse(
+                    localStorageUserSelection.value
+                  );
+                  if (this.userSelectionsFromLocalStorage && this.userSelectionsFromLocalStorage.selectableItems
+                    && (this.shopOfferedItemsList.length > 0)) {
+                    // console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage)
+                    this.userSelectionsFromLocalStorage.selectableItems.forEach(selectableStorageItem => {
+                      const storedItem = this.shopOfferedItemsList
+                                          .find(eachItem => eachItem.itemId === selectableStorageItem["itemId"]);
+                      storedItem.itemCount = selectableStorageItem.itemCount;
+                    });
+                    this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
+                    this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+                  }
+                  // this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
+                });
     if (this.customOrderService.selectableItemsOrders) {
       this.selectedItems = this.customOrderService.selectableItemsOrders;
     }
@@ -96,21 +200,18 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
         }
       }
     }
-    console.log("ionViewWillEnter this.shopOfferedItemsList", this.shopOfferedItemsList);
   }
 
-  ionViewDidEnter() {
-    // console.log("ionViewDidEnter item selection", this.customOrderService.isResetAllOrdersNeeded);
-  }
+  ionViewDidEnter() {}
 
   ionViewWillLeave() {
     this.persistSelection();
-    // console.log("ionViewWillLeave item selection", this.customOrderService.isResetAllOrdersNeeded);
+    if (this.userSelectionsLocalStorageSub) {
+      this.userSelectionsLocalStorageSub.unsubscribe();
+    }
   }
 
-  ionViewDidLeave() {
-    // console.log("ionViewDidLeave item selection", this.customOrderService.isResetAllOrdersNeeded);
-  }
+  ionViewDidLeave() {}
 
   persistSelection() {
     if (!this.customOrderService.selectableItemsOrders) {
@@ -136,7 +237,6 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
   }
 
   addCustomOrders() {
-    // console.log("this.shopId this.shopId from page",this.shopId)
     this.modalCtrl
       .create({
         component: CustomOrderModalComponent,
@@ -210,9 +310,6 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
                   this.shopOfferedItemsList.forEach(element => {
                     element.itemCount = 0;
                   });
-                  // (
-                  //   item => item.itemId === itemId
-                  // );
                   this.selectedItems = [];
                   this.customOrderService.customItemOrdersDetails = [];
                   this.customOrderService.customItemsPacksOrdersDetails = [];
@@ -251,7 +348,6 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
         item => item.itemId === itemId
       );
       currentSelectedItem[0].itemCount++;
-      // this.selectableItemUpdateEvent.publish('selectableItemUpdate : cartDataUpdated');
       const selectedItem: ISelectableItemsOrder = {
         shopId: this.shopId,
         shopName: this.selectedShopDetails.shopName,
@@ -267,7 +363,7 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
       this.selectedItems.push(selectedItem);
     }
     this.customOrderService.selectableItemsOrders = this.selectedItems;
-    this.messageService.sendMessage('ITEM_ADDED_IN_CART');
+    this.messageService.sendMessage("ITEM_ADDED_IN_CART");
   }
 
   decrement(itemId, selectableItemsForm: NgForm) {
@@ -280,7 +376,6 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
           item => item.itemId === itemId
         );
         currentSelectedItem[0].itemCount--;
-        // this.selectableItemUpdateEvent.publish('selectableItemUpdate : cartDataUpdated');
         selectedItemFound.itemCount--;
         selectedItemFound.totalPrice =
           selectedItemFound.itemCount * selectedItemFound.itemDiscountedRate;
@@ -293,11 +388,11 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
     }
 
     this.customOrderService.selectableItemsOrders = this.selectedItems;
-    this.messageService.sendMessage('ITEM_REMOVED_IN_CART');
+    this.messageService.sendMessage("ITEM_REMOVED_IN_CART");
   }
 
   clearMessage(): void {
     // clear message
     this.messageService.clearMessage();
-}
+  }
 }

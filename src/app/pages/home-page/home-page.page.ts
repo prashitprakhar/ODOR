@@ -6,6 +6,7 @@ import { Subscription } from "rxjs";
 // import { CustomOrderService } from 'src/app/services/custom-order.service';
 import { MessageService } from "./../../shared/services/message.service";
 import { CustomOrderService } from "src/app/services/custom-order.service";
+import { IShopData } from 'src/app/models/shop-data.model';
 
 @Component({
   selector: "app-home-page",
@@ -15,7 +16,8 @@ import { CustomOrderService } from "src/app/services/custom-order.service";
 export class HomePagePage implements OnInit, OnDestroy {
   // Important command for live reloading on android device
   // ionic capacitor run android -l
-  public shopList: IShopList[];
+  // public shopList: IShopList[];
+  public shopList: IShopData[];
   public allShopListSubs: Subscription;
   public message: any;
   public isItemSelected: boolean = false;
@@ -37,6 +39,7 @@ export class HomePagePage implements OnInit, OnDestroy {
       .getMessage()
       .subscribe(message => {
         this.message = message;
+        console.log("this.customOrderService.selectableItemsOrders", this.customOrderService.selectableItemsOrders);
         if (this.customOrderService.selectableItemsOrders.length > 0 ) {
           this.isItemSelected = true;
         } else {

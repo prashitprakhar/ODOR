@@ -8,6 +8,7 @@ import { ISelectableItemsOrder } from "src/app/models/selectable-items-orders.mo
 import { NgForm } from "@angular/forms";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { MessageService } from 'src/app/shared/services/message.service';
+import { IShopData } from 'src/app/models/shop-data.model';
 
 @Component({
   selector: "app-search-item-modal",
@@ -16,7 +17,8 @@ import { MessageService } from 'src/app/shared/services/message.service';
 })
 export class SearchItemModalComponent implements OnInit, OnDestroy {
   public shopId: string = "";
-  public selectedShopDetails: IShopList;
+  // public selectedShopDetails: IShopList;
+  public selectedShopDetails: IShopData;
   public shopOfferedItemsList: IShopOfferedItems[] = [];
   public searchableShopOfferedItemsList: IShopOfferedItems[] = [];
   public shopOfferedItemsSubs: Subscription;
@@ -40,12 +42,13 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
       this.selectedItems = this.customOrderService.selectableItemsOrders;
     }
     this.shopOfferedItemsSubs = this.shopItemSelectionService
-      .getShopOfferedItems(this.shopId)
+      // .getShopOfferedItems(this.shopId)
+      .getShopOfferedItemsForCustomer(this.shopId)
       .subscribe(shop => {
         this.selectedShopDetails = shop;
       });
     this.shopOfferedItemsList = [
-      ...this.selectedShopDetails.shopOfferedItemsList
+      ...this.selectedShopDetails.shopOfferedItems
     ];
     this.searchableShopOfferedItemsList = [...this.shopOfferedItemsList];
   }

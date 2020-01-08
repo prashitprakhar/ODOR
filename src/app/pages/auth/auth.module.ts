@@ -6,8 +6,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AuthPage } from './auth.page';
-import { SignupModalComponent } from 'src/app/shared/modals/signup-modal/signup-modal.component';
-import { SignupSuccessModalComponent } from 'src/app/shared/modals/signup-success-modal/signup-success-modal.component';
+// import { SignupModalComponent } from 'src/app/shared/modals/signup-modal/signup-modal.component';
+// import { SignupSuccessModalComponent } from 'src/app/shared/modals/signup-success-modal/signup-success-modal.component';
 
 const routes: Routes = [
   {
@@ -23,7 +23,9 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  entryComponents: [SignupModalComponent, SignupSuccessModalComponent],
-  declarations: [AuthPage, SignupModalComponent, SignupSuccessModalComponent]
+  // entryComponents: [SignupModalComponent, SignupSuccessModalComponent],
+  // declarations: [AuthPage, SignupModalComponent, SignupSuccessModalComponent]
+  entryComponents: [],
+  declarations: [AuthPage]
 })
 export class AuthPageModule {}

@@ -9,6 +9,8 @@ import { DeliveryTimeService } from 'src/app/services/delivery-time.service';
 import { UserProfileService } from 'src/app/services/user-profile.service';
 import { Router } from '@angular/router';
 import { OrderConfirmedModalComponent } from 'src/app/modals/order-confirmed-modal/order-confirmed-modal.component';
+import { IShopData } from 'src/app/models/shop-data.model';
+import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
 
 @Component({
   selector: 'app-order-details',
@@ -23,7 +25,8 @@ export class OrderDetailsPage implements OnInit {
   public allOrdersCombined: ICustomOrderItem[] = [];
   public grandTotal: number = 0;
   public userFinalOrder: IUserFinalOrder;
-  public selectedShopDetails: IShopList;
+  // public selectedShopDetails: IShopList;
+  public selectedShopDetails: IShopData;
   public isOrderUnplaced: boolean = false;
   public selectedShopName: string;
   public hasCustomOrders: boolean = false;
@@ -39,7 +42,8 @@ export class OrderDetailsPage implements OnInit {
               private actionSheetCtrl: ActionSheetController,
               private deliveryTimeService: DeliveryTimeService,
               private userProfileService: UserProfileService,
-              private orderConfModalCtrl: ModalController) { }
+              private orderConfModalCtrl: ModalController,
+              private shopItemSelectionService: ShopItemSelectionService) { }
 
   ngOnInit() {
     this.selectableOrders = [];
@@ -216,6 +220,7 @@ export class OrderDetailsPage implements OnInit {
       orderConfirmationStatus: 'WAITING'
     };
     this.userProfileService.saveUserOrder(this.userFinalOrder);
+    this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
     this.orderConfModalCtrl
     .create({
       component: OrderConfirmedModalComponent,

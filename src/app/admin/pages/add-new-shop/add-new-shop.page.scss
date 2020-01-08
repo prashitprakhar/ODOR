@@ -28,7 +28,7 @@ ion-list {
 
 .input_field {
   border-radius: 25px;
-  margin-bottom: 2px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   max-height: 28px;
@@ -48,7 +48,12 @@ ion-list {
 .ion_input_style {
   --padding-top: 0 !important;
   --padding-bottom: 0 !important;
-  font-size: 18px;
+  font-size: 14px;
+}
+
+.ion_list_style {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 // .custom_input_style {
 //     --placeholder-color : var(--ion-color-dark)

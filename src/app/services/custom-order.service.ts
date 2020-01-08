@@ -1,22 +1,27 @@
 import { Injectable } from "@angular/core";
 import { IShopList } from "../models/shop-list.model";
+import { IShopData } from '../models/shop-data.model';
+import { ShopItemSelectionService } from './shop-item-selection.service';
+import { ISelectableItemsOrder } from '../models/selectable-items-orders.model';
+import { ICustomOrderItem } from '../models/custom-order-items.model';
 
 @Injectable({
   providedIn: "root"
 })
 export class CustomOrderService {
 
-  constructor() {}
+  constructor(private shopItemSelectionService: ShopItemSelectionService) {}
 
-  private _customItemOrders: any[];
+  private _customItemOrders: ICustomOrderItem[];
 
-  private _customItemsPacksOrders: any[];
+  private _customItemsPacksOrders: ICustomOrderItem[];
 
-  private _selectableItemsOrders: any[];
+  private _selectableItemsOrders: ISelectableItemsOrder[];
 
   private _isResetAllOrdersNeeded: boolean;
 
-  private _selectedShopDetails: IShopList;
+  // private _selectedShopDetails: IShopList;
+  private _selectedShopDetails: IShopData;
 
   private _currentSelectedShopName: string;
 
@@ -28,11 +33,19 @@ export class CustomOrderService {
     this._currentSelectedShopName = value;
   }
 
-  public get selectedShopDetails(): IShopList {
+  // public get selectedShopDetails(): IShopList {
+  //   return this._selectedShopDetails;
+  // }
+
+  // public set selectedShopDetails(value: IShopList) {
+  //   this._selectedShopDetails = value;
+  // }
+
+  public get selectedShopDetails(): IShopData {
     return this._selectedShopDetails;
   }
 
-  public set selectedShopDetails(value: IShopList) {
+  public set selectedShopDetails(value: IShopData) {
     this._selectedShopDetails = value;
   }
 
@@ -44,27 +57,33 @@ export class CustomOrderService {
     this._isResetAllOrdersNeeded = value;
   }
 
-  public get selectableItemsOrders(): any[] {
+  public get selectableItemsOrders(): ISelectableItemsOrder[] {
     return this._selectableItemsOrders;
   }
 
-  public set selectableItemsOrders(value: any[]) {
+  public set selectableItemsOrders(value: ISelectableItemsOrder[]) {
     this._selectableItemsOrders = value;
+    this.shopItemSelectionService.addOrderedItemsToLocalStorage(this._selectableItemsOrders,
+      this._customItemOrders, this._customItemsPacksOrders);
   }
 
-  get customItemsPacksOrdersDetails(): any[] {
+  get customItemsPacksOrdersDetails(): ICustomOrderItem[] {
     return this._customItemsPacksOrders;
   }
 
-  set customItemsPacksOrdersDetails(value: any[]) {
+  set customItemsPacksOrdersDetails(value: ICustomOrderItem[]) {
     this._customItemsPacksOrders = value;
+    this.shopItemSelectionService.addOrderedItemsToLocalStorage(this._selectableItemsOrders,
+      this._customItemOrders, this._customItemsPacksOrders);
   }
 
-  get customItemOrdersDetails(): any[] {
+  get customItemOrdersDetails(): ICustomOrderItem[] {
     return this._customItemOrders;
   }
 
-  set customItemOrdersDetails(orderDetails: any[]) {
+  set customItemOrdersDetails(orderDetails: ICustomOrderItem[]) {
     this._customItemOrders = orderDetails;
+    this.shopItemSelectionService.addOrderedItemsToLocalStorage(this._selectableItemsOrders,
+      this._customItemOrders, this._customItemsPacksOrders);
   }
 }

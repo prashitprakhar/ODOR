@@ -14,12 +14,14 @@ export class EditItemDetailsModalComponent implements OnInit {
 
   public product: IShopOfferedItems;
   public editForm: FormGroup;
+  public shopId: string;
 
   constructor(private editItemDetailsModalCtrl: ModalController,
               private navParams: NavParams,
               private shopItemSelectionService: ShopItemSelectionService,
               private updatingItemLoadingCtrl: LoadingController) {
     this.product = navParams.get("product");
+    this.shopId = navParams.get("selectedShopId");
     // console.log("this.product*****",this.product);
   }
 
@@ -80,12 +82,29 @@ export class EditItemDetailsModalComponent implements OnInit {
     this.updatingItemLoadingCtrl.create({
       message: 'Updating Item Details ...'
     }).then(loadingEl => {
+
       loadingEl.present();
-      this.shopItemSelectionService.updateItemDetails(updateItemDetails).subscribe(data => {
+      this.shopItemSelectionService.getProductDoc('ENTERPRISE_PARTNER_PRODUCTS', this.shopId.toString())
+    .subscribe(newItemAdd => {
+      const docId = newItemAdd.map(data => data.payload.doc.id);
+      const doc = newItemAdd.map(element => element.payload.doc.data());
+      const shopOfferedItems = doc[0]["shopOfferedItems"].filter(element => element.itemId !== this.product.itemId);
+      doc[0]["shopOfferedItems"] = shopOfferedItems;
+      doc[0]["shopOfferedItems"].push(updateItemDetails)
+      this.shopItemSelectionService.updateDocument('ENTERPRISE_PARTNER_PRODUCTS', doc[0], docId[0])
+      .subscribe(updatedDoc => {
         loadingEl.dismiss();
         this.editForm.reset();
         this.editItemDetailsModalCtrl.dismiss(null, "closed", "editItemDetailsModal");
+      }, error => {
+        console.log("Error Occured While Deleting Item");
       });
+  });
+      // this.shopItemSelectionService.updateItemDetails(updateItemDetails).subscribe(data => {
+      //   loadingEl.dismiss();
+      //   this.editForm.reset();
+      //   this.editItemDetailsModalCtrl.dismiss(null, "closed", "editItemDetailsModal");
+      // });
     });
   }
 

@@ -1,15 +1,107 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from "@angular/core";
+import { NgForm } from "@angular/forms";
+import { AdminFunctionsService } from "../../services/admin-functions.service";
+import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
+import { IShopData } from 'src/app/models/shop-data.model';
 
 @Component({
-  selector: 'app-add-new-shop',
-  templateUrl: './add-new-shop.page.html',
-  styleUrls: ['./add-new-shop.page.scss'],
+  selector: "app-add-new-shop",
+  templateUrl: "./add-new-shop.page.html",
+  styleUrls: ["./add-new-shop.page.scss"]
 })
 export class AddNewShopPage implements OnInit {
+  constructor(private adminFunctionsService: AdminFunctionsService) {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  onSubmit(shopRegistrationForm: NgForm) {
+    if (!shopRegistrationForm.valid) {
+      return;
+    }
+
+    const email = shopRegistrationForm.value.email;
+    const shopName = shopRegistrationForm.value.shopName;
+    const shopAddressLineOne = shopRegistrationForm.value.shopAddressLineOne;
+    const shopAddressLineTwo = shopRegistrationForm.value.shopAddressLineTwo;
+    const shopPincode = shopRegistrationForm.value.shopPincode;
+    const shopCity = shopRegistrationForm.value.shopCity;
+    const shopState = shopRegistrationForm.value.shopState;
+    const shopMobileNumber = shopRegistrationForm.value.shopMobileNumber;
+    const role = "ENTERPRISE_PARTNER";
+
+    let shopProfile = {
+      email,
+      shopName,
+      shopAddressLineOne,
+      shopAddressLineTwo,
+      shopPincode,
+      shopCity,
+      shopState,
+      shopMobileNumber,
+      role,
+      shopType: "GROCERY",
+      shopId: "",
+      shopRating: 4.5,
+      userId: "",
+      firstOrderTime: "7 AM",
+      lastOrderTime: "10 PM",
+      isShopOpen: true,
+    };
+
+    const shopOfferedItems: IShopOfferedItems[] = [];
+
+    let shopProductsDetails: IShopData = {
+      ...shopProfile,
+      shopOfferedItems,
+      shopAddress: shopAddressLineOne,
+      shopPostalCode: shopPincode,
+      shopLocation: shopAddressLineOne,
+      shopImageUrl: "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
+    };
+
+    this.adminFunctionsService.createShopAccount(email, shopName).subscribe(
+      signupSuccessRes => {
+        const shopSignupDetails = signupSuccessRes.user.toJSON();
+        shopProfile = {
+          ...shopProfile,
+          shopId: shopSignupDetails["uid"],
+          userId: shopSignupDetails["uid"]
+        };
+        this.adminFunctionsService
+          .addShopProfile("USER_PROFILE", shopProfile)
+          .subscribe(
+            userProfileAddSuccessData => {
+              shopRegistrationForm.reset();
+              shopProductsDetails = {
+                ...shopProductsDetails,
+                shopId: shopSignupDetails["uid"],
+                userId: shopSignupDetails["uid"]
+              };
+              this.adminFunctionsService
+                .addShopProductsDoc(
+                  "ENTERPRISE_PARTNER_PRODUCTS",
+                  shopProductsDetails
+                )
+                .subscribe(
+                  shopProductsDocAddSuccess => {},
+                  shopProductsDocAddError => {
+                    console.log(
+                      " shopProductsDocAddError >>>>>>>",
+                      shopProductsDocAddError
+                    );
+                  }
+                );
+            },
+            errorShopProfileAdd => {
+              console.log("Error in Profile addition", errorShopProfileAdd);
+            }
+          );
+      },
+      signupError => {
+        console.log("Signup Error Happened", signupError);
+      }
+    );
   }
 
+  // gqMzCJjKAuRQBdrYewQIl4GGgm42 - OrderService User UID
 }

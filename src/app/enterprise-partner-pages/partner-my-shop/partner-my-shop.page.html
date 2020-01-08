@@ -16,21 +16,21 @@
         >
           <ion-item>
             <ion-thumbnail slot="start">
-              <ion-img [src]="shopDetails.shopImageUrl"></ion-img>
+              <ion-img [src]="shopDetails[0].shopImageUrl"></ion-img>
             </ion-thumbnail>
             <ion-label>
-              <h5>{{ shopDetails.shopName }}</h5>
+              <h5>{{ shopDetails[0].shopName }}</h5>
               <p class="pre_item_rating_section" style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
-                {{ shopDetails.shopType }}
+                {{ shopDetails[0].shopType }}
                 <ion-button
-              *ngIf="shopDetails.isShopOpen"
+              *ngIf="shopDetails[0].isShopOpen"
                 (click)="setShopOpenCloseStatus(shopDetails)"
                 size="small"
                 color="success"
                 >OPEN
               </ion-button>
               <ion-button
-              *ngIf="!shopDetails.isShopOpen"
+              *ngIf="!shopDetails[0].isShopOpen"
                 (click)="setShopOpenCloseStatus(shopDetails)"
                 size="small"
                 color="danger"
