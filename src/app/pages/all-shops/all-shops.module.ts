@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { AllShopsPage } from './all-shops.page';
+import { NoInternetConnectivityModalComponent } from 'src/app/shared/modals/no-internet-connectivity-modal/no-internet-connectivity-modal.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [AllShopsPage]
+  entryComponents: [NoInternetConnectivityModalComponent],
+  declarations: [AllShopsPage, NoInternetConnectivityModalComponent]
 })
 export class AllShopsPageModule {}

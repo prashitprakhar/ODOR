@@ -299,9 +299,12 @@ export class ShopItemSelectionService {
     console.log("cutom Items List", customItemsKG);
     console.log("customItemsPacks List", customItemsPacks);
     const userSelectionCustomItems = {
-      selectableItems,
-      customItemsKG,
-      customItemsPacks
+      // tslint:disable-next-line: object-literal-shorthand
+      selectableItems : selectableItems,
+      // tslint:disable-next-line: object-literal-shorthand
+      customItemsKG : customItemsKG ? customItemsKG : [],
+      // tslint:disable-next-line: object-literal-shorthand
+      customItemsPacks : customItemsPacks ? customItemsPacks : []
     };
     Plugins.Storage.set({ key: 'userSelectionCustomItems', value: JSON.stringify(userSelectionCustomItems) });
   }

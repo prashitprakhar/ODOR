@@ -37,8 +37,16 @@ export class UserProfileService {
 
   // db string -> orderitserviceprivatelimited+jan+2020
   // username -> orderitservice@gmail.com // firebase creds
+  // @sendgrid/email - login - support@indilligence.com
+  // @sendgrid/email - username - orderitservices
+  // @sendgrid/email - password
+  // API Key Name - orderitservicesapikey
+  // API key - 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
+  // API Key ID: 805x_HtZQ9mlT8bLilTQ-w
   // Password -> !AdOr@20Dec2019
+  // PIN - "628464"
   // Password -> a82c61f17045a59a5a5c13d6bd16e2ff //MD5 Hash
+
   // DB url : https://orderitservices.firebaseio.com/
   // Firebase Web API Key - AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ
   // Web App Name : order-it-services

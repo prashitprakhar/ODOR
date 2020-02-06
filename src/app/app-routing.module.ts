@@ -12,19 +12,19 @@ const routes: Routes = [
     path: "partnerHomePage",
     loadChildren:
       "./enterprise-partner-pages/partner-home/partner-home.module#PartnerHomePageModule",
-    canLoad: [AuthGuard] // Need to find a way out with role
+    // canLoad: [AuthGuard] // Need to find a way out with role
   },
   // { path: 'home', loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)},
   {
     path: "homepage",
-    loadChildren: "./pages/home-page/home-page.module#HomePagePageModule"
+    loadChildren: "./pages/home-page/home-page.module#HomePagePageModule",
     // canLoad: [AuthGuard] // Need to find a way out with role
   },
   {
     path: "adminHomePage",
     loadChildren:
       "./admin/pages/admin-home/admin-home.module#AdminHomePageModule",
-    canLoad: [AuthGuard] // Need to find a way out with role
+    // canLoad: [AuthGuard] // Need to find a way out with role
   },
   {
     path: "registered-shops-list",

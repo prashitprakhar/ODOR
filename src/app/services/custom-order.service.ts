@@ -86,4 +86,11 @@ export class CustomOrderService {
     this.shopItemSelectionService.addOrderedItemsToLocalStorage(this._selectableItemsOrders,
       this._customItemOrders, this._customItemsPacksOrders);
   }
+
+  addLocalStorageItemsToCart(selectableItems: ISelectableItemsOrder[], customItemsPackOrders: ICustomOrderItem[],
+                             customItemsKGOrders: ICustomOrderItem[]) {
+                               this._customItemOrders = customItemsKGOrders;
+                               this._customItemsPacksOrders = customItemsPackOrders;
+                               this._selectableItemsOrders = selectableItems;
+                             }
 }

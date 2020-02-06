@@ -102,7 +102,7 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
                   if (this.userSelectionsFromLocalStorage && this.userSelectionsFromLocalStorage.selectableItems
                     && this.userSelectionsFromLocalStorage.selectableItems.length > 0
                     && (this.shopOfferedItemsList.length > 0)) {
-                    console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage)
+                    // console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage);
                     this.userSelectionsFromLocalStorage.selectableItems.forEach(selectableStorageItem => {
                       const storedItem = this.shopOfferedItemsList
                                           .find(eachItem => eachItem.itemId === selectableStorageItem["itemId"]);
@@ -306,7 +306,6 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
                 text: "Yes",
                 handler: () => {
                   this.resetCart = true;
-                  // this.customOrderService.isResetAllOrdersNeeded = false;
                   this.shopOfferedItemsList.forEach(element => {
                     element.itemCount = 0;
                   });

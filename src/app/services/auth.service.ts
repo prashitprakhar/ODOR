@@ -24,6 +24,7 @@ export class AuthService implements OnDestroy {
   private _userIsCustomer: boolean = false;
   private _user = new BehaviorSubject<UserClass>(null);
   private activeLogoutTimer: any;
+  private _userAuthState = new BehaviorSubject<any>(null);
 
   get userIsEnterprisePartner() {
     return this._userIsEnterprisePartner;
@@ -59,9 +60,35 @@ export class AuthService implements OnDestroy {
   }
 
   onAuthStateChanged() {
-    this.angularFireAuth.auth.onAuthStateChanged(user => {
-      console.log("User authstateCangeveghdvjdckdcdc", user);
-    })
+    // return from(
+      this.angularFireAuth.auth.onAuthStateChanged(user => {
+      this._userAuthState.next(user);
+    });
+    // );
+      // console.log("User authstateCangeveghdvjdckdcdc", user);
+      // if (user) {
+      //   return user.toJSON();
+      // } else {
+      //   return null;
+      // }
+    // }))
+    // .pipe(
+    //   take(1),
+    //   map
+    // )
+  }
+
+  get userAuthState() {
+    return this._userAuthState.asObservable().pipe(
+      take(1),
+      map(user => {
+        if (user) {
+          return true;
+        } else {
+          return false;
+        }
+      })
+    );
   }
 
   autoLogin() {
@@ -210,7 +237,7 @@ export class AuthService implements OnDestroy {
         const splittedLocalTime = localTimeFromAuthState.split('/');
         const newDateFormatted = splittedLocalTime[1] + '/' + splittedLocalTime[0] + '/' + splittedLocalTime[2];
         const localeTimeFormatted = new Date(newDateFormatted);
-        console.log("user.tokenDuration user.tokenDuration", localeTimeFormatted);
+        // console.log("user.tokenDuration user.tokenDuration", localeTimeFormatted);
         // const user = new UserClass(userId, email, refreshToken, expirationTime);
         const user = new UserClass(userId, email, refreshToken, localeTimeFormatted);
 

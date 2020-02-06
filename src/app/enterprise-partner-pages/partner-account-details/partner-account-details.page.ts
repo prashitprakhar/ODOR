@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { AuthenticationService } from 'src/app/shared/internal-services/authentication.service';
 
 @Component({
   selector: 'app-partner-account-details',
@@ -11,18 +12,19 @@ export class PartnerAccountDetailsPage implements OnInit {
 
   public userProfile: any = {};
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
-    this.authService.getAuthState().subscribe(userProfileData => {
-      const userProfileInfo = userProfileData.toJSON();
-      this.userProfile.email = userProfileInfo['email'];
-    });
+    // this.authService.getAuthState().subscribe(userProfileData => {
+    //   const userProfileInfo = userProfileData.toJSON();
+    //   this.userProfile.email = userProfileInfo['email'];
+    // });
   }
 
   onLogout() {
-    this.authService.logout();
-    this.router.navigateByUrl('/auth');
+    // this.authService.logout();
+    // this.router.navigateByUrl('/auth');
+    this.authenticationService.logout();
   }
 
   // myAllOrders() {

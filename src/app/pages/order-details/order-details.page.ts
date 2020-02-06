@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { OrderConfirmedModalComponent } from 'src/app/modals/order-confirmed-modal/order-confirmed-modal.component';
 import { IShopData } from 'src/app/models/shop-data.model';
 import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-order-details',
@@ -43,7 +44,8 @@ export class OrderDetailsPage implements OnInit {
               private deliveryTimeService: DeliveryTimeService,
               private userProfileService: UserProfileService,
               private orderConfModalCtrl: ModalController,
-              private shopItemSelectionService: ShopItemSelectionService) { }
+              private shopItemSelectionService: ShopItemSelectionService,
+              private authService: AuthService) { }
 
   ngOnInit() {
     this.selectableOrders = [];
@@ -170,30 +172,40 @@ export class OrderDetailsPage implements OnInit {
     return monthText;
   }
 
-  placeOrder() {
-    if (this.customOrderService.customItemOrdersDetails && this.customOrderService.customItemsPacksOrdersDetails) {
-      if (this.customOrderService.customItemOrdersDetails.length > 0 || this.customOrderService.customItemsPacksOrdersDetails.length > 0) {
-        this.actionSheetCtrl.create({
-          header: 'Place Order',
-          // tslint:disable-next-line: max-line-length
-          subHeader: 'You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.',
-          buttons: [
-            {
-              text: 'Ok. Got it. Place Order.',
-              handler: () => {
-                this.confirmOrder();
-              }
-            }
-          ]
-        }).then(actionSheetEl => {
-          actionSheetEl.present();
-        });
+  async placeOrder() {
+    await this.authService.onAuthStateChanged();
+    this.authService.userAuthState.subscribe(userAuth => {
+      if (!userAuth) {
+        console.log("Need to get user Logged In****** call login page***");
       } else {
-        this.confirmOrder();
+        if (this.customOrderService.customItemOrdersDetails
+          && this.customOrderService.customItemsPacksOrdersDetails) {
+          if (this.customOrderService.customItemOrdersDetails.length > 0
+            || this.customOrderService.customItemsPacksOrdersDetails.length > 0) {
+            this.actionSheetCtrl.create({
+              header: 'Place Order',
+              // tslint:disable-next-line: max-line-length
+              subHeader: 'You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.',
+              buttons: [
+                {
+                  text: 'Ok. Got it. Place Order.',
+                  handler: () => {
+                    this.confirmOrder();
+                  }
+                }
+              ]
+            }).then(actionSheetEl => {
+              actionSheetEl.present();
+            });
+          } else {
+            this.confirmOrder();
+          }
+        } else {
+          this.confirmOrder();
+        }
       }
-    } else {
-      this.confirmOrder();
-    }
+    });
+
   }
 
   confirmOrder() {

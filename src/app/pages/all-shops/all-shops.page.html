@@ -5,20 +5,53 @@
 </ion-header>
 
 <ion-content>
-  <!-- <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+  <!-- <ion-refresher
+    slot="fixed"
+    (ionRefresh)="doRefresh($event)"
+    *ngIf="!networkStatus"
+  >
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher> -->
+  
   <ion-grid class="ion-no-padding">
-    <ion-row *ngIf="!networkStatus" style="min-width: 100vw;background-color: black;">
-      <ion-col size="12" size-sm="12" class="ion-text-center ion-no-padding custom_background_no_network" *ngIf="!networkStatus">
-        <!-- <ion-label>No Network</ion-label> -->
+    <!-- <ion-row *ngIf="!networkStatus" style="min-width: 100vw;background-color: black;"> -->
+    <!-- <ion-row
+      *ngIf="!networkStatus"
+      style="min-width: 100vw;background-color: #a9a9a9;height: 50vh;"
+    >
+      <ion-col
+        size="12"
+        size-sm="12"
+        class="ion-text-center ion-no-padding custom_background_no_network"
+        *ngIf="!networkStatus"
+      >
         <ion-list class="ion-text-center no_network_display_list">
-          <ion-icon name="wifi" color="light" class="no_network_icon"></ion-icon>
+          <ion-icon
+            name="wifi"
+            color="light"
+            class="no_network_icon"
+          ></ion-icon>
         </ion-list>
       </ion-col>
-    </ion-row>
-      <ion-row *ngIf="networkStatus">
-      <ion-col size="12" size-sm="12" class="ion-text-center ion-no-padding" *ngIf="networkStatus">
+    </ion-row> -->
+    <!-- <ion-row
+      *ngIf="!networkStatus"
+      style="min-width: 100vw;background-color: #a9a9a9;min-height: 34vh;"
+    >
+      <ion-col>
+        <ion-text
+          >
+          No Network. Please check your network and try again.
+        </ion-text>
+      </ion-col>
+    </ion-row> -->
+    <ion-row *ngIf="networkStatus">
+      <ion-col
+        size="12"
+        size-sm="12"
+        class="ion-text-center ion-no-padding"
+        *ngIf="networkStatus"
+      >
         <ion-list>
           <ion-item
             *ngFor="let shop of shopList"
@@ -26,7 +59,7 @@
             lines="full"
             class="row_padding"
             [ngClass]="shop.isShopOpen ? 'shop_open' : 'shop_Closed'"
-            >
+          >
             <ion-thumbnail slot="start">
               <ion-img [src]="shop.shopImageUrl"></ion-img>
             </ion-thumbnail>
@@ -38,10 +71,19 @@
               <ion-icon name="star" class="star_style"></ion-icon>
               <ion-text class="space_left">{{ shop.shopRating }}</ion-text>
               <ion-text class="space_dot">&#8226;</ion-text>
-              <ion-text class="space_left_delivery">{{currentDeliveryTimeSchedule.deliveryTimeWithin1K}} mins</ion-text>
+              <ion-text class="space_left_delivery"
+                >{{currentDeliveryTimeSchedule.deliveryTimeWithin1K}}
+                mins</ion-text
+              >
               <!-- <ion-text class="space_dot">&#8226;</ion-text> -->
               <!-- <ion-text class="space_left_delivery">Min. order &#8377;100</ion-text> -->
-              <p *ngIf="!shop.isShopOpen" class="pre_shop_rating_section" style="color: red;">Shop is Currently Closed.</p>
+              <p
+                *ngIf="!shop.isShopOpen"
+                class="pre_shop_rating_section"
+                style="color: red;"
+              >
+                Shop is Currently Closed.
+              </p>
             </ion-label>
             <!-- <ion-label slot="end">
                 <ion-icon name="arrow-dropright"></ion-icon>

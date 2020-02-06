@@ -4,7 +4,11 @@
 
 export const environment = {
   production: false,
-  firebaseAPIKey : 'AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ'
+  firebaseAPIKey : 'AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ',
+  internalAPI : {
+    userAuth : "http://localhost:3000/users/",
+    adminFunctions : "http://localhost:3000/admin/"
+  }
 };
 
 /*

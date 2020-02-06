@@ -14,6 +14,7 @@ import { SignupModalComponent } from "src/app/shared/modals/signup-modal/signup-
 import { IAuththenticationResponse } from "src/app/shared/models/authentication-response.model";
 import { SignupSuccessModalComponent } from "src/app/shared/modals/signup-success-modal/signup-success-modal.component";
 import { UserProfileService } from 'src/app/services/user-profile.service';
+import { AuthenticationService } from 'src/app/shared/internal-services/authentication.service';
 
 @Component({
   selector: "app-auth",
@@ -33,7 +34,8 @@ export class AuthPage implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private signupSuccessModalCtrl: ModalController,
     private loginSuccessToastCtrl: ToastController,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private authenticationService: AuthenticationService
   ) {}
 
   ngOnInit() {}
@@ -54,96 +56,141 @@ export class AuthPage implements OnInit, OnDestroy {
       .create({ keyboardClose: true, message: "Logging in..." })
       .then(async loadingEl => {
         loadingEl.present();
-        this.authObjObservable = this.authService.login(email, password);
-        this.authObjObsSubs = this.authObjObservable.subscribe(
-          async resData => {
-            const loginData = resData.user.toJSON();
-            this.userProfileService.getUserProfile(loginData.email).subscribe(async userProfile => {
-              // mahalakshmikiranastore@gmail.com
-              // Qwerty123!
-              const userRole = userProfile[0]["role"];
-              await loadingEl.dismiss();
-              if (userRole === "ENTERPRISE_PARTNER") {
+        // this.authObjObservable = this.authService.login(email, password);
+        this.authObjObservable = this.authenticationService.login(email, password);
+        this.authObjObsSubs = this.authObjObservable.subscribe(async loginResData => {
+          console.log("Login Success Res Data", loginResData);
+          const userAuthInfo = loginResData["user"];
+          const userRole = userAuthInfo["role"];
+          await loadingEl.dismiss();
+          // if (userRole === "ENTERPRISE_PARTNER") {
+          //   this.loginSuccessToastControllerMessage();
+          //   // this.onCloseLoginSuccess('ENTERPRISE_PARTNER');
+          // } else if (userRole === "GENERAL_ADMIN") {
+          //   this.loginSuccessToastControllerMessage();
+          //   // this.onCloseLoginSuccess('GENERAL_ADMIN');
+          // } else {
+          //   await this.authObjObsSubs.unsubscribe();
+          //   this.loginSuccessToastControllerMessage();
+          //   // this.onCloseLoginSuccess('CUSTOMER');
+          // }
+          if (userRole) {
+            if (userRole === "ENTERPRISE_PARTNER") {
               this.loginSuccessToastControllerMessage();
               this.router.navigateByUrl("/partnerHomePage/partnerTabs");
             } else if (userRole === "GENERAL_ADMIN") {
               this.loginSuccessToastControllerMessage();
               this.router.navigateByUrl("/adminHomePage/adminTab");
-            // } else if (userRole === "CUSTOMER") {
-            } else {
-              await this.authObjObsSubs.unsubscribe();
+            } else if (userRole === "CUSTOMER") {
               this.loginSuccessToastControllerMessage();
-              // this.router.navigateByUrl("/homepage/tabs");
-              this.router.navigateByUrl("/homepage/tabs/account");
+              // this.router.navigateByUrl("/homepage/tabs/account");
+              this.router.navigateByUrl("/homepage/tabs");
             }
-            }, errorFetchingUserProfile => {
-              loadingEl.dismiss();
-              let errorMessage = "";
-              let errorHeader = "";
-              errorMessage = "Something went wrong. Please try again.";
-              errorHeader = "OOPS...";
-              this.genericErrorAlertMessage(
-                errorHeader,
-                errorMessage,
-                loginForm
-              );
-            });
-            // await loadingEl.dismiss();
-            // if (loginData.email === "mahalakshmikiranastore@gmail.com") {
-            //   // Qwerty123!
-            //   this.loginSuccessToastControllerMessage();
-            //   this.router.navigateByUrl("/partnerHomePage/partnerTabs");
-            // } else if (loginData.email === "orderitservice@gmail.com") {
-            //   this.loginSuccessToastControllerMessage()
-            //   this.router.navigateByUrl("/adminHomePage/adminTab");
-            // } else {
-            //   await this.authObjObsSubs.unsubscribe();
-            //   this.loginSuccessToastControllerMessage()
-            //   this.router.navigateByUrl("/homepage/tabs");
-            // }
-          },
-          errResponse => {
-            loadingEl.dismiss();
-            const errorCode = errResponse.code;
-            let errorMessage = "";
-            let errorHeader = "";
-            if (errorCode === "EMAIL_NOT_FOUND") {
-              errorMessage =
-                "Please create account with the email you have provided.";
-              errorHeader = "Email address not registered.";
-              this.emailNotFoundErrorAlertMessage(
-                errorHeader,
-                errorMessage,
-                loginForm
-              );
-            } else if (errorCode === "auth/wrong-password") {
-              errorMessage = "Please verify your email/password and try again.";
-              errorHeader = "Incorrect email/password.";
-              this.incorrectPasswordErrorAlertMessage(
-                errorHeader,
-                errorMessage,
-                loginForm
-              );
-            } else if (errorCode === 'auth/user-not-found') {
-              errorMessage =
-              "Please create account with the email you have provided.";
-              errorHeader = "Email address not registered.";
-              this.emailNotFoundErrorAlertMessage(
-              errorHeader,
-              errorMessage,
-              loginForm
-            );
-            } else {
-              errorMessage = "Something went wrong. Please try again.";
-              errorHeader = "OOPS...";
-              this.genericErrorAlertMessage(
-                errorHeader,
-                errorMessage,
-                loginForm
-              );
-            }
+          } else {
+            this.router.navigateByUrl("/homepage/tabs");
           }
-        );
+        }, errorFetchingUserProfile => {
+          loadingEl.dismiss();
+          let errorMessage = "";
+          let errorHeader = "";
+          errorMessage = "Something went wrong. Please try again.";
+          errorHeader = "OOPS...";
+          this.genericErrorAlertMessage(
+            errorHeader,
+            errorMessage,
+            loginForm
+          );
+        });
+        // })
+        // this.authObjObsSubs = this.authObjObservable.subscribe(
+        //   async resData => {
+        //     const loginData = resData.user.toJSON();
+        //     this.userProfileService.getUserProfile(loginData.email).subscribe(async userProfile => {
+        //       // mahalakshmikiranastore@gmail.com
+        //       // Qwerty123!
+        //       const userRole = userProfile[0]["role"];
+        //       await loadingEl.dismiss();
+        //       if (userRole === "ENTERPRISE_PARTNER") {
+        //       this.loginSuccessToastControllerMessage();
+        //       this.router.navigateByUrl("/partnerHomePage/partnerTabs");
+        //     } else if (userRole === "GENERAL_ADMIN") {
+        //       this.loginSuccessToastControllerMessage();
+        //       this.router.navigateByUrl("/adminHomePage/adminTab");
+        //     // } else if (userRole === "CUSTOMER") {
+        //     } else {
+        //       await this.authObjObsSubs.unsubscribe();
+        //       this.loginSuccessToastControllerMessage();
+        //       // this.router.navigateByUrl("/homepage/tabs");
+        //       this.router.navigateByUrl("/homepage/tabs/account");
+        //     }
+        //     }, errorFetchingUserProfile => {
+        //       loadingEl.dismiss();
+        //       let errorMessage = "";
+        //       let errorHeader = "";
+        //       errorMessage = "Something went wrong. Please try again.";
+        //       errorHeader = "OOPS...";
+        //       this.genericErrorAlertMessage(
+        //         errorHeader,
+        //         errorMessage,
+        //         loginForm
+        //       );
+        //     });
+        //     // await loadingEl.dismiss();
+        //     // if (loginData.email === "mahalakshmikiranastore@gmail.com") {
+        //     //   // Qwerty123!
+        //     //   this.loginSuccessToastControllerMessage();
+        //     //   this.router.navigateByUrl("/partnerHomePage/partnerTabs");
+        //     // } else if (loginData.email === "orderitservice@gmail.com") {
+        //     //   this.loginSuccessToastControllerMessage()
+        //     //   this.router.navigateByUrl("/adminHomePage/adminTab");
+        //     // } else {
+        //     //   await this.authObjObsSubs.unsubscribe();
+        //     //   this.loginSuccessToastControllerMessage()
+        //     //   this.router.navigateByUrl("/homepage/tabs");
+        //     // }
+        //   },
+        //   errResponse => {
+        //     loadingEl.dismiss();
+        //     const errorCode = errResponse.code;
+        //     let errorMessage = "";
+        //     let errorHeader = "";
+        //     if (errorCode === "EMAIL_NOT_FOUND") {
+        //       errorMessage =
+        //         "Please create account with the email you have provided.";
+        //       errorHeader = "Email address not registered.";
+        //       this.emailNotFoundErrorAlertMessage(
+        //         errorHeader,
+        //         errorMessage,
+        //         loginForm
+        //       );
+        //     } else if (errorCode === "auth/wrong-password") {
+        //       errorMessage = "Please verify your email/password and try again.";
+        //       errorHeader = "Incorrect email/password.";
+        //       this.incorrectPasswordErrorAlertMessage(
+        //         errorHeader,
+        //         errorMessage,
+        //         loginForm
+        //       );
+        //     } else if (errorCode === 'auth/user-not-found') {
+        //       errorMessage =
+        //       "Please create account with the email you have provided.";
+        //       errorHeader = "Email address not registered.";
+        //       this.emailNotFoundErrorAlertMessage(
+        //       errorHeader,
+        //       errorMessage,
+        //       loginForm
+        //     );
+        //     } else {
+        //       errorMessage = "Something went wrong. Please try again.";
+        //       errorHeader = "OOPS...";
+        //       this.genericErrorAlertMessage(
+        //         errorHeader,
+        //         errorMessage,
+        //         loginForm
+        //       );
+        //     }
+        //   }
+        // );
         loginForm.reset();
       });
   }

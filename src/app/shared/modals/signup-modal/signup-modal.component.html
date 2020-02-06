@@ -12,7 +12,98 @@
         </ion-col>
       </ion-row>
   </ion-grid>
-    <form #loginForm="ngForm">
+  <form [formGroup]="signupForm" (ngSubmit)="onSignup()">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-sm="10" offset-sm="1">
+          <ion-item class="input_field">
+            <ion-label position="floating" color="dark">Email</ion-label>
+            <ion-input formControlName="email" type="email"> </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div *ngIf="f.email.errors && f.email.touched" class="invalid-feedback">
+            <label style="color: red;">Email is required.</label>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-sm="10" offset-sm="1">
+          <ion-item class="input_field">
+            <ion-label position="floating" color="dark">Password</ion-label>
+            <ion-input formControlName="password" type="password"> </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div *ngIf="f.password.errors && f.password.touched" class="invalid-feedback">
+            <label style="color: red;">Password is required. (Min 8 characters.)</label>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-sm="10" offset-sm="1">
+          <ion-item class="input_field">
+            <ion-label position="floating" color="dark"
+              >Confirm Password</ion-label
+            >
+            <ion-input formControlName="confirmPassword" type="password">
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div *ngIf="f.confirmPassword.errors" class="invalid-feedback">
+            <div *ngIf="f.confirmPassword.errors.mustMatch">
+              <label style="color: red;">Passwords must match.</label>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-sm="10" offset-sm="1">
+          <ion-item class="input_field">
+            <ion-label position="floating" color="dark"
+              >4 - 6 digit secure PIN</ion-label
+            >
+            <ion-input formControlName="securePin" type="password" pattern="^[0-9]*$"
+            maxlength="6">
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col>
+          <div *ngIf="f.securePin.errors && f.securePin.touched" class="invalid-feedback">
+            <label style="color: red;">Please enter 4 - 6 digit secure PIN to secure your account (eg. 874657).</label>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col style="text-align: center;">
+          <ion-button
+            fill="outline"
+            color="dark"
+            shape="round"
+            type="submit"
+            expand="block"
+            [disabled]="f.confirmPassword.errors || f.email.errors || f.securePin.errors"
+          >
+            REGISTER
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+    <!-- <form #loginForm="ngForm">
       <ion-list>
         <ion-item>
           <ion-label position="floating" color="dark">Email</ion-label>
@@ -76,16 +167,9 @@
         <ion-label>Register</ion-label>
       </ion-button>
       
-    </form>
+    </form> -->
   </ion-content>
 
-<!-- <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col> </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content> -->
 <ion-footer>
   <ion-toolbar
     style="display: flex; flex-direction: row; justify-content: center;"

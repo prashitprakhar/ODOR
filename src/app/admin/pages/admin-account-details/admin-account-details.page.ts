@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { Router } from '@angular/router';
+import { AuthenticationService } from 'src/app/shared/internal-services/authentication.service';
 
 @Component({
   selector: 'app-admin-account-details',
@@ -9,14 +10,17 @@ import { Router } from '@angular/router';
 })
 export class AdminAccountDetailsPage implements OnInit {
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService,
+              private router: Router,
+              private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
   }
 
   onLogout() {
-    this.authService.logout();
-    this.router.navigateByUrl('/auth');
+    // this.authService.logout();
+    this.authenticationService.logout();
+    // this.router.navigateByUrl('/auth');
   }
 
 }

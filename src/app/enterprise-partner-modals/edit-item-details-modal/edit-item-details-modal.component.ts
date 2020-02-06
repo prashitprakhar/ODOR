@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, LoadingController } from '@ionic/angular';
 import { NavParams } from "@ionic/angular";
 import { IShopOfferedItems } from 'src/app/models/shop-offered-items.model';
-import { FormsModule, ReactiveFormsModule, NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
-
+// FormsModule, ReactiveFormsModule, NgForm,
 @Component({
   selector: 'app-edit-item-details-modal',
   templateUrl: './edit-item-details-modal.component.html',
