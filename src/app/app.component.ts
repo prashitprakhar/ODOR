@@ -56,10 +56,43 @@ export class AppComponent implements OnInit, OnDestroy {
     //   }
     // })
     // this.authenticationService.autoLogin().subscribe()
+    /*
+
+if (userRole === "ENTERPRISE_PARTNER") {
+            this.loginSuccessToastControllerMessage();
+            this.onCloseLoginSuccess('ENTERPRISE_PARTNER');
+          } else if (userRole === "GENERAL_ADMIN") {
+            this.loginSuccessToastControllerMessage();
+            this.onCloseLoginSuccess('GENERAL_ADMIN');
+          } else {
+            await this.authObjObsSubs.unsubscribe();
+            this.loginSuccessToastControllerMessage();
+            this.onCloseLoginSuccess('CUSTOMER');
+          }
+
+
+    */
     this.authenticationService.userAuthState.subscribe(isAuth => {
       console.log("isAuth New AuthstateChanged *****", isAuth);
       if (!isAuth) {
         this.router.navigateByUrl("/homepage/tabs");
+      } else {
+        const parsedAuthData = JSON.parse(isAuth.value) as {
+          token: string;
+          userId: string;
+          tokenExpirationDate: string;
+          email: string;
+          username: string;
+          role: string;
+        };
+        console.log("Cmae in Else Part ******");
+        if (parsedAuthData.role === 'ENTERPRISE_PARTNER') {
+          this.router.navigateByUrl("/partnerHomePage/partnerTabs");
+        } else if (parsedAuthData.role === 'GENERAL_ADMIN') {
+          this.router.navigateByUrl("/adminHomePage/adminTab");
+        } else {
+          this.router.navigateByUrl("/homepage/tabs");
+        }
       }
     });
     this.shopItemSelectionService

@@ -7,7 +7,8 @@ export const environment = {
   firebaseAPIKey : 'AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ',
   internalAPI : {
     userAuth : "http://localhost:3000/users/",
-    adminFunctions : "http://localhost:3000/admin/"
+    adminFunctions : "http://localhost:3000/admin/",
+    shopFunctions : "http://localhost:3000/shop/"
   }
 };
 

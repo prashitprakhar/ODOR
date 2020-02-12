@@ -27,6 +27,19 @@ export class AuthenticationService {
     return from(Plugins.Storage.get({ key: "authData" })).pipe(take(1));
   }
 
+  get userId() {
+    return this._user.asObservable().pipe(
+      take(1),
+      map(user => {
+        if (user) {
+          return user.id;
+        } else {
+          return null;
+        }
+      })
+    );
+  }
+
   // emitExpirationTimeRemianing() {
 
   // }
@@ -114,7 +127,7 @@ export class AuthenticationService {
       token,
       expirationDateTime,
       username,
-      // role
+      role
     );
 
     this._user.next(user);
@@ -134,7 +147,8 @@ export class AuthenticationService {
       token,
       expirationDateTime.toLocaleString(),
       email,
-      username
+      username,
+      role
     );
   }
 
@@ -143,14 +157,16 @@ export class AuthenticationService {
     token: string,
     tokenExpirationDate: string,
     email: string,
-    username: string
+    username: string,
+    role: string
   ) {
     const authData = JSON.stringify({
       userId,
       token,
       tokenExpirationDate,
       email,
-      username
+      username,
+      role
     });
     Plugins.Storage.set({ key: "authData", value: authData });
   }
@@ -180,6 +196,7 @@ export class AuthenticationService {
           tokenExpirationDate: string;
           email: string;
           username: string;
+          role: string;
         };
         const splittedLocalTime = parsedAuthData.tokenExpirationDate.split('/');
         const newDateFormatted = splittedLocalTime[1] + '/' + splittedLocalTime[0] + '/' + splittedLocalTime[2];
@@ -194,7 +211,8 @@ export class AuthenticationService {
           parsedAuthData.email,
           parsedAuthData.token,
           expirationTime,
-          parsedAuthData.username
+          parsedAuthData.username,
+          parsedAuthData.role
         );
         return user;
       }),

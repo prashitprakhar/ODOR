@@ -3,10 +3,16 @@ import { ShopItemSelectionService } from "src/app/services/shop-item-selection.s
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
 import { IShopList } from "src/app/models/shop-list.model";
 import { IShopData } from "src/app/models/shop-data.model";
+import { IShopOfferedItemsData } from "./../../models/shop-offered-items-data.model";
 import { Plugins } from "@capacitor/core";
 import { Subscription } from "rxjs";
-import { ModalController, IonItemSliding } from "@ionic/angular";
+import {
+  ModalController,
+  IonItemSliding,
+  AlertController
+} from "@ionic/angular";
 import { EditItemDetailsModalComponent } from "src/app/enterprise-partner-modals/edit-item-details-modal/edit-item-details-modal.component";
+import { IShopProfile } from "src/app/models/shop-profile.model";
 
 @Component({
   selector: "app-partner-my-shop",
@@ -20,46 +26,63 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
   public shopOfferedItemsList: IShopOfferedItems[] = [];
   public allShopListSubs: Subscription;
   public shopOfferedItemsSubs: Subscription;
+  // New Functions
+  public shopOfferedItemsData: IShopOfferedItemsData;
+  public shopProfile: IShopProfile;
 
   constructor(
     private shopItemSelectionService: ShopItemSelectionService,
-    private editItemDetailsModalCtrl: ModalController
+    private editItemDetailsModalCtrl: ModalController,
+    private confirmDeleteAlertCtrl: AlertController,
+    private itemAvailabilirtAlertCtrl: AlertController
   ) {}
 
   ngOnInit() {
-    // const shopId = this.getStorageData();
     const userData = this.getStoredUserInfo();
     userData.then(data => {
       const userDataFetched = JSON.parse(data.value);
       this.shopId = userDataFetched.userId;
-      // console.log("this.shopId this.shopId",this.shopId);
-      // user ID : LFOvhdrs5ZW1XqX9CmY66B12IuI2
-      // this.allShopListSubs = this.shopItemSelectionService
-      //   .getShopOfferedItems('ENTERPRISE_PARTNER_PRODUCTS', this.shopId.toString())
-      //   .subscribe(shop => {
-      //     console.log("ON INIT Shop Fetched *********", shop);
-      //     this.shopDetails = shop;
-      //     this.shopOfferedItemsList = this.shopDetails[0].shopOfferedItems; //Commented Here
-      //   });
     });
-    // shopId.then(data => {
-    //   this.shopId = JSON.parse(data.value);
-    //   this.allShopListSubs = this.shopItemSelectionService
-    //     .getShopOfferedItems('ENTERPRISE_PARTNER_PRODUCTS', this.shopId.toString())
-    //     .subscribe(shop => {
-    //       console.log("ON INIT Shop Fetched *********", shop);
-    //       // this.shopDetails = shop;
-    //       // this.shopOfferedItemsList = this.shopDetails.shopOfferedItemsList; //Commented Here
-    //     });
-    // });
+  }
+
+  getShopProfile(): Promise<IShopProfile> {
+    return new Promise((resolve, reject) => {
+      this.shopItemSelectionService
+        .getShopProfile(this.shopId)
+        .then(shopOfferedItem => {
+          this.shopProfile = shopOfferedItem;
+          resolve(this.shopProfile);
+        })
+        .catch(err => {
+          reject(null);
+        });
+    });
+  }
+
+  getShopOfferedItemsList(): Promise<IShopOfferedItemsData> {
+    return new Promise((resolve, reject) => {
+      this.shopItemSelectionService
+        .getShopOfferedItemsList(this.shopId)
+        .then(shopOfferedItem => {
+          this.shopOfferedItemsData = shopOfferedItem;
+          this.shopOfferedItemsList = shopOfferedItem.shopOfferedItemsList;
+          resolve(this.shopOfferedItemsData);
+        })
+        .catch(err => {
+          reject(null);
+        });
+    });
   }
 
   ionViewDidEnter() {
-    this.allShopListSubs = this.shopItemSelectionService
-      .getShopOfferedItems('ENTERPRISE_PARTNER_PRODUCTS', this.shopId.toString())
-      .subscribe(shop => {
-        this.shopDetails = shop;
-        this.shopOfferedItemsList = this.shopDetails[0].shopOfferedItems; // Commented Here
+    Promise.all([this.getShopProfile(), this.getShopOfferedItemsList()])
+      .then(data => {})
+      .catch(err => {
+        this.shopOfferedItemsData = {
+          shopId: this.shopId,
+          shopOfferedItemsList: []
+        };
+        this.shopProfile = null;
       });
   }
 
@@ -69,25 +92,59 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
     }
   }
 
-  deleteItem(itemId) {
-    this.shopItemSelectionService.getProductDoc('ENTERPRISE_PARTNER_PRODUCTS', this.shopId.toString())
-    .subscribe(newItemAdd => {
-      const docId = newItemAdd.map(data => data.payload.doc.id);
-      const doc = newItemAdd.map(element => element.payload.doc.data());
-      const shopOfferedItems = doc[0]["shopOfferedItems"].filter(element => element.itemId !== itemId);
-      doc[0]["shopOfferedItems"] = shopOfferedItems;
-      this.shopItemSelectionService.updateDocument('ENTERPRISE_PARTNER_PRODUCTS', doc[0], docId[0])
-      .subscribe(updatedDoc => {
-      }, error => {
-        console.log("Error Occured While Deleting Item");
+  confirmItemDeletion(header, message, itemId) {
+    const alert = this.confirmDeleteAlertCtrl
+      .create({
+        header,
+        message,
+        //   "Please ",
+        buttons: [
+          {
+            text: "No",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: cancel => {
+              // itemDetailsForm.reset();
+            }
+          },
+          {
+            text: "Yes",
+            // role: "cancel",
+            cssClass: "secondary",
+            handler: () => {
+              this.shopItemSelectionService
+                .deteteShopItem(this.shopId.toString(), itemId)
+                .then(data => {
+                  console.log("Deteled Item from Shop", data);
+                  Promise.all([
+                    this.getShopProfile(),
+                    this.getShopOfferedItemsList()
+                  ])
+                    .then(data => {})
+                    .catch(err => {
+                      this.shopOfferedItemsData = {
+                        shopId: this.shopId,
+                        shopOfferedItemsList: []
+                      };
+                      this.shopProfile = null;
+                    });
+                })
+                .catch(err => {
+                  console.log("Error Occured while deleting ***", err);
+                });
+            }
+          }
+        ]
+      })
+      .then(alertEl => {
+        alertEl.present();
       });
-  });
-    // this.shopItemSelectionService.removeItem(itemId).subscribe(data => {
-    //   const currentShop = data.find(
-    //     element => element.shopId === this.shopId.toString()
-    //   );
-    //   this.shopOfferedItemsList = currentShop.shopOfferedItemsList;
-    // });
+  }
+
+  deleteItem(itemId) {
+    const header = "Delete Item";
+    const message = "Are you sure to delete the Item ?";
+    this.confirmItemDeletion(header, message, itemId);
   }
 
   editItemDetails(item, editEl: IonItemSliding) {
@@ -107,16 +164,15 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
         return modalEl.onDidDismiss();
       })
       .then(data => {
-        // console.log(
-        //   "this.customOrderService.customItemOrdersDetails",
-        //   this.customOrderService.customItemOrdersDetails
-        // );
-        // if(data.role === 'confirm'){
-        //   console.log("Save users data")
-        // }
-        // else if(data.role === 'cancel'){
-        //   console.log("Dont save users data")
-        // }
+        Promise.all([this.getShopProfile(), this.getShopOfferedItemsList()])
+          .then(data => {})
+          .catch(err => {
+            this.shopOfferedItemsData = {
+              shopId: this.shopId,
+              shopOfferedItemsList: []
+            };
+            this.shopProfile = null;
+          });
       });
   }
 
@@ -131,25 +187,40 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
 
   setAvailability(item) {
     const itemId = item.itemId;
-    this.shopItemSelectionService.getProductDoc('ENTERPRISE_PARTNER_PRODUCTS', this.shopId.toString())
-    .subscribe(newItemAdd => {
-      const docId = newItemAdd.map(data => data.payload.doc.id);
-      const doc = newItemAdd.map(element => element.payload.doc.data());
-      const selectedItem = doc[0]["shopOfferedItems"].find(element => element.itemId === itemId);
-      const shopOfferedItems = doc[0]["shopOfferedItems"].filter(element => element.itemId !== itemId);
-      selectedItem["itemAvailable"] = !selectedItem["itemAvailable"]
-      shopOfferedItems.push(selectedItem)
-      doc[0]["shopOfferedItems"] = shopOfferedItems;
-      this.shopItemSelectionService.updateDocument('ENTERPRISE_PARTNER_PRODUCTS', doc[0], docId[0])
-      .subscribe(updatedDoc => {
-      }, error => {
-        console.log("Error Occured While Deleting Item");
+    this.shopItemSelectionService.setItemAvailability(this.shopId.toString(), item.itemId).then(data => {
+      Promise.all([this.getShopProfile(), this.getShopOfferedItemsList()])
+      .then(data => {})
+      .catch(err => {
+        this.shopOfferedItemsData = {
+          shopId: this.shopId,
+          shopOfferedItemsList: []
+        };
+        this.shopProfile = null;
       });
-  });
-    // const itemSelected = this.shopOfferedItemsList.find(
-    //   element => element.itemId === item.itemId
-    // );
-    // itemSelected.itemAvailable = !itemSelected.itemAvailable;
+    })
+    .catch(err => {
+      this.failureInUpdate();
+    });
+  }
+
+  failureInUpdate(header = "Item Availability update Failed.", message = "Oops.. Something went wrong. Please try again.") {
+    const alert = this.confirmDeleteAlertCtrl
+      .create({
+        header,
+        message,
+        buttons: [
+          {
+            text: "OK",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: cancel => {
+            }
+          }
+        ]
+      })
+      .then(alertEl => {
+        alertEl.present();
+      });
   }
 
   async getStorageData(): Promise<any> {
@@ -158,21 +229,41 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
   }
 
   async getStoredUserInfo(): Promise<any> {
-    const userData = await Plugins.Storage.get({ key: 'authData'});
+    const userData = await Plugins.Storage.get({ key: "authData" });
     return userData;
   }
 
   setShopOpenCloseStatus(shopDetails) {
-    this.shopItemSelectionService.getProductDoc('ENTERPRISE_PARTNER_PRODUCTS', this.shopId.toString())
-    .subscribe(newItemAdd => {
-      const docId = newItemAdd.map(data => data.payload.doc.id);
-      const doc = newItemAdd.map(element => element.payload.doc.data());
-      doc[0]["isShopOpen"] = !doc[0]["isShopOpen"];
-      this.shopItemSelectionService.updateDocument('ENTERPRISE_PARTNER_PRODUCTS', doc[0], docId[0])
-      .subscribe(updatedDoc => {
-      }, error => {
-        console.log("Error Occured While Deleting Item");
+    this.shopItemSelectionService.setShopOpeStatus(this.shopId.toString()).then(data => {
+      Promise.all([this.getShopProfile(), this.getShopOfferedItemsList()])
+      .then(data => {})
+      .catch(err => {
+        this.shopOfferedItemsData = {
+          shopId: this.shopId,
+          shopOfferedItemsList: []
+        };
+        this.shopProfile = null;
       });
-  });
+    })
+    .catch(err => {
+      const header = "Shop Profile Update Failed.";
+      const message = "Oops.. Something went wrong. Please try again."
+      this.failureInUpdate(header, message);
+    })
+    // this.shopItemSelectionService
+    //   .getProductDoc("ENTERPRISE_PARTNER_PRODUCTS", this.shopId.toString())
+    //   .subscribe(newItemAdd => {
+    //     const docId = newItemAdd.map(data => data.payload.doc.id);
+    //     const doc = newItemAdd.map(element => element.payload.doc.data());
+    //     doc[0]["isShopOpen"] = !doc[0]["isShopOpen"];
+    //     this.shopItemSelectionService
+    //       .updateDocument("ENTERPRISE_PARTNER_PRODUCTS", doc[0], docId[0])
+    //       .subscribe(
+    //         updatedDoc => {},
+    //         error => {
+    //           console.log("Error Occured While Deleting Item");
+    //         }
+    //       );
+    //   });
   }
 }

@@ -6,7 +6,7 @@ export class UserClassModel {
       private _token: string,
       private tokenExpirationDate: Date,
       private username: string,
-      // private role: string
+      private role: string
     ) {}
   
     get token() {
