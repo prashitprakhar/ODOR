@@ -1,12 +1,10 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Events } from "@ionic/angular";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
-import { IShopList } from "src/app/models/shop-list.model";
 import { Subscription } from "rxjs";
-// import { CustomOrderService } from 'src/app/services/custom-order.service';
 import { MessageService } from "./../../shared/services/message.service";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { IShopData } from 'src/app/models/shop-data.model';
+import { CurrentShopProfileService } from 'src/app/shared/internal-services/current-shop-profile.service';
 
 @Component({
   selector: "app-home-page",
@@ -16,16 +14,16 @@ import { IShopData } from 'src/app/models/shop-data.model';
 export class HomePagePage implements OnInit, OnDestroy {
   // Important command for live reloading on android device
   // ionic capacitor run android -l
-  // public shopList: IShopList[];
-  public shopList: IShopData[];
   public allShopListSubs: Subscription;
   public message: any;
   public isItemSelected: boolean = false;
+  public shopIdFromSavedCartItems: string;
 
   constructor(
     private shopItemSelectionService: ShopItemSelectionService,
     private messageService: MessageService,
-    private customOrderService: CustomOrderService
+    private customOrderService: CustomOrderService,
+    private currentShopProfileService: CurrentShopProfileService
   ) {
     if (this.customOrderService.selectableItemsOrders) {
       if (this.customOrderService.selectableItemsOrders.length > 0 ) {
@@ -39,7 +37,6 @@ export class HomePagePage implements OnInit, OnDestroy {
       .getMessage()
       .subscribe(message => {
         this.message = message;
-        console.log("this.customOrderService.selectableItemsOrders", this.customOrderService.selectableItemsOrders);
         if (this.customOrderService.selectableItemsOrders.length > 0 ) {
           this.isItemSelected = true;
         } else {
@@ -49,15 +46,34 @@ export class HomePagePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.allShopListSubs = this.shopItemSelectionService.getAllShopList.subscribe(
-      shops => {
-        this.shopList = shops;
-      }
-    );
+    this.shopItemSelectionService.getOrderedItemsFromLocalStorage().subscribe(localStorageItemsSaved => {
+        const localStorageCartDataParsed = JSON.parse(localStorageItemsSaved.value);
+        if (localStorageCartDataParsed.selectableItems.length > 0) {
+          this.shopIdFromSavedCartItems = localStorageCartDataParsed.selectableItems[0].shopId;
+          this.shopItemSelectionService.getShopProfileForCustomers(this.shopIdFromSavedCartItems)
+          .then(shopProfile => {
+            this.currentShopProfileService.currentShopProfile = shopProfile;
+          });
+        } else if (localStorageCartDataParsed.customItemsKG.length) {
+          this.shopIdFromSavedCartItems = localStorageCartDataParsed.customItemsKG[0].shopId;
+          this.shopItemSelectionService.getShopProfileForCustomers(this.shopIdFromSavedCartItems)
+          .then(shopProfile => {
+            this.currentShopProfileService.currentShopProfile = shopProfile;
+          });
+        } else if (localStorageCartDataParsed.customItemsPacks.length) {
+          this.shopIdFromSavedCartItems = localStorageCartDataParsed.customItemsPacks[0].shopId;
+          this.shopItemSelectionService.getShopProfileForCustomers(this.shopIdFromSavedCartItems)
+          .then(shopProfile => {
+            this.currentShopProfileService.currentShopProfile = shopProfile;
+          });
+        } else {
+          this.shopIdFromSavedCartItems = '';
+          this.currentShopProfileService.currentShopProfile = null;
+        }
+    });
   }
 
   clearMessage(): void {
-    // clear message
     this.messageService.clearMessage();
   }
 

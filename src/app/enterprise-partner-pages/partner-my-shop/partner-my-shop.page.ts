@@ -13,6 +13,7 @@ import {
 } from "@ionic/angular";
 import { EditItemDetailsModalComponent } from "src/app/enterprise-partner-modals/edit-item-details-modal/edit-item-details-modal.component";
 import { IShopProfile } from "src/app/models/shop-profile.model";
+import { SortByService } from 'src/app/shared/utils/sort-by.service';
 
 @Component({
   selector: "app-partner-my-shop",
@@ -21,7 +22,6 @@ import { IShopProfile } from "src/app/models/shop-profile.model";
 })
 export class PartnerMyShopPage implements OnInit, OnDestroy {
   public shopId: any;
-  // public shopDetails: IShopList[];
   public shopDetails: IShopData[];
   public shopOfferedItemsList: IShopOfferedItems[] = [];
   public allShopListSubs: Subscription;
@@ -34,7 +34,8 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
     private shopItemSelectionService: ShopItemSelectionService,
     private editItemDetailsModalCtrl: ModalController,
     private confirmDeleteAlertCtrl: AlertController,
-    private itemAvailabilirtAlertCtrl: AlertController
+    private itemAvailabilirtAlertCtrl: AlertController,
+    private sortByService: SortByService
   ) {}
 
   ngOnInit() {
@@ -65,7 +66,7 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
         .getShopOfferedItemsList(this.shopId)
         .then(shopOfferedItem => {
           this.shopOfferedItemsData = shopOfferedItem;
-          this.shopOfferedItemsList = shopOfferedItem.shopOfferedItemsList;
+          this.shopOfferedItemsList = this.sortByService.sortArrayByItemName(shopOfferedItem.shopOfferedItemsList);
           resolve(this.shopOfferedItemsData);
         })
         .catch(err => {

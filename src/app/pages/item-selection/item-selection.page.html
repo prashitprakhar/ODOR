@@ -13,11 +13,6 @@
   <div *ngIf="!networkStatus">
     <ion-label>No Network</ion-label>
   </div>
-  
-  <!-- <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher> -->
-  <!-- <ion-fab horizontal="end" vertical="top" slot="fixed" edge> -->
       <ion-fab horizontal="start" vertical="bottom" slot="fixed" *ngIf="networkStatus">
     <ion-fab-button color="danger" (click)="addCustomOrders()">
       <ion-icon name="add"></ion-icon>
@@ -30,7 +25,7 @@
       </ion-fab-button>
     </ion-fab>
   <!-- Main content area -->
-  <div *ngIf="selectedShopDetails && networkStatus">
+  <div *ngIf="selectedShopOfferedItems && networkStatus">
   <ion-grid class="ion-no-padding">
     <ion-row>
       <ion-col
@@ -41,17 +36,17 @@
       >
         <ion-item lines="none">
           <ion-thumbnail slot="start">
-            <ion-img [src]="selectedShopDetails.shopImageUrl"></ion-img>
+            <ion-img [src]="shopProfile.shopImageUrl"></ion-img>
           </ion-thumbnail>
           <ion-label>
-            <h5>{{ selectedShopDetails.shopName }}</h5>
+            <h5>{{ shopProfile.shopName }}</h5>
             <p class="pre_item_rating_section">
-              {{ selectedShopDetails.shopType }}
+              {{ shopProfile.shopType }}
             </p>
-            <p *ngIf="selectedShopDetails.isShopOpen">
+            <p *ngIf="shopProfile.isShopOpen">
               Shop is open.
             </p>
-            <p *ngIf="!selectedShopDetails.isShopOpen">
+            <p *ngIf="!shopProfile.isShopOpen">
               Shop is closed.
             </p>
           </ion-label>
@@ -146,7 +141,7 @@
     </ion-row>
   </ion-grid>
 </div>
-  <div *ngIf="!selectedShopDetails && networkStatus">
+  <div *ngIf="!selectedShopOfferedItems && networkStatus">
     <div class="ion-padding custom-skeleton">
       <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
       <ion-skeleton-text animated></ion-skeleton-text>

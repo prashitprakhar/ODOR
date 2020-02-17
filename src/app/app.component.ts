@@ -74,7 +74,8 @@ if (userRole === "ENTERPRISE_PARTNER") {
     */
     this.authenticationService.userAuthState.subscribe(isAuth => {
       console.log("isAuth New AuthstateChanged *****", isAuth);
-      if (!isAuth) {
+      const authState = JSON.parse(isAuth.value);
+      if (!authState) {
         this.router.navigateByUrl("/homepage/tabs");
       } else {
         const parsedAuthData = JSON.parse(isAuth.value) as {

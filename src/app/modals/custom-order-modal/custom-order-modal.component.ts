@@ -69,11 +69,14 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     private shopItemSelectionService: ShopItemSelectionService
   ) {
     this.selectedShopId = navParams.get("selectedShopId");
-    this.shopOfferedItemsSubs = this.shopItemSelectionService
-      .getShopOfferedItemsForCustomer(this.selectedShopId)
-      .subscribe(shop => {
-        this.shopName = shop.shopName;
-      });
+    // this.shopOfferedItemsSubs = this.shopItemSelectionService
+    //   .getShopOfferedItemsForCustomer(this.selectedShopId)
+    //   .subscribe(shop => {
+    //     this.shopName = shop.shopName;
+    //   });
+    this.shopItemSelectionService.getShopProfileForCustomers(this.selectedShopId.toString()).then(shopProfile => {
+      this.shopName = shopProfile.shopName;
+    })
     // .getShopOfferedItems(this.selectedShopId).subscribe(shop => {
     //   this.shopName = shop.shopName;
     // });

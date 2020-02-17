@@ -2,13 +2,13 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ModalController, NavParams, AlertController } from "@ionic/angular";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
-import { IShopList } from "src/app/models/shop-list.model";
 import { Subscription } from "rxjs";
 import { ISelectableItemsOrder } from "src/app/models/selectable-items-orders.model";
 import { NgForm } from "@angular/forms";
 import { CustomOrderService } from "src/app/services/custom-order.service";
-import { MessageService } from 'src/app/shared/services/message.service';
-import { IShopData } from 'src/app/models/shop-data.model';
+import { MessageService } from "src/app/shared/services/message.service";
+import { IShopOfferedItemsData } from 'src/app/models/shop-offered-items-data.model';
+import { IShopProfile } from 'src/app/models/shop-profile.model';
 
 @Component({
   selector: "app-search-item-modal",
@@ -17,14 +17,16 @@ import { IShopData } from 'src/app/models/shop-data.model';
 })
 export class SearchItemModalComponent implements OnInit, OnDestroy {
   public shopId: string = "";
-  // public selectedShopDetails: IShopList;
-  public selectedShopDetails: IShopData;
+  public selectedShopDetails: IShopOfferedItemsData;
   public shopOfferedItemsList: IShopOfferedItems[] = [];
   public searchableShopOfferedItemsList: IShopOfferedItems[] = [];
   public shopOfferedItemsSubs: Subscription;
   public selectedItems: ISelectableItemsOrder[] = [];
   public resetCart: boolean = false;
   public searchText: string = "";
+  public shopProfile: IShopProfile;
+  public userSelectionsFromLocalStorage;
+  public userSelectionsLocalStorageSub: Subscription;
 
   constructor(
     private searchItemModalCtrl: ModalController,
@@ -41,26 +43,74 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
     if (this.customOrderService.selectableItemsOrders) {
       this.selectedItems = this.customOrderService.selectableItemsOrders;
     }
-    this.shopOfferedItemsSubs = this.shopItemSelectionService
-      // .getShopOfferedItems(this.shopId)
-      .getShopOfferedItemsForCustomer(this.shopId)
-      .subscribe(shop => {
-        this.selectedShopDetails = shop;
-      });
+    this.setInitialData();
+  }
+
+  async setInitialData() {
+    const shopData = await this.shopItemSelectionService.getShopOfferedItemsForCustomers(
+      this.shopId
+    );
+    this.shopProfile = await this.shopItemSelectionService.getShopProfileForCustomers(this.shopId.toString());
+    this.selectedShopDetails = shopData;
     this.shopOfferedItemsList = [
-      ...this.selectedShopDetails.shopOfferedItems
+      ...this.selectedShopDetails.shopOfferedItemsList
     ];
     this.searchableShopOfferedItemsList = [...this.shopOfferedItemsList];
+    this.userSelectionsLocalStorageSub = this.shopItemSelectionService
+          .getOrderedItemsFromLocalStorage()
+          .subscribe(localStorageUserSelection => {
+            this.userSelectionsFromLocalStorage = JSON.parse(
+              localStorageUserSelection.value
+            );
+            if (
+              this.userSelectionsFromLocalStorage &&
+              this.userSelectionsFromLocalStorage.selectableItems &&
+              this.userSelectionsFromLocalStorage.selectableItems.length > 0 &&
+              this.shopOfferedItemsList.length > 0
+            ) {
+              this.userSelectionsFromLocalStorage.selectableItems.forEach(
+                selectableStorageItem => {
+                  const storedItem = this.shopOfferedItemsList.find(
+                    eachItem =>
+                      eachItem.itemId === selectableStorageItem["itemId"]
+                  );
+                  storedItem.itemCount = selectableStorageItem.itemCount;
+                }
+              );
+              this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
+              this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+            }
+          });
+    //
+    // const selectableOrders = this.customOrderService.selectableItemsOrders;
+    // if (selectableOrders || this.customOrderService.isResetAllOrdersNeeded) {
+    //   if (this.customOrderService.isResetAllOrdersNeeded) {
+    //     this.selectedItems = [];
+    //     this.shopOfferedItemsList.forEach(element => {
+    //       element.itemCount = 0;
+    //     });
+    //   } else {
+    //     let filteredSelectableOrders = [];
+    //     if (selectableOrders) {
+    //       filteredSelectableOrders = selectableOrders.filter(
+    //         element => element.shopId !== this.shopId
+    //       );
+    //     }
+    //     if (filteredSelectableOrders.length > 0) {
+    //       this.shopOfferedItemsList.forEach(element => {
+    //         element.itemCount = 0;
+    //       });
+    //     }
+    //   }
+    // }
   }
 
   ngOnDestroy() {
-    // console.log("ondestroy Before ******", this.customOrderService.selectableItemsOrders);
     if (this.selectedItems) {
       this.customOrderService.selectableItemsOrders = this.selectedItems.filter(
         element => element.itemCount > 0
       );
     }
-    // console.log("ondestroy After ******", this.customOrderService.selectableItemsOrders);
     if (this.shopOfferedItemsSubs) {
       this.shopOfferedItemsSubs.unsubscribe();
     }
@@ -171,8 +221,7 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
         element => element.itemCount > 0
       );
     }
-    // this.customOrderService.selectableItemsOrders = this.selectedItems;
-    this.messageService.sendMessage('ITEM_REMOVED_IN_CART');
+    this.messageService.sendMessage("ITEM_REMOVED_IN_CART");
   }
 
   increment(itemId, selectableItemsForm: NgForm) {
@@ -184,9 +233,6 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
     } else {
       this.selectedItems = [];
     }
-    // const selectedItemFound = this.selectedItems.find(selectedItem => {
-    //   return selectedItem.itemId === itemId;
-    // });
     if (selectedItemFound) {
       const currentSelectedItem = this.shopOfferedItemsList.filter(
         item => item.itemId === itemId
@@ -202,7 +248,7 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
       currentSelectedItem[0].itemCount++;
       const selectedItem: ISelectableItemsOrder = {
         shopId: this.shopId,
-        shopName: this.selectedShopDetails.shopName,
+        shopName: this.shopProfile.shopName,
         itemId: currentSelectedItem[0].itemId,
         itemName: currentSelectedItem[0].itemName,
         itemUnit: currentSelectedItem[0].itemUnit,
@@ -213,10 +259,9 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
         orderType: "SELECT"
       };
       this.selectedItems.push(selectedItem);
-      // console.log("selectedItems selectedItems selectedItems selectedItems", this.selectedItems);
     }
     this.customOrderService.selectableItemsOrders = this.selectedItems;
-    this.messageService.sendMessage('ITEM_ADDED_IN_CART');
+    this.messageService.sendMessage("ITEM_ADDED_IN_CART");
   }
 
   initializeSearchItem() {
@@ -224,23 +269,16 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
   }
 
   searchItems() {
-    if (this.searchText === '') {
+    if (this.searchText === "") {
       this.initializeSearchItem();
     } else {
-    this.initializeSearchItem();
-    // console.log("searchText searchItems*****", this.searchText);
-    // console.log(
-    //   "searchItems---> Before filter ----> this.shopOfferedItem******",
-    //   this.shopOfferedItemsList
-    // );
-    this.searchableShopOfferedItemsList = this.shopOfferedItemsList.filter(element => {
-        const searchtextLocal = this.searchText.trim().toLowerCase();
-        // console.log("searchtextLocal ******", searchtextLocal);
-        return element.itemName.toLowerCase().includes(searchtextLocal);
-      }
-    );
-    // console.log("searchItems---> After filter ----> this.shopOfferedItem******", this.shopOfferedItemsList);
-    // this.shopOfferedItemsList = [...this.shopOfferedItemsList];
+      this.initializeSearchItem();
+      this.searchableShopOfferedItemsList = this.shopOfferedItemsList.filter(
+        element => {
+          const searchtextLocal = this.searchText.trim().toLowerCase();
+          return element.itemName.toLowerCase().includes(searchtextLocal);
+        }
+      );
     }
   }
 }

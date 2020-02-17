@@ -2,14 +2,15 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { IShopList } from "src/app/models/shop-list.model";
 import { DeliveryTimeService } from "src/app/services/delivery-time.service";
-import { IStandardDeliveryTime } from 'src/app/models/standard-delivery-time.model';
-import { Router } from '@angular/router';
-import { AlertController, ModalController } from '@ionic/angular';
-import { Subscription } from 'rxjs';
-import { IShopData } from 'src/app/models/shop-data.model';
-import { NetworkService } from 'src/app/shared/services/network.service';
-import { MessageService } from 'src/app/shared/services/message.service';
-import { NoInternetConnectivityModalComponent } from 'src/app/shared/modals/no-internet-connectivity-modal/no-internet-connectivity-modal.component';
+import { IStandardDeliveryTime } from "src/app/models/standard-delivery-time.model";
+import { Router } from "@angular/router";
+import { AlertController, ModalController } from "@ionic/angular";
+import { Subscription } from "rxjs";
+import { IShopData } from "src/app/models/shop-data.model";
+import { NetworkService } from "src/app/shared/services/network.service";
+import { MessageService } from "src/app/shared/services/message.service";
+// tslint:disable-next-line: max-line-length
+import { NoInternetConnectivityModalComponent } from "src/app/shared/modals/no-internet-connectivity-modal/no-internet-connectivity-modal.component";
 
 @Component({
   selector: "app-all-shops",
@@ -17,11 +18,10 @@ import { NoInternetConnectivityModalComponent } from 'src/app/shared/modals/no-i
   styleUrls: ["./all-shops.page.scss"]
 })
 export class AllShopsPage implements OnInit, OnDestroy {
-
   // public shopList: IShopList[];
   public shopList: IShopData[];
   public currentDeliveryTimeSchedule: IStandardDeliveryTime;
-  public allShopListSubs: Subscription;
+  // public allShopListSubs: Subscription;
   public networkStatusSubs: Subscription;
   public networkStatus: boolean = true;
 
@@ -43,89 +43,83 @@ export class AllShopsPage implements OnInit, OnDestroy {
     // });
     this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
     this.checkNetworkStatus();
-              // this.networkStatusSubs = this.networkService.checkNetworkStatus().subscribe(networkData => {
-              //   console.log("Came inside Subscribe *********");
-              //   if (!networkData.connected) {
-              //     this.networkStatus = false;
-              //     this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : false});
-              //   } else {
-              //     this.networkStatus = true;
-              //     this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : true});
-              //     // this.getInitialData();
-              //     this.fetchShopsList();
-              //   }
-              // });
+    // this.networkStatusSubs = this.networkService.checkNetworkStatus().subscribe(networkData => {
+    //   console.log("Came inside Subscribe *********");
+    //   if (!networkData.connected) {
+    //     this.networkStatus = false;
+    //     this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : false});
+    //   } else {
+    //     this.networkStatus = true;
+    //     this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : true});
+    //     // this.getInitialData();
+    //     this.fetchShopsList();
+    //   }
+    // });
   }
 
   showNoInternetConnectionModal() {
     // showLoginSignupScreen() {
-      this.noInternetConnModal
-        .create({
-          component: NoInternetConnectivityModalComponent,
-          id: "noInternetConnModal"
-        })
-        .then(loginModalEl => {
-          loginModalEl.present();
-          return loginModalEl.onDidDismiss();
-        })
-        .then(data => {
-          console.log("No Network Conn modal closed")
-          // if (data.role === "LOGIN_SUCCESS") {
-          //   if (data.data === "ENTERPRISE_PARTNER") {
-          //     this.router.navigateByUrl("/partnerHomePage/partnerTabs");
-          //   } else if (data.data === "GENERAL_ADMIN") {
-          //     this.router.navigateByUrl("/adminHomePage/adminTab");
-          //   } else if (data.data === "CUSTOMER") {
-          //     // this.router.navigateByUrl("/homepage/tabs/account");
-          //     this.router.navigateByUrl("/homepage/tabs");
-          //   }
-          // } else {
-          //   this.router.navigateByUrl("/homepage/tabs");
-          // }
-        });
+    this.noInternetConnModal
+      .create({
+        component: NoInternetConnectivityModalComponent,
+        id: "noInternetConnModal"
+      })
+      .then(loginModalEl => {
+        loginModalEl.present();
+        return loginModalEl.onDidDismiss();
+      })
+      .then(data => {
+        console.log("No Network Conn modal closed");
+        // if (data.role === "LOGIN_SUCCESS") {
+        //   if (data.data === "ENTERPRISE_PARTNER") {
+        //     this.router.navigateByUrl("/partnerHomePage/partnerTabs");
+        //   } else if (data.data === "GENERAL_ADMIN") {
+        //     this.router.navigateByUrl("/adminHomePage/adminTab");
+        //   } else if (data.data === "CUSTOMER") {
+        //     // this.router.navigateByUrl("/homepage/tabs/account");
+        //     this.router.navigateByUrl("/homepage/tabs");
+        //   }
+        // } else {
+        //   this.router.navigateByUrl("/homepage/tabs");
+        // }
+      });
     // }
   }
 
   checkNetworkStatus(event = null) {
-    this.networkStatusSubs = this.networkService.checkNetworkStatus().subscribe(networkData => {
-      // console.log("Came inside Subscribe *********");
-      if (!networkData.connected) {
-        this.networkStatus = false;
-        this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : false});
-        this.showNoInternetConnectionModal();
-        // this.handleRefresher(event);
-      } else {
-        this.networkStatus = true;
-        this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : true});
-        // this.getInitialData();
-        this.fetchShopsList();
-      }
-    });
+    this.networkStatusSubs = this.networkService
+      .checkNetworkStatus()
+      .subscribe(networkData => {
+        if (!networkData.connected) {
+          this.networkStatus = false;
+          this.messageService.sendNetworkStatusMessage({
+            NETWORK_CONNECTION: false
+          });
+          this.showNoInternetConnectionModal();
+        } else {
+          this.networkStatus = true;
+          this.messageService.sendNetworkStatusMessage({
+            NETWORK_CONNECTION: true
+          });
+          this.fetchShopsList();
+        }
+      });
   }
 
   // [routerLink]="['/', 'homepage', 'tabs', 'selectShop', shop.shopId]"
   ionViewWillEnter() {
-    // console.log("Came here in ion View Will Enter");
-            // this.networkStatusSubs = this.networkService.checkNetworkStatus().subscribe(networkData => {
-            //   // console.log("Came inside Subscribe *********")
-            //   if (!networkData.connected) {
-            //     this.networkStatus = false;
-            //     this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : false});
-            //     // this.handleRefresher(event);
-            //   } else {
-            //     this.networkStatus = true;
-            //     this.messageService.sendNetworkStatusMessage({NETWORK_CONNECTION : true});
-            //     // this.getInitialData();
-            //     // this.fetchShopsList();
-            //   }
-            // });
-            this.checkNetworkStatus();
+    this.checkNetworkStatus();
   }
 
   fetchShopsList(event = null) {
-    this.allShopListSubs = this.shopItemSelectionService.getAllShopList.subscribe(shops => {
-      // console.log(" SHOPS FETCHED ********", shops);
-      this.shopList = shops;
+    // this.allShopListSubs = this.shopItemSelectionService.getAllShopList.subscribe(shops => {
+    //   // console.log(" SHOPS FETCHED ********", shops);
+    //   this.shopList = shops;
+    //   this.handleRefresher(event);
+    // });
+    // this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
+    this.shopItemSelectionService.getAllShopsList.then(allShops => {
+      this.shopList = allShops;
       this.handleRefresher(event);
     });
     this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
@@ -151,10 +145,10 @@ export class AllShopsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.allShopListSubs) {
-    this.allShopListSubs.unsubscribe();
-    }
-    if(this.networkStatusSubs) {
+    // if (this.allShopListSubs) {
+    //   this.allShopListSubs.unsubscribe();
+    // }
+    if (this.networkStatusSubs) {
       this.networkStatusSubs.unsubscribe();
     }
   }
@@ -163,27 +157,27 @@ export class AllShopsPage implements OnInit, OnDestroy {
     // console.log("SHOP ON CLICK",shop)
     if (shop.isShopOpen) {
       // console.log("shop.shopId", shop.shopId)
-      this.router.navigate(['/homepage/tabs/selectShop', shop.shopId]) ;
+      this.router.navigate(["/homepage/tabs/selectShop", shop.shopId]);
     } else {
       const alert = this.shopClosedAlertCtrl
-          .create({
-            header: "Shop is currently closed.",
-            // message:
-            //   "Please ",
-            buttons: [
-              {
-                text: "OK",
-                role: "cancel",
-                cssClass: "secondary",
-                handler: cancel => {
-                  // console.log("Shop is closed");
-                }
+        .create({
+          header: "Shop is currently closed.",
+          // message:
+          //   "Please ",
+          buttons: [
+            {
+              text: "OK",
+              role: "cancel",
+              cssClass: "secondary",
+              handler: cancel => {
+                // console.log("Shop is closed");
               }
-            ]
-          })
-          .then(alertEl => {
-            alertEl.present();
-          });
+            }
+          ]
+        })
+        .then(alertEl => {
+          alertEl.present();
+        });
     }
   }
 }

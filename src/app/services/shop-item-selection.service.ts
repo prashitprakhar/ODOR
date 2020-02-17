@@ -2,152 +2,77 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { IShopList } from "./../models/shop-list.model";
 import { IShopOfferedItems } from "../models/shop-offered-items.model";
-import { IShopOfferedItemsData } from './../models/shop-offered-items-data.model';
-import { IShopProfile } from './../models/shop-profile.model';
+import { IShopOfferedItemsData } from "./../models/shop-offered-items-data.model";
+import { IShopProfile } from "./../models/shop-profile.model";
 import { AuthService } from "./auth.service";
 import { BehaviorSubject, from } from "rxjs";
 import { take, map, tap, delay, switchMap } from "rxjs/operators";
 // import { from } from "rxjs";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Plugins } from "@capacitor/core";
-import { IShopData } from '../models/shop-data.model';
-import { ISelectableItemsOrder } from '../models/selectable-items-orders.model';
-import { ICustomOrderItem } from '../models/custom-order-items.model';
-import { environment } from './../../environments/environment';
-import { HttpApiService } from '../shared/services/http-api.service';
+import { IShopData } from "../models/shop-data.model";
+import { ISelectableItemsOrder } from "../models/selectable-items-orders.model";
+import { ICustomOrderItem } from "../models/custom-order-items.model";
+import { environment } from "./../../environments/environment";
+import { HttpApiService } from "../shared/services/http-api.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class ShopItemSelectionService {
   private shopAPI: string = environment.internalAPI.shopFunctions;
-  // private _shopList = new BehaviorSubject<IShopList[]>([
-  //   {
-  //     shopId: "SUDARSHANNAGARSHOP1",
-  //     shopName: "Maha Lakshmi Kirana & General Store",
-  //     shopType: "GROCERY",
-  //     shopLocation: "SUDARSHAN NAGAR COLONY",
-  //     shopAddress: "SUDARSHAN NAGAR COLONY",
-  //     shopPostalCode: 500032,
-  //     shopImageUrl:
-  //       "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y",
-  //     shopRating: 4.5,
-  //     userId: "0YFzC3NLQwafa78cKc92dU6X9i52",
-  //     firstOrderTime: "7 AM",
-  //     lastOrderTime: "10 PM",
-  //     isShopOpen: true,
-  //     shopOfferedItemsList: [
-  //       {
-  //         itemId: "MILK1",
-  //         itemName: "Jersey Milk",
-  //         itemBrand: "Jersey",
-  //         itemDescription: "Packaged Milk Tetra Pack",
-  //         itemCategory: "Packaged",
-  //         itemUndiscountedRate: 10,
-  //         isDiscountedAvailable: false,
-  //         itemDiscountedRate: 10,
-  //         discountAmount: 0,
-  //         discountPercentage: 0,
-  //         itemWeight: 100,
-  //         itemUnit: "g",
-  //         itemCount: 0,
-  //         itemAvailable: false,
-  //         itemImageUrl:
-  //           "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
-  //       },
-  //       {
-  //         itemId: "MILK2",
-  //         itemName: "Jersey Milk",
-  //         itemBrand: "Jersey",
-  //         itemDescription: "Packaged Milk Tetra Pack",
-  //         itemCategory: "Packaged",
-  //         itemUndiscountedRate: 10,
-  //         isDiscountedAvailable: false,
-  //         itemDiscountedRate: 10,
-  //         discountAmount: 0,
-  //         discountPercentage: 0,
-  //         itemCount: 0,
-  //         itemWeight: 100,
-  //         itemUnit: "g",
-  //         itemAvailable: true,
-  //         itemImageUrl:
-  //           "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
-  //       },
-  //       {
-  //         itemId: "MILK3",
-  //         itemName: "Jersey Milk",
-  //         itemBrand: "Jersey",
-  //         itemDescription: "Packaged Milk Tetra Pack",
-  //         itemCategory: "Packaged",
-  //         itemUndiscountedRate: 10,
-  //         isDiscountedAvailable: false,
-  //         itemDiscountedRate: 10,
-  //         discountAmount: 0,
-  //         discountPercentage: 0,
-  //         itemCount: 0,
-  //         itemWeight: 100,
-  //         itemUnit: "g",
-  //         itemAvailable: true,
-  //         itemImageUrl:
-  //           "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
-  //       },
-  //       {
-  //         itemId: "MILK4",
-  //         itemName: "Jersey Milk",
-  //         itemBrand: "Jersey",
-  //         itemDescription: "Packaged Milk Tetra Pack",
-  //         itemCategory: "Packaged",
-  //         itemUndiscountedRate: 10,
-  //         isDiscountedAvailable: false,
-  //         itemDiscountedRate: 10,
-  //         discountAmount: 0,
-  //         discountPercentage: 0,
-  //         itemCount: 0,
-  //         itemWeight: 100,
-  //         itemUnit: "g",
-  //         itemAvailable: true,
-  //         itemImageUrl:
-  //           "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
-  //       }
-  //     ]
-  //   }
-  // ]);
   private _shopList = new BehaviorSubject<IShopData[]>(null);
 
   constructor(
-    private authService: AuthService,
-    private http: HttpClient,
+    // private authService: AuthService,
+    // private http: HttpClient,
     private db: AngularFirestore,
     private httpAPIService: HttpApiService
   ) {}
 
   // get getAllShopList() {
-  //   return this._shopList.asObservable();
+  //   return from(
+  //     this.db.collection("ENTERPRISE_PARTNER_PRODUCTS").valueChanges()
+  //   ).pipe(
+  //     take(1),
+  //     map(data => {
+  //       this._shopList.next(data as IShopData[]);
+  //       return data as IShopData[];
+  //     })
+  //   );
   // }
 
-  get getAllShopList() {
-    return from(this.db.collection('ENTERPRISE_PARTNER_PRODUCTS').valueChanges()).pipe(
-      take(1),
-      map(data => {
-        this._shopList.next(data as IShopData[]);
-        return data as IShopData[];
-      })
-    );
+  get getAllShopsList(): Promise<any> {
+    const url = `${this.shopAPI}getAllShops`;
+    return this.httpAPIService.getAPI(url);
   }
 
+  // async checkCartItems() {// : Promise<any>
+  //   const storageCartData = await Plugins.Storage.get({ key: "userSelectionCustomItems" });
+  //   const cartDataParsed = JSON.parse(storageCartData.value);
+  //   console.log("cartDataParsed cartDataParsed", cartDataParsed);
+  //   if (!cartDataParsed) {
+  //     return false;
+  //   } else {
+
+  //   }
+  // }
+
   get getShopListForCustomer() {
-    this._shopList.subscribe(data => {
-    });
+    this._shopList.subscribe(data => {});
     return this._shopList.asObservable();
   }
 
   getShopData(collectionId: string, shopId: string) {
-    return this.db.collection(collectionId, ref => ref.where("shopId", "==", shopId))
-            .snapshotChanges()
-            .pipe(take(1));
+    return this.db
+      .collection(collectionId, ref => ref.where("shopId", "==", shopId))
+      .snapshotChanges()
+      .pipe(take(1));
   }
 
-  async getShopOfferedItemsList(shopId: string): Promise<IShopOfferedItemsData> {
+  async getShopOfferedItemsList(
+    shopId: string
+  ): Promise<IShopOfferedItemsData> {
     const url = `${this.shopAPI}getShopOfferedItems`;
     const userData = await Plugins.Storage.get({ key: "authData" });
     const userDataFetched = JSON.parse(userData.value);
@@ -156,9 +81,7 @@ export class ShopItemSelectionService {
     const payload = {
       shopId
     };
-
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
-
   }
 
   async getShopProfile(shopId: string): Promise<IShopProfile> {
@@ -170,13 +93,24 @@ export class ShopItemSelectionService {
     const payload = {
       shopId
     };
-
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
+  async getShopProfileForCustomers(shopId: string): Promise<IShopProfile> {
+    const url = `${this.shopAPI}getShopProfileUnauthenticated`;
+    const payload = {
+      shopId
+    };
+
+    return this.httpAPIService.postAPI(url, payload);
+  }
+
   getShopOfferedItems(collectionId: string, shopId: string) {
-    return from(this.db.collection(collectionId, ref => ref.where("shopId", "==", shopId))
-    .valueChanges()).pipe(
+    return from(
+      this.db
+        .collection(collectionId, ref => ref.where("shopId", "==", shopId))
+        .valueChanges()
+    ).pipe(
       take(1),
       map(data => {
         console.log("Data **********************", data);
@@ -201,7 +135,10 @@ export class ShopItemSelectionService {
     // );
   }
 
-  async setItemAvailability(shopId: string, itemId: string): Promise<IShopOfferedItemsData> {
+  async setItemAvailability(
+    shopId: string,
+    itemId: string
+  ): Promise<IShopOfferedItemsData> {
     const payload = {
       shopId,
       itemId
@@ -226,7 +163,10 @@ export class ShopItemSelectionService {
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
-  async updateItemDetails(shopId: string, updatedItemdetails: IShopOfferedItems): Promise<IShopOfferedItemsData> {
+  async updateItemDetails(
+    shopId: string,
+    updatedItemdetails: IShopOfferedItems
+  ): Promise<IShopOfferedItemsData> {
     const payload = {
       shopId,
       itemId: updatedItemdetails.itemId,
@@ -273,6 +213,7 @@ export class ShopItemSelectionService {
   //   );
   // }
 
+  // NOT USER ANY MORE
   getShopOfferedItemsForCustomer(shopId) {
     return this.getShopListForCustomer.pipe(
       take(1),
@@ -286,7 +227,13 @@ export class ShopItemSelectionService {
     );
   }
 
-  // getShopProfile(collectionId, )
+  getShopOfferedItemsForCustomers(shopId): Promise<IShopOfferedItemsData> {
+    const url = `${this.shopAPI}getShopOfferedItemsForCustomers`;
+    const payload = {
+      shopId
+    };
+    return this.httpAPIService.postAPI(url, payload);
+  }
 
   getProductDoc(collectionId, userId: string) {
     return this.db
@@ -387,21 +334,27 @@ export class ShopItemSelectionService {
   //   );
   // }
 
-  addOrderedItemsToLocalStorage(selectableItems: ISelectableItemsOrder[],
-                                customItemsKG: ICustomOrderItem[], customItemsPacks: ICustomOrderItem[]) {
+  addOrderedItemsToLocalStorage(
+    selectableItems: ISelectableItemsOrder[],
+    customItemsKG: ICustomOrderItem[],
+    customItemsPacks: ICustomOrderItem[]
+  ) {
     // Plugins.Storage.set({ key: "authData", value: orderedItem });
-    console.log("selectable Items List", selectableItems);
-    console.log("cutom Items List", customItemsKG);
-    console.log("customItemsPacks List", customItemsPacks);
+    // console.log("selectable Items List", selectableItems);
+    // console.log("cutom Items List", customItemsKG);
+    // console.log("customItemsPacks List", customItemsPacks);
     const userSelectionCustomItems = {
       // tslint:disable-next-line: object-literal-shorthand
-      selectableItems : selectableItems,
+      selectableItems: selectableItems,
       // tslint:disable-next-line: object-literal-shorthand
-      customItemsKG : customItemsKG ? customItemsKG : [],
+      customItemsKG: customItemsKG ? customItemsKG : [],
       // tslint:disable-next-line: object-literal-shorthand
-      customItemsPacks : customItemsPacks ? customItemsPacks : []
+      customItemsPacks: customItemsPacks ? customItemsPacks : []
     };
-    Plugins.Storage.set({ key: 'userSelectionCustomItems', value: JSON.stringify(userSelectionCustomItems) });
+    Plugins.Storage.set({
+      key: "userSelectionCustomItems",
+      value: JSON.stringify(userSelectionCustomItems)
+    });
   }
 
   getOrderedItemsFromLocalStorage() {
@@ -415,10 +368,11 @@ export class ShopItemSelectionService {
   }
 
   removeUserSelectionFromLocalStorage() {
-    Plugins.Storage.remove({ key: "userSelectionCustomItems" }).then(removalSuccess => {})
-    .catch(err => {
-      console.log("removeUserSelectionFromLocalStorage failure", err);
-    });
+    Plugins.Storage.remove({ key: "userSelectionCustomItems" })
+      .then(removalSuccess => {})
+      .catch(err => {
+        console.log("removeUserSelectionFromLocalStorage failure", err);
+      });
   }
 
   async addShopOfferedNewItem(itemDetails): Promise<any> {

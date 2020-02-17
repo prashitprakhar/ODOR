@@ -4,6 +4,7 @@ import { IShopData } from '../models/shop-data.model';
 import { ShopItemSelectionService } from './shop-item-selection.service';
 import { ISelectableItemsOrder } from '../models/selectable-items-orders.model';
 import { ICustomOrderItem } from '../models/custom-order-items.model';
+import { IShopOfferedItemsData } from '../models/shop-offered-items-data.model';
 
 @Injectable({
   providedIn: "root"
@@ -21,7 +22,8 @@ export class CustomOrderService {
   private _isResetAllOrdersNeeded: boolean;
 
   // private _selectedShopDetails: IShopList;
-  private _selectedShopDetails: IShopData;
+  // private _selectedShopDetails: IShopData;
+  private _selectedShopDetails: IShopOfferedItemsData;
 
   private _currentSelectedShopName: string;
 
@@ -41,13 +43,21 @@ export class CustomOrderService {
   //   this._selectedShopDetails = value;
   // }
 
-  public get selectedShopDetails(): IShopData {
-    return this._selectedShopDetails;
-  }
+  // public get selectedShopDetails(): IShopData {
+  //   return this._selectedShopDetails;
+  // }
 
-  public set selectedShopDetails(value: IShopData) {
-    this._selectedShopDetails = value;
-  }
+  // public set selectedShopDetails(value: IShopData) {
+  //   this._selectedShopDetails = value;
+  // }
+
+  public get selectedShopDetails(): IShopOfferedItemsData {
+      return this._selectedShopDetails;
+    }
+  
+    public set selectedShopDetails(value: IShopOfferedItemsData) {
+      this._selectedShopDetails = value;
+    }
 
   public get isResetAllOrdersNeeded(): boolean {
     return this._isResetAllOrdersNeeded;

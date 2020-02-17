@@ -17,6 +17,10 @@ import { AngularFirestoreModule } from "@angular/fire/firestore";
 import { AngularFireAuthModule } from "@angular/fire/auth";
 
 import * as firebase from "firebase";
+import { LoginModalComponent } from "./shared/modals/login-modal/login-modal.component";
+import { SignupModalComponent } from "./shared/modals/signup-modal/signup-modal.component";
+import { SignupSuccessModalComponent } from "./shared/modals/signup-success-modal/signup-success-modal.component";
+import { PasswordResetModalComponent } from "./shared/modals/password-reset-modal/password-reset-modal.component";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ",
@@ -32,8 +36,19 @@ const firebaseConfig = {
 // firebase.initializeApp(firebaseConfig);
 
 @NgModule({
-  declarations: [AppComponent],
-  entryComponents: [],
+  declarations: [
+    AppComponent,
+    LoginModalComponent,
+    SignupModalComponent,
+    SignupSuccessModalComponent,
+    PasswordResetModalComponent
+  ],
+  entryComponents: [
+    LoginModalComponent,
+    SignupModalComponent,
+    SignupSuccessModalComponent,
+    PasswordResetModalComponent
+  ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),

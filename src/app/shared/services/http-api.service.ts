@@ -8,6 +8,10 @@ export class HttpApiService {
 
   constructor(private http: HttpClient) { }
 
+  getAPI(url): Promise<any> {
+    return this.http.get(url).toPromise();
+  }
+
   postAPI(url, payload): Promise<any> {
     return this.http.post(url, payload).toPromise();
   }

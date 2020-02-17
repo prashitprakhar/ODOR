@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { ModalController, AlertController } from "@ionic/angular";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
-// import { IShopList } from "src/app/models/shop-list.model";
 import { CustomOrderModalComponent } from "../../modals/custom-order-modal/custom-order-modal.component";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ISelectableItemsOrder } from "./../../models/selectable-items-orders.model";
@@ -13,7 +12,10 @@ import { SearchItemModalComponent } from "src/app/modals/search-item-modal/searc
 import { MessageService } from "src/app/shared/services/message.service";
 import { IShopData } from "src/app/models/shop-data.model";
 import { NetworkService } from "src/app/shared/services/network.service";
-// import { take, map, tap, delay, switchMap } from "rxjs/operators";
+import { IShopOfferedItemsData } from "src/app/models/shop-offered-items-data.model";
+import { IShopProfile } from 'src/app/models/shop-profile.model';
+import { CurrentShopProfileService } from 'src/app/shared/internal-services/current-shop-profile.service';
+import { SortByService } from 'src/app/shared/utils/sort-by.service';
 
 @Component({
   selector: "app-item-selection",
@@ -21,7 +23,6 @@ import { NetworkService } from "src/app/shared/services/network.service";
   styleUrls: ["./item-selection.page.scss"]
 })
 export class ItemSelectionPage implements OnInit, OnDestroy {
-  // public selectedShopDetails: IShopList;
   public selectedShopDetails: IShopData;
   public selectedItems: ISelectableItemsOrder[] = [];
   public shopOfferedItemsList: IShopOfferedItems[] = [];
@@ -35,7 +36,9 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
   public userCustomItemsFromLocalStorage;
   public userSelectionsLocalStorageSub: Subscription;
 
-  // @Output() selectableItemUpdateEvent = new EventEmitter<any>();
+  // New Properties
+  public selectedShopOfferedItems: IShopOfferedItemsData; // Alternative for this.selectedShopDetails
+  public shopProfile: IShopProfile;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -46,7 +49,9 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private customOrderService: CustomOrderService,
     private messageService: MessageService,
-    private networkService: NetworkService
+    private networkService: NetworkService,
+    private currentShopProfileService: CurrentShopProfileService,
+    private sortByService: SortByService
   ) {}
 
   // doRefresh(event) {
@@ -59,66 +64,56 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
   //   this.getInitialData(event);
   // }
 
-  getInitialData(event = null) {
+  async getInitialData(event = null) {
     if (this.customOrderService.selectableItemsOrders) {
       this.selectedItems = this.customOrderService.selectableItemsOrders;
     }
-    this.activatedRoute.paramMap.subscribe(paramMap => {
+    this.activatedRoute.paramMap.subscribe(async paramMap => {
       if (!paramMap.has("shopId")) {
         return;
       }
       this.shopId = paramMap.get("shopId");
-      this.shopOfferedItemsSubs = this.shopItemSelectionService
-        // .getShopOfferedItems("ENTERPRISE_PARTNER_PRODUCTS", this.shopId)
-        // .pipe(take(1))
-        .getShopOfferedItemsForCustomer(this.shopId)
-        .subscribe(shop => {
-          // console.log("<<<<<<<<< Selected Shop >>>>>>>>>>", shop);
-          if (shop) {
-            this.selectedShopDetails = shop;
-            this.customOrderService.selectedShopDetails = this.selectedShopDetails;
-            this.shopOfferedItemsList = [
-              ...this.selectedShopDetails.shopOfferedItems
-            ];
-            // this.handleRefresher(event);
-          } else {
-            this.shopItemSelectionService.getAllShopList.subscribe(shops => {
-              if (shops) {
-                this.selectedShopDetails = shops.find(
-                  element => element.shopId === this.shopId
-                );
-                this.customOrderService.selectedShopDetails = this.selectedShopDetails;
-                this.shopOfferedItemsList = [
-                  ...this.selectedShopDetails.shopOfferedItems
-                ];
-              }
-              this.userSelectionsLocalStorageSub = this.shopItemSelectionService
-                .getOrderedItemsFromLocalStorage()
-                .subscribe(localStorageUserSelection => {
-                  this.userSelectionsFromLocalStorage = JSON.parse(
-                    localStorageUserSelection.value
+      const shopData = await this.shopItemSelectionService.getShopOfferedItemsForCustomers(
+        this.shopId
+      );
+      this.shopProfile = await this.shopItemSelectionService.getShopProfileForCustomers(this.shopId.toString());
+      if (shopData) {
+        this.currentShopProfileService.currentShopProfile = this.shopProfile;
+        this.selectedShopOfferedItems = shopData;
+        this.customOrderService.selectedShopDetails = this.selectedShopOfferedItems;
+        this.shopOfferedItemsList = [
+          ...this.selectedShopOfferedItems.shopOfferedItemsList
+        ];
+        this.userSelectionsLocalStorageSub = this.shopItemSelectionService
+          .getOrderedItemsFromLocalStorage()
+          .subscribe(localStorageUserSelection => {
+            this.userSelectionsFromLocalStorage = JSON.parse(
+              localStorageUserSelection.value
+            );
+            if (
+              this.userSelectionsFromLocalStorage &&
+              this.userSelectionsFromLocalStorage.selectableItems &&
+              this.userSelectionsFromLocalStorage.selectableItems.length > 0 &&
+              this.shopOfferedItemsList.length > 0
+            ) {
+              this.userSelectionsFromLocalStorage.selectableItems.forEach(
+                selectableStorageItem => {
+                  const storedItem = this.shopOfferedItemsList.find(
+                    eachItem =>
+                      eachItem.itemId === selectableStorageItem["itemId"]
                   );
-                  // console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage)
-                  if (this.userSelectionsFromLocalStorage && this.userSelectionsFromLocalStorage.selectableItems
-                    && this.userSelectionsFromLocalStorage.selectableItems.length > 0
-                    && (this.shopOfferedItemsList.length > 0)) {
-                    // console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage);
-                    this.userSelectionsFromLocalStorage.selectableItems.forEach(selectableStorageItem => {
-                      const storedItem = this.shopOfferedItemsList
-                                          .find(eachItem => eachItem.itemId === selectableStorageItem["itemId"]);
-                      storedItem.itemCount = selectableStorageItem.itemCount;
-                    });
-                    this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
-                    this.messageService.sendMessage("ITEM_ADDED_IN_CART");
-                  }
-                  // this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
-                });
-              // this.handleRefresher(event);
-            });
-          }
-        });
-      if (this.selectedShopDetails) {
-        this.customOrderService.currentSelectedShopName = this.selectedShopDetails.shopName;
+                  storedItem.itemCount = selectableStorageItem.itemCount;
+                }
+              );
+              this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
+              this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+            }
+          });
+      } else {
+        // Show the skeleton || Show message that there is no item in the shop currently
+      }
+      if (this.shopProfile) {
+        this.customOrderService.currentSelectedShopName = this.shopProfile.shopName;
       }
     });
   }
@@ -158,24 +153,28 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
     this.userSelectionsLocalStorageSub = this.shopItemSelectionService
-                .getOrderedItemsFromLocalStorage()
-                .subscribe(localStorageUserSelection => {
-                  this.userSelectionsFromLocalStorage = JSON.parse(
-                    localStorageUserSelection.value
-                  );
-                  if (this.userSelectionsFromLocalStorage && this.userSelectionsFromLocalStorage.selectableItems
-                    && (this.shopOfferedItemsList.length > 0)) {
-                    // console.log("this.userSelectionsFromLocalStorage >>>>>>>>", this.userSelectionsFromLocalStorage)
-                    this.userSelectionsFromLocalStorage.selectableItems.forEach(selectableStorageItem => {
-                      const storedItem = this.shopOfferedItemsList
-                                          .find(eachItem => eachItem.itemId === selectableStorageItem["itemId"]);
-                      storedItem.itemCount = selectableStorageItem.itemCount;
-                    });
-                    this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
-                    this.messageService.sendMessage("ITEM_ADDED_IN_CART");
-                  }
-                  // this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
-                });
+      .getOrderedItemsFromLocalStorage()
+      .subscribe(localStorageUserSelection => {
+        this.userSelectionsFromLocalStorage = JSON.parse(
+          localStorageUserSelection.value
+        );
+        if (
+          this.userSelectionsFromLocalStorage &&
+          this.userSelectionsFromLocalStorage.selectableItems &&
+          this.shopOfferedItemsList.length > 0
+        ) {
+          this.userSelectionsFromLocalStorage.selectableItems.forEach(
+            selectableStorageItem => {
+              const storedItem = this.shopOfferedItemsList.find(
+                eachItem => eachItem.itemId === selectableStorageItem["itemId"]
+              );
+              storedItem.itemCount = selectableStorageItem.itemCount;
+            }
+          );
+          this.customOrderService.selectableItemsOrders = this.userSelectionsFromLocalStorage.selectableItems;
+          this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+        }
+      });
     if (this.customOrderService.selectableItemsOrders) {
       this.selectedItems = this.customOrderService.selectableItemsOrders;
     }
@@ -233,7 +232,9 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
         searchModalEl.present();
         return searchModalEl.onDidDismiss();
       })
-      .then(data => {});
+      .then(data => {
+        this.getInitialData();
+      });
   }
 
   addCustomOrders() {
@@ -349,7 +350,7 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
       currentSelectedItem[0].itemCount++;
       const selectedItem: ISelectableItemsOrder = {
         shopId: this.shopId,
-        shopName: this.selectedShopDetails.shopName,
+        shopName: this.shopProfile.shopName,
         itemId: currentSelectedItem[0].itemId,
         itemName: currentSelectedItem[0].itemName,
         itemUnit: currentSelectedItem[0].itemUnit,
