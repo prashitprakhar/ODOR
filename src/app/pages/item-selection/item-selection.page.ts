@@ -13,9 +13,9 @@ import { MessageService } from "src/app/shared/services/message.service";
 import { IShopData } from "src/app/models/shop-data.model";
 import { NetworkService } from "src/app/shared/services/network.service";
 import { IShopOfferedItemsData } from "src/app/models/shop-offered-items-data.model";
-import { IShopProfile } from 'src/app/models/shop-profile.model';
-import { CurrentShopProfileService } from 'src/app/shared/internal-services/current-shop-profile.service';
-import { SortByService } from 'src/app/shared/utils/sort-by.service';
+import { IShopProfile } from "src/app/models/shop-profile.model";
+import { CurrentShopProfileService } from "src/app/shared/internal-services/current-shop-profile.service";
+import { SortByService } from "src/app/shared/utils/sort-by.service";
 
 @Component({
   selector: "app-item-selection",
@@ -39,6 +39,7 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
   // New Properties
   public selectedShopOfferedItems: IShopOfferedItemsData; // Alternative for this.selectedShopDetails
   public shopProfile: IShopProfile;
+  public deviceFCMToken: string;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -76,7 +77,9 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
       const shopData = await this.shopItemSelectionService.getShopOfferedItemsForCustomers(
         this.shopId
       );
-      this.shopProfile = await this.shopItemSelectionService.getShopProfileForCustomers(this.shopId.toString());
+      this.shopProfile = await this.shopItemSelectionService.getShopProfileForCustomers(
+        this.shopId.toString()
+      );
       if (shopData) {
         this.currentShopProfileService.currentShopProfile = this.shopProfile;
         this.selectedShopOfferedItems = shopData;
@@ -143,6 +146,9 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
           this.getInitialData();
         }
       });
+    this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {
+      this.deviceFCMToken = deviceFCMToken;
+    });
   }
 
   ngOnDestroy() {

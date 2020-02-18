@@ -24,6 +24,7 @@ export class AllShopsPage implements OnInit, OnDestroy {
   // public allShopListSubs: Subscription;
   public networkStatusSubs: Subscription;
   public networkStatus: boolean = true;
+  public deviceFCMToken: string;
 
   constructor(
     private shopItemSelectionService: ShopItemSelectionService,
@@ -43,6 +44,9 @@ export class AllShopsPage implements OnInit, OnDestroy {
     // });
     this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
     this.checkNetworkStatus();
+    this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {
+      this.deviceFCMToken = deviceFCMToken;
+    });
     // this.networkStatusSubs = this.networkService.checkNetworkStatus().subscribe(networkData => {
     //   console.log("Came inside Subscribe *********");
     //   if (!networkData.connected) {
@@ -109,6 +113,9 @@ export class AllShopsPage implements OnInit, OnDestroy {
   // [routerLink]="['/', 'homepage', 'tabs', 'selectShop', shop.shopId]"
   ionViewWillEnter() {
     this.checkNetworkStatus();
+    this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {
+      this.deviceFCMToken = deviceFCMToken;
+    });
   }
 
   fetchShopsList(event = null) {

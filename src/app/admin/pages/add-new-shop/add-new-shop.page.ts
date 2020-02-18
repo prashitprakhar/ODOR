@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
-import { AdminFunctionsService } from "../../services/admin-functions.service";
+// import { AdminFunctionsService } from "../../services/admin-functions.service";
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
 import { IShopData } from "src/app/models/shop-data.model";
 import { AdminShopFunctionsService } from "../../services/admin-shop-functions.service";
@@ -56,20 +56,22 @@ export class AddNewShopPage implements OnInit {
       userId: "",
       firstOrderTime: "7 AM",
       lastOrderTime: "10 PM",
-      isShopOpen: true
-    };
-
-    const shopOfferedItems: IShopOfferedItems[] = [];
-
-    const shopProductsDetails: IShopData = {
-      ...shopProfile,
-      shopOfferedItems,
-      shopAddress: shopAddressLineOne,
-      shopPostalCode: shopPincode,
-      shopLocation: shopAddressLineOne,
+      isShopOpen: true,
       shopImageUrl:
         "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
     };
+
+    // const shopOfferedItems: IShopOfferedItems[] = [];
+
+    // const shopProductsDetails: IShopData = {
+    //   ...shopProfile,
+    //   shopOfferedItems,
+    //   shopAddress: shopAddressLineOne,
+    //   shopPostalCode: shopPincode,
+    //   shopLocation: shopAddressLineOne,
+    //   shopImageUrl:
+    //     "https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y"
+    // };
 
     // const createShopAccount = await
     this.shopAccountCreationProgressLoadingCtrl.create({

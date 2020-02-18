@@ -322,7 +322,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
         return passwordResetModalEl.onDidDismiss();
       })
       .then(data => {
-        console.log("came here on close", data);
+        // console.log("came here on close", data);
         // if (data.role === "LOGIN_SUCCESS") {
         //   if (data.data === "ENTERPRISE_PARTNER") {
         //     this.router.navigateByUrl("/partnerHomePage/partnerTabs");

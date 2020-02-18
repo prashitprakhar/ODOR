@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { IUserFinalOrder } from '../models/user-final-order.model';
 import { AuthService } from './auth.service';
-import { from } from 'rxjs';
+// import { from } from 'rxjs';
 import { AngularFirestore } from "@angular/fire/firestore";
 import { take } from 'rxjs/operators';
 
@@ -50,5 +50,7 @@ export class UserProfileService {
   // DB url : https://orderitservices.firebaseio.com/
   // Firebase Web API Key - AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ
   // Web App Name : order-it-services
+  // tslint:disable-next-line: max-line-length
+  // FCM Device Token (My Android Device Nokia 8.1) - dh0cQiSUj_Y:APA91bGwljiA94hz1OAd2f4wtMcu3RpplT5ezf5QXqg7J_MPE9PpAVcHQFy5y2w5kf0JQAN4-xECbbUkORkLlXV8mel4pAuV4rdoYXyG6D_5UICFOQ95YdBicZFLMd9GhNipJQ7IYoyn
 
 }

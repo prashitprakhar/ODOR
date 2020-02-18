@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { IShopList } from "./../models/shop-list.model";
+// import { HttpClient } from "@angular/common/http";
+// import { IShopList } from "./../models/shop-list.model";
 import { IShopOfferedItems } from "../models/shop-offered-items.model";
 import { IShopOfferedItemsData } from "./../models/shop-offered-items-data.model";
 import { IShopProfile } from "./../models/shop-profile.model";
-import { AuthService } from "./auth.service";
+// import { AuthService } from "./auth.service";
 import { BehaviorSubject, from } from "rxjs";
-import { take, map, tap, delay, switchMap } from "rxjs/operators";
+import { take, map } from "rxjs/operators";
 // import { from } from "rxjs";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Plugins } from "@capacitor/core";
@@ -45,6 +45,12 @@ export class ShopItemSelectionService {
   get getAllShopsList(): Promise<any> {
     const url = `${this.shopAPI}getAllShops`;
     return this.httpAPIService.getAPI(url);
+  }
+
+  async getDeviceFCMToken(): Promise<string> {
+    const deviceFCMToken = await Plugins.Storage.get({ key: "user_fcm_token"});
+    const parsedDeviceFCMToken = JSON.parse(deviceFCMToken.value);
+    return parsedDeviceFCMToken;
   }
 
   // async checkCartItems() {// : Promise<any>

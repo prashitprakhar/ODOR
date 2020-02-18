@@ -10,6 +10,9 @@
 </ion-header>
 
 <ion-content>
+  <div>
+    <ion-row><ion-col>{{deviceFCMToken}}</ion-col></ion-row>
+  </div>
   <div *ngIf="!networkStatus">
     <ion-label>No Network</ion-label>
   </div>
