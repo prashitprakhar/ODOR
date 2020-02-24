@@ -179,6 +179,16 @@ export class AuthenticationService {
     return from(
       this.http.post(`${this.userAuthAPI}login`, payload)
     ).pipe(take(1), tap(this.setUserData.bind(this)));
+    // )
+    // .pipe(take(1),
+    // map(loginData => {
+    //   if (loginData) {
+    //     this.setUserData.bind(loginData);
+    //   } else {
+    //     return null;
+    //   }
+    // })
+    // );
   }
 
   autoLogin() {

@@ -5,7 +5,7 @@
 </ion-header> -->
 
 <ion-content>
-  <ion-grid class="ion-no-padding">
+  <ion-grid class="ion-no-padding" style="background: #000000; height: 100%">
     <ion-row class="profile_section_row" *ngIf="isUserLoggedIn">
         <div class="header_section">
           <div class="icon_section">
@@ -13,41 +13,33 @@
     </div>
     <div class="profile_details_section">
       <div class="profile_details_header_section">
-      <ion-label style="color: #FFFFFF;font-size: 14px;" >Logged in as : {{userProfile.email}}</ion-label>
+      <ion-label style="color: #FFFFFF;font-size: 14px;">Logged in as : {{userProfile.email}}</ion-label>
       
     </div>
-    <!-- <div class="profile_details_desc_section">
-      <ion-label style="color: #FFFFFF;font-size: 14px;">Hello</ion-label>
-    </div> -->
     </div>
     </div>
     </ion-row>
-    <ion-row class="ion-no-padding" *ngIf="isUserLoggedIn">
-      <ion-row>
-        <ion-col>
-          <ion-item>
-              <ion-button expand="block" size="default" color="warning" (click)="myAllOrders()">
+    <div *ngIf="isUserLoggedIn">
+      <ion-row class="ion-no-padding">
+              <ion-button expand="block" size="default" color="light" (click)="myAllOrders()" style="width: 100vw;">
                   <ion-icon name="exit" slot="start"></ion-icon>
                   <ion-label>All Orders</ion-label>
                 </ion-button>
-          </ion-item>
-          <ion-item>
-              <ion-button expand="block" size="default" color="warning" (click)="onLogout()">
-                  <ion-icon name="exit" slot="start"></ion-icon>
+      </ion-row>
+      <ion-row class="ion-no-padding">
+        <ion-button expand="block" size="default" color="light" (click)="updateUserProfile()" style="width: 100vw;">
+            <!-- <ion-icon name="exit" slot="start"></ion-icon> -->
+            <ion-icon name="create" slot="start"></ion-icon>
+            <ion-label>Update Profile</ion-label>
+          </ion-button>
+</ion-row>
+      <ion-row class="ion-no-padding">
+              <ion-button expand="block" size="default" color="warning" (click)="onLogout()" style="width: 100vw;">
+                  <!-- <ion-icon name="exit" slot="start"></ion-icon> -->
+                  <ion-icon name="power" slot="start"></ion-icon>
                   <ion-label>Logout</ion-label>
                 </ion-button>
-          </ion-item>
-        </ion-col>
       </ion-row>
-      <!-- <ion-row>
-        <ion-text>{{deviceFCMToken}}</ion-text>
-      </ion-row> -->
-      <!-- <ion-col class="ion-no-padding">
-        <ion-button expand="block" size="default" color="warning" (click)="onLogout()">
-        <ion-icon name="exit" slot="start"></ion-icon>
-        <ion-label>Logout</ion-label>
-      </ion-button>
-      </ion-col> -->
-    </ion-row>
+    </div>
   </ion-grid>
 </ion-content>

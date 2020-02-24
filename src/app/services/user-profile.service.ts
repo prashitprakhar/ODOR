@@ -4,16 +4,22 @@ import { AuthService } from './auth.service';
 // import { from } from 'rxjs';
 import { AngularFirestore } from "@angular/fire/firestore";
 import { take } from 'rxjs/operators';
+import { ICustomerAddress } from '../models/customer-address.model';
+import { environment } from 'src/environments/environment';
+import { Plugins } from "@capacitor/core";
+import { HttpApiService } from '../shared/services/http-api.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfileService {
 
+  private userAPI: string = environment.internalAPI.userAuth;
   public userOrderList: IUserFinalOrder[] = [];
 
   constructor(private authService: AuthService,
-              private db: AngularFirestore) { }
+              private db: AngularFirestore,
+              private httpAPIService: HttpApiService) { }
 
   saveUserOrder(userCurrentOrder: IUserFinalOrder) {
     this.userOrderList = [userCurrentOrder, ...this.userOrderList];
@@ -27,6 +33,26 @@ export class UserProfileService {
     return this.db.collection('USER_PROFILE', ref => ref.where('email', '==', email)).valueChanges().pipe(
       take(1)
     );
+  }
+
+  async addNewAddress(addressDetails: ICustomerAddress): Promise<any> {
+    const url = `${this.userAPI}addNewAddress`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {...addressDetails, userId};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async getCustomerSavedAddresses(): Promise<any> {
+    const url = `${this.userAPI}customerSavedAddress`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {userId};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
   // getUserProfile() {

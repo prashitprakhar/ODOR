@@ -65,50 +65,50 @@ export class HomePagePage implements OnInit, OnDestroy {
      ** Push Notification Code Goes Here
      */
     // console.log("this.platform >>>>>>", this.platform.platforms());
-    if (this.platform.is('android')) {
-    // fcm.deleteInstance();
-    PushNotifications.register();
+            //   if (this.platform.is('android')) {
+            //   // fcm.deleteInstance();
+            //   PushNotifications.register();
 
-    PushNotifications.addListener(
-      "registration",
-      (token: PushNotificationToken) => {
-        // alert("Push registration success, token: " + token.value);
-      }
-    );
+            //   PushNotifications.addListener(
+            //     "registration",
+            //     (token: PushNotificationToken) => {
+            //       // alert("Push registration success, token: " + token.value);
+            //     }
+            //   );
 
-    PushNotifications.addListener("registrationError", (error: any) => {
-      // alert("Error on registration: " + JSON.stringify(error));
-    });
+            //   PushNotifications.addListener("registrationError", (error: any) => {
+            //     // alert("Error on registration: " + JSON.stringify(error));
+            //   });
 
-    fcm.getToken()
-    .then(r => {
-      // alert(`Token ${r.token}`)
-      Plugins.Storage.set({
-        key: "user_fcm_token",
-        value: JSON.stringify(r.token)
-      });
-    })
-    .catch(err => {
-      Plugins.Storage.set({
-        key: "user_fcm_token",
-        value: null
-      });
-    });
+            //   fcm.getToken()
+            //   .then(r => {
+            //     // alert(`Token ${r.token}`)
+            //     Plugins.Storage.set({
+            //       key: "user_fcm_token",
+            //       value: JSON.stringify(r.token)
+            //     });
+            //   })
+            //   .catch(err => {
+            //     Plugins.Storage.set({
+            //       key: "user_fcm_token",
+            //       value: null
+            //     });
+            //   });
 
-    PushNotifications.addListener(
-      "pushNotificationReceived",
-      (notification: PushNotification) => {
-        // alert("Push received: " + JSON.stringify(notification));
-      }
-    );
+            //   PushNotifications.addListener(
+            //     "pushNotificationReceived",
+            //     (notification: PushNotification) => {
+            //       // alert("Push received: " + JSON.stringify(notification));
+            //     }
+            //   );
 
-    PushNotifications.addListener(
-      "pushNotificationActionPerformed",
-      (notification: PushNotificationActionPerformed) => {
-        // alert("Push action performed: " + JSON.stringify(notification));
-      }
-    );
-  }
+            //   PushNotifications.addListener(
+            //     "pushNotificationActionPerformed",
+            //     (notification: PushNotificationActionPerformed) => {
+            //       // alert("Push action performed: " + JSON.stringify(notification));
+            //     }
+            //   );
+            // }
     /*
      ** Push Notification Code till here
      */

@@ -6,6 +6,7 @@ import { LoginModalComponent } from "src/app/shared/modals/login-modal/login-mod
 import { Subscription } from "rxjs";
 import { AuthenticationService } from "src/app/shared/internal-services/authentication.service";
 import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
+import { UpdateUserProfileModalComponent } from 'src/app/modals/update-user-profile-modal/update-user-profile-modal.component';
 
 @Component({
   selector: "app-account-details",
@@ -21,6 +22,7 @@ export class AccountDetailsPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private allOrdersModalCtrl: ModalController,
+    private updateProfileModalCtrl: ModalController,
     private loginModalCtrl: ModalController,
     private authenticationService: AuthenticationService,
     private shopItemSelectionService: ShopItemSelectionService
@@ -105,6 +107,20 @@ export class AccountDetailsPage implements OnInit, OnDestroy {
         return modalEl.onDidDismiss();
       })
       .then(data => {});
+  }
+
+  updateUserProfile() {
+    console.log("Update Profile clicked ***");
+    this.updateProfileModalCtrl
+        .create({
+          component: UpdateUserProfileModalComponent,
+          id: "userProfileUpdateModal"
+        })
+        .then(profileUpdateEl => {
+          profileUpdateEl.present();
+          return profileUpdateEl.onDidDismiss();
+        })
+        .then(data => {});
   }
 }
 

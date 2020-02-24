@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { NgForm } from "@angular/forms";
 // import { AdminFunctionsService } from "../../services/admin-functions.service";
-import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
-import { IShopData } from "src/app/models/shop-data.model";
+// import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
+// import { IShopData } from "src/app/models/shop-data.model";
 import { AdminShopFunctionsService } from "../../services/admin-shop-functions.service";
 import { AlertController, LoadingController } from '@ionic/angular';
 
@@ -299,6 +299,4 @@ export class AddNewShopPage implements OnInit {
             alertEl.present();
           });
   }
-
-  // gqMzCJjKAuRQBdrYewQIl4GGgm42 - OrderService User UID
 }
