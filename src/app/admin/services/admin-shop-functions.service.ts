@@ -13,7 +13,7 @@ export class AdminShopFunctionsService {
 
   constructor(private httpAPIService: HttpApiService) {}
 
-  createNewShopAccount(
+  async createNewShopAccount(
     email,
     password,
     role,
@@ -27,8 +27,13 @@ export class AdminShopFunctionsService {
       role,
       securePIN
     };
+
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+
     const url = `${this.userAuth}createShopAccount`;
-    return this.httpAPIService.postAPI(url, payload);
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
   async rollBackShopAccountCreation(userId) {

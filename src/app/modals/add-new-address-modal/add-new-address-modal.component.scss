@@ -1,0 +1,15 @@
+// ion-content {
+//     --background : var(--ion-color-primary);
+//   }
+
+.heading_style {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+ion-item {
+    --min-height: 0 !important;
+    font-size: 12px;
+}

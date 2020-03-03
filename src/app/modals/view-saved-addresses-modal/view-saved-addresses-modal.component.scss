@@ -1,0 +1,92 @@
+.no_saved_address {
+  height: 100%;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  padding-top: 10px;
+  border-top: 2px solid #FFFFFF;
+}
+
+.no_address_label {
+  color: #FFFFFF;
+}
+
+.saved_address {
+  // height: 100%;
+  width: 100vw;
+  background: #000000;
+}
+
+.custom_add_sub_item_quantity_section {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid;
+  align-items: center;
+  border-radius: 20px;
+  justify-content: space-between;
+}
+.space_left {
+  font-size: 12px;
+}
+
+.space_left_delivery {
+  font-size: 12px;
+  vertical-align: text-top;
+}
+
+.space_dot {
+  margin-left: 5px;
+  margin-right: 7px;
+}
+
+.star_style {
+  font-size: 14px;
+  vertical-align: text-top;
+}
+
+.item_name {
+  margin-top: 0px;
+  margin-bottom: 5px;
+}
+
+.pre_item_rate_section {
+  font-size: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  line-height: 15px;
+  margin-bottom: 0 !important;
+}
+
+.post_item_rate_section {
+  font-size: 12px;
+}
+
+.ion_item_sliding {
+  width: 97vw;
+  margin-bottom: 10px;
+}
+
+.currently_used_address {
+  background: #0adc22 !important;
+  color: #0adc22 !important;
+}
+
+.currently_not_used_address {
+  background: #ff0e06 !important;
+}
+
+.item_used_address {
+  border: 3px solid #0adc22;
+}
+
+.item_not_used_address {
+  border: none;
+}
+
+ion-content {
+  --background: var(--ion-color-primary);
+}

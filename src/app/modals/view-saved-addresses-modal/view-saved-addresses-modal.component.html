@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Your saved Addresses
+    </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onClose()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-no-padding">
+  <div class="no_saved_address" *ngIf="savedAddressesList.length === 0">
+    <ion-label class="no_address_label">Currently, there are no address saved. Please add address so that we can deliver your orders.</ion-label>
+  </div>
+  <div class="saved_address" *ngIf="savedAddressesList.length > 0">
+    <ion-grid style="background: #000000;">
+      <ion-row>
+        <ion-list style="background: #000000;">
+        <ion-item-sliding
+              *ngFor="let address of savedAddressesList"
+              #ionItemSliding
+              class="ion_item_sliding"
+            >
+              <ion-item-options side="start">
+                <ion-item-option
+                  color="warning"
+                  (click)="editAddressDetails(address, ionItemSliding)"
+                >
+                  <ion-icon name="create" slot="icon-only"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+              <ion-item [ngClass]="address.isCurrentlyUsed ? 'item_used_address' : 'item_not_used_address'" lines="none">
+                <ion-col size="12"
+                  >
+                  <ion-label>
+                    <h5 class="item_name">Address Location : {{ address.addressCategory | titlecase}}</h5>
+                    <p class="pre_item_rate_section">
+                      Flat/House : {{ address.houseNumber | titlecase}} 
+                      <!-- . {{
+                      product.itemCategory | titlecase}} Rupee Sign : &#8377;-->
+                    </p>
+                    <p class="pre_item_rate_section">
+                    <ion-text class="space_left"
+                      >{{ address.addressLineOne }}</ion-text
+                    >
+                  </p>
+                  <p class="pre_item_rate_section">
+                    <ion-text class="space_left_delivery" *ngIf="address.addressLineTwo"
+                      >{{ address.addressLineTwo }}</ion-text
+                    >
+                  </p>
+                  <p class="pre_item_rate_section">
+                    <ion-text class="space_left_delivery"
+                      >{{getCityFullName(address.city).value | titlecase}} . {{address.state}} . {{ address.pincode }}</ion-text
+                    >
+                  </p>
+                  <p class="pre_item_rate_section">
+                    <ion-text class="space_left_delivery">
+                      Mob: {{address.mobileNumber}}
+                    </ion-text>
+                  </p>
+                  </ion-label>
+                  <ion-button
+                    *ngIf="address.isCurrentlyUsed"
+                    expand="block"
+                    color="success"
+                    [disabled]="true"
+                    >Currently Used
+                  </ion-button>
+                  <ion-button
+                    *ngIf="!address.isCurrentlyUsed"
+                    (click)="changeUsageFlag(address)"
+                    expand="block"
+                    color="warning"
+                    >USE
+                  </ion-button>
+                </ion-col>
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option
+                  color="danger"
+                  (click)="deleteAddress(address, ionItemSliding)"
+                >
+                  <ion-icon name="close" slot="icon-only"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          </ion-list>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

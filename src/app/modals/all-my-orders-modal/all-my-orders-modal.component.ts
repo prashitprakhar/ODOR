@@ -15,7 +15,7 @@ export class AllMyOrdersModalComponent implements OnInit {
 
   ngOnInit() {
     const userOrders = this.userProfileService.getUserOrder();
-    console.log("User Orders *********",userOrders)
+    console.log("User Orders *********",userOrders);
   }
 
   onClose() {

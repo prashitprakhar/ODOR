@@ -1,12 +1,12 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { IShopList } from "./../models/shop-list.model";
+// import { HttpClient } from "@angular/common/http";
+// import { IShopList } from "./../models/shop-list.model";
 import { IShopOfferedItems } from "../models/shop-offered-items.model";
 import { IShopOfferedItemsData } from "./../models/shop-offered-items-data.model";
 import { IShopProfile } from "./../models/shop-profile.model";
-import { AuthService } from "./auth.service";
+// import { AuthService } from "./auth.service";
 import { BehaviorSubject, from } from "rxjs";
-import { take, map, tap, delay, switchMap } from "rxjs/operators";
+import { take, map } from "rxjs/operators";
 // import { from } from "rxjs";
 import { AngularFirestore } from "@angular/fire/firestore";
 import { Plugins } from "@capacitor/core";
@@ -45,6 +45,12 @@ export class ShopItemSelectionService {
   get getAllShopsList(): Promise<any> {
     const url = `${this.shopAPI}getAllShops`;
     return this.httpAPIService.getAPI(url);
+  }
+
+  async getDeviceFCMToken(): Promise<string> {
+    const deviceFCMToken = await Plugins.Storage.get({ key: "user_fcm_token"});
+    const parsedDeviceFCMToken = JSON.parse(deviceFCMToken.value);
+    return parsedDeviceFCMToken;
   }
 
   // async checkCartItems() {// : Promise<any>
@@ -339,10 +345,6 @@ export class ShopItemSelectionService {
     customItemsKG: ICustomOrderItem[],
     customItemsPacks: ICustomOrderItem[]
   ) {
-    // Plugins.Storage.set({ key: "authData", value: orderedItem });
-    // console.log("selectable Items List", selectableItems);
-    // console.log("cutom Items List", customItemsKG);
-    // console.log("customItemsPacks List", customItemsPacks);
     const userSelectionCustomItems = {
       // tslint:disable-next-line: object-literal-shorthand
       selectableItems: selectableItems,
@@ -368,11 +370,25 @@ export class ShopItemSelectionService {
   }
 
   removeUserSelectionFromLocalStorage() {
-    Plugins.Storage.remove({ key: "userSelectionCustomItems" })
-      .then(removalSuccess => {})
-      .catch(err => {
-        console.log("removeUserSelectionFromLocalStorage failure", err);
-      });
+    const userSelectionCustomItems = {
+      // tslint:disable-next-line: object-literal-shorthand
+      selectableItems: [],
+      // tslint:disable-next-line: object-literal-shorthand
+      customItemsKG: [],
+      // tslint:disable-next-line: object-literal-shorthand
+      customItemsPacks: []
+    };
+
+    Plugins.Storage.set({
+      key: "userSelectionCustomItems",
+      value: JSON.stringify(userSelectionCustomItems)
+    });
+
+    // Plugins.Storage.remove({ key: "userSelectionCustomItems" })
+    //   .then(removalSuccess => {})
+    //   .catch(err => {
+    //     console.log("removeUserSelectionFromLocalStorage failure", err);
+    //   });
   }
 
   async addShopOfferedNewItem(itemDetails): Promise<any> {

@@ -39,6 +39,11 @@ ion-list {
   --background: #000000;
 }
 
+ion-item {
+  --min-height: 0 !important;
+  font-size: 12px;
+}
+
 //   .sc-ion-input-md-h {
 //       --padding-top: 0 !important;
 //       --padding-bottom: 0 !important;

@@ -1,5 +1,5 @@
 {
-  "appId": "com.odor.ionic",
+  "appId": "com.orderitservices.orderit",
   "appName": "order-it",
   "bundledWebRuntime": false,
   "npmClient": "npm",

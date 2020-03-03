@@ -18,5 +18,8 @@ export const environment = {
  *
  * This import should be commented out in production mode because it will have a negative impact
  * on performance if an error is thrown.
+ * userAuth : "http://localhost:3000/users/",
+ * adminFunctions : "http://localhost:3000/admin/",
+ * shopFunctions : "http://localhost:3000/shop/",
  */
 // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
