@@ -11,7 +11,7 @@ import {
   PushNotificationToken,
   PushNotificationActionPerformed
 } from "@capacitor/core";
-import { Platform } from '@ionic/angular';
+import { Platform } from "@ionic/angular";
 
 import { FCM } from "capacitor-fcm";
 // import { FCM } from '@ionic-native/fcm/ngx';
@@ -43,6 +43,7 @@ export class HomePagePage implements OnInit, OnDestroy {
     if (this.customOrderService.selectableItemsOrders) {
       if (this.customOrderService.selectableItemsOrders.length > 0) {
         this.isItemSelected = true;
+        console.log("Cam in if statement");
       } else {
         this.isItemSelected = false;
       }
@@ -61,54 +62,63 @@ export class HomePagePage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.messageService.getCartEmptyAfterOrderPlacedStatus().subscribe(data => {
+      console.log("Data for cart status Arrived", data);
+      if (data) {
+        if (data.cartStatus === "CART_EMPTY") {
+          this.isItemSelected = false;
+          this.messageService.clearCartStatusAfterOrderPlaced();
+        }
+      }
+    });
     /*
      ** Push Notification Code Goes Here
      */
     // console.log("this.platform >>>>>>", this.platform.platforms());
-            //   if (this.platform.is('android')) {
-            //   // fcm.deleteInstance();
-            //   PushNotifications.register();
+    //   if (this.platform.is('android')) {
+    //   // fcm.deleteInstance();
+    //   PushNotifications.register();
 
-            //   PushNotifications.addListener(
-            //     "registration",
-            //     (token: PushNotificationToken) => {
-            //       // alert("Push registration success, token: " + token.value);
-            //     }
-            //   );
+    //   PushNotifications.addListener(
+    //     "registration",
+    //     (token: PushNotificationToken) => {
+    //       // alert("Push registration success, token: " + token.value);
+    //     }
+    //   );
 
-            //   PushNotifications.addListener("registrationError", (error: any) => {
-            //     // alert("Error on registration: " + JSON.stringify(error));
-            //   });
+    //   PushNotifications.addListener("registrationError", (error: any) => {
+    //     // alert("Error on registration: " + JSON.stringify(error));
+    //   });
 
-            //   fcm.getToken()
-            //   .then(r => {
-            //     // alert(`Token ${r.token}`)
-            //     Plugins.Storage.set({
-            //       key: "user_fcm_token",
-            //       value: JSON.stringify(r.token)
-            //     });
-            //   })
-            //   .catch(err => {
-            //     Plugins.Storage.set({
-            //       key: "user_fcm_token",
-            //       value: null
-            //     });
-            //   });
+    //   fcm.getToken()
+    //   .then(r => {
+    //     // alert(`Token ${r.token}`)
+    //     Plugins.Storage.set({
+    //       key: "user_fcm_token",
+    //       value: JSON.stringify(r.token)
+    //     });
+    //   })
+    //   .catch(err => {
+    //     Plugins.Storage.set({
+    //       key: "user_fcm_token",
+    //       value: null
+    //     });
+    //   });
 
-            //   PushNotifications.addListener(
-            //     "pushNotificationReceived",
-            //     (notification: PushNotification) => {
-            //       // alert("Push received: " + JSON.stringify(notification));
-            //     }
-            //   );
+    //   PushNotifications.addListener(
+    //     "pushNotificationReceived",
+    //     (notification: PushNotification) => {
+    //       // alert("Push received: " + JSON.stringify(notification));
+    //     }
+    //   );
 
-            //   PushNotifications.addListener(
-            //     "pushNotificationActionPerformed",
-            //     (notification: PushNotificationActionPerformed) => {
-            //       // alert("Push action performed: " + JSON.stringify(notification));
-            //     }
-            //   );
-            // }
+    //   PushNotifications.addListener(
+    //     "pushNotificationActionPerformed",
+    //     (notification: PushNotificationActionPerformed) => {
+    //       // alert("Push action performed: " + JSON.stringify(notification));
+    //     }
+    //   );
+    // }
     /*
      ** Push Notification Code till here
      */
@@ -118,30 +128,35 @@ export class HomePagePage implements OnInit, OnDestroy {
         const localStorageCartDataParsed = JSON.parse(
           localStorageItemsSaved.value
         );
-        if (localStorageCartDataParsed.selectableItems.length > 0) {
-          this.shopIdFromSavedCartItems =
-            localStorageCartDataParsed.selectableItems[0].shopId;
-          this.shopItemSelectionService
-            .getShopProfileForCustomers(this.shopIdFromSavedCartItems)
-            .then(shopProfile => {
-              this.currentShopProfileService.currentShopProfile = shopProfile;
-            });
-        } else if (localStorageCartDataParsed.customItemsKG.length) {
-          this.shopIdFromSavedCartItems =
-            localStorageCartDataParsed.customItemsKG[0].shopId;
-          this.shopItemSelectionService
-            .getShopProfileForCustomers(this.shopIdFromSavedCartItems)
-            .then(shopProfile => {
-              this.currentShopProfileService.currentShopProfile = shopProfile;
-            });
-        } else if (localStorageCartDataParsed.customItemsPacks.length) {
-          this.shopIdFromSavedCartItems =
-            localStorageCartDataParsed.customItemsPacks[0].shopId;
-          this.shopItemSelectionService
-            .getShopProfileForCustomers(this.shopIdFromSavedCartItems)
-            .then(shopProfile => {
-              this.currentShopProfileService.currentShopProfile = shopProfile;
-            });
+        if (localStorageCartDataParsed) {
+          if (localStorageCartDataParsed.selectableItems.length > 0) {
+            this.shopIdFromSavedCartItems =
+              localStorageCartDataParsed.selectableItems[0].shopId;
+            this.shopItemSelectionService
+              .getShopProfileForCustomers(this.shopIdFromSavedCartItems)
+              .then(shopProfile => {
+                this.currentShopProfileService.currentShopProfile = shopProfile;
+              });
+          } else if (localStorageCartDataParsed.customItemsKG.length) {
+            this.shopIdFromSavedCartItems =
+              localStorageCartDataParsed.customItemsKG[0].shopId;
+            this.shopItemSelectionService
+              .getShopProfileForCustomers(this.shopIdFromSavedCartItems)
+              .then(shopProfile => {
+                this.currentShopProfileService.currentShopProfile = shopProfile;
+              });
+          } else if (localStorageCartDataParsed.customItemsPacks.length) {
+            this.shopIdFromSavedCartItems =
+              localStorageCartDataParsed.customItemsPacks[0].shopId;
+            this.shopItemSelectionService
+              .getShopProfileForCustomers(this.shopIdFromSavedCartItems)
+              .then(shopProfile => {
+                this.currentShopProfileService.currentShopProfile = shopProfile;
+              });
+          } else {
+            this.shopIdFromSavedCartItems = "";
+            this.currentShopProfileService.currentShopProfile = null;
+          }
         } else {
           this.shopIdFromSavedCartItems = "";
           this.currentShopProfileService.currentShopProfile = null;

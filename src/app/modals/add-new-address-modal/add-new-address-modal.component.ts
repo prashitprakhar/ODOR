@@ -43,7 +43,8 @@ export class AddNewAddressModalComponent implements OnInit {
     const city = addressUpdateForm.value.city;
     const state = addressUpdateForm.value.state;
     const mobileNumber = addressUpdateForm.value.mobileNumber;
-    const isCurrentlyUsed: boolean = addressUpdateForm.value.isCurrentlyUsed;
+    // const isCurrentlyUsed: boolean = addressUpdateForm.value.isCurrentlyUsed;
+    const isCurrentlyUsed = false;
 
     this.customerAddress = {
       addressCategory,
@@ -54,7 +55,8 @@ export class AddNewAddressModalComponent implements OnInit {
       city,
       state,
       mobileNumber,
-      isCurrentlyUsed
+      isCurrentlyUsed,
+      createdAt: Date.now()
     };
 
     this.userProfileService
@@ -68,6 +70,7 @@ export class AddNewAddressModalComponent implements OnInit {
             loadingEl.present();
             if (addressInfo) {
               loadingEl.dismiss();
+              this.userProfileService.getAndSetCustomerProfile(); // To get User Profile and save the details in the Local Storage
               const header = "Successfully added address.";
               this.displaySuccessAlert(header, addressUpdateForm);
             } else {

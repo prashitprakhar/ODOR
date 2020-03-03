@@ -8,6 +8,8 @@ import { ICustomerAddress } from '../models/customer-address.model';
 import { environment } from 'src/environments/environment';
 import { Plugins } from "@capacitor/core";
 import { HttpApiService } from '../shared/services/http-api.service';
+import { ICustomerProfileDetails } from '../models/customer-profile-details.model';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,8 @@ export class UserProfileService {
   private userAPI: string = environment.internalAPI.userAuth;
   public userOrderList: IUserFinalOrder[] = [];
 
-  constructor(private authService: AuthService,
+  constructor(
+    // private authService: AuthService,
               private db: AngularFirestore,
               private httpAPIService: HttpApiService) { }
 
@@ -29,10 +32,34 @@ export class UserProfileService {
     return [...this.userOrderList] ;
   }
 
-  getUserProfile(email: string) {
-    return this.db.collection('USER_PROFILE', ref => ref.where('email', '==', email)).valueChanges().pipe(
-      take(1)
-    );
+  // getUserProfile(email: string) {
+  //   return this.db.collection('USER_PROFILE', ref => ref.where('email', '==', email)).valueChanges().pipe(
+  //     take(1)
+  //   );
+  // }
+
+  async getAndSetCustomerProfile(): Promise<ICustomerProfileDetails> {
+    const userProfile = await this.getCustomerProfile();
+    const customerDetails = JSON.stringify({
+      customerRating: userProfile.customerRating,
+      customerAddressList: userProfile.customerAddressList,
+      customerImageUrl: userProfile.customerImageUrl
+    });
+
+    await Plugins.Storage.set({ key: 'customerProfileDetails', value: customerDetails});
+
+    return userProfile;
+  }
+
+  async getCustomerProfile(): Promise<ICustomerProfileDetails> {
+    const url = `${this.userAPI}getCustomerProfile`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {userId};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+    // getCustomerProfile
   }
 
   async addNewAddress(addressDetails: ICustomerAddress): Promise<any> {
@@ -52,6 +79,53 @@ export class UserProfileService {
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
     const payload = {userId};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async getCustomerSavedAddressListFromLocalStorage(): Promise<ICustomerAddress[]> {
+    const customerSavedProfile = await Plugins.Storage.get({ key: 'customerProfileDetails'});
+    const parsedCustomerProfile = JSON.parse(customerSavedProfile.value);
+    const customerSavedAddressList = parsedCustomerProfile.customerAddressList;
+    return customerSavedAddressList;
+  }
+
+  // async getCustomerSavedAddresses(): Observable<any> {
+  //   const url = `${this.userAPI}customerSavedAddress`;
+  //   const userData = await Plugins.Storage.get({ key: "authData" });
+  //   const userDataFetched = JSON.parse(userData.value);
+  //   const userToken = userDataFetched.token;
+  //   const userId = userDataFetched.userId;
+  //   const payload = {userId};
+  //   return from(this.httpAPIService.authenticatedPostAPI(url, payload, userToken)).asObservable();
+  // }
+
+  async updateAddressUsageFlag(_id): Promise<any> {
+    const url = `${this.userAPI}updateUsageFlag`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {userId, _id};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async editAddressDetails(addressDetails: ICustomerAddress, _id): Promise<any> {
+    const url = `${this.userAPI}editAddressDetails`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {...addressDetails, userId, _id};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async deleteAddress(_id) : Promise<any> {
+    const url = `${this.userAPI}deleteAddress`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {userId, _id};
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
@@ -78,5 +152,7 @@ export class UserProfileService {
   // Web App Name : order-it-services
   // tslint:disable-next-line: max-line-length
   // FCM Device Token (My Android Device Nokia 8.1) - dh0cQiSUj_Y:APA91bGwljiA94hz1OAd2f4wtMcu3RpplT5ezf5QXqg7J_MPE9PpAVcHQFy5y2w5kf0JQAN4-xECbbUkORkLlXV8mel4pAuV4rdoYXyG6D_5UICFOQ95YdBicZFLMd9GhNipJQ7IYoyn
+
+  // Shop - mahalakshmikiranastore@gmail.com
 
 }

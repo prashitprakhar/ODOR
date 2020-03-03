@@ -1,4 +1,5 @@
 import { ICustomOrderItem } from './custom-order-items.model';
+import { ICustomerAddress } from './customer-address.model';
 
 export interface IUserFinalOrder {
     orderId: string;
@@ -9,7 +10,7 @@ export interface IUserFinalOrder {
     customItemsEstimatedPrice: number;
     estimatedDeliveryTime: string;
     estimatedDeliveryDateTimeFull: string;
-    deliveryAddress: string;
+    deliveryAddress: ICustomerAddress;
     deliveryDate: Date;
     deliveryTimeSlot: string;
     deliveryCharge: string;

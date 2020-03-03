@@ -10,6 +10,7 @@ import { AllMyOrdersModalComponent } from "src/app/modals/all-my-orders-modal/al
 import { UpdateUserProfileModalComponent } from 'src/app/modals/update-user-profile-modal/update-user-profile-modal.component';
 import { AddNewAddressModalComponent } from 'src/app/modals/add-new-address-modal/add-new-address-modal.component';
 import { ViewSavedAddressesModalComponent } from 'src/app/modals/view-saved-addresses-modal/view-saved-addresses-modal.component';
+import { EditAddressModalComponent } from 'src/app/modals/edit-address-modal/edit-address-modal.component';
 
 const routes: Routes = [
   {
@@ -30,14 +31,16 @@ const routes: Routes = [
     AllMyOrdersModalComponent,
     UpdateUserProfileModalComponent,
     AddNewAddressModalComponent,
-    ViewSavedAddressesModalComponent
+    ViewSavedAddressesModalComponent,
+    EditAddressModalComponent
   ],
   declarations: [
     AccountDetailsPage,
     AllMyOrdersModalComponent,
     UpdateUserProfileModalComponent,
     AddNewAddressModalComponent,
-    ViewSavedAddressesModalComponent
+    ViewSavedAddressesModalComponent,
+    EditAddressModalComponent
   ]
 })
 export class AccountDetailsPageModule {}

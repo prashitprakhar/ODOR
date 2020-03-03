@@ -345,10 +345,6 @@ export class ShopItemSelectionService {
     customItemsKG: ICustomOrderItem[],
     customItemsPacks: ICustomOrderItem[]
   ) {
-    // Plugins.Storage.set({ key: "authData", value: orderedItem });
-    // console.log("selectable Items List", selectableItems);
-    // console.log("cutom Items List", customItemsKG);
-    // console.log("customItemsPacks List", customItemsPacks);
     const userSelectionCustomItems = {
       // tslint:disable-next-line: object-literal-shorthand
       selectableItems: selectableItems,
@@ -374,11 +370,25 @@ export class ShopItemSelectionService {
   }
 
   removeUserSelectionFromLocalStorage() {
-    Plugins.Storage.remove({ key: "userSelectionCustomItems" })
-      .then(removalSuccess => {})
-      .catch(err => {
-        console.log("removeUserSelectionFromLocalStorage failure", err);
-      });
+    const userSelectionCustomItems = {
+      // tslint:disable-next-line: object-literal-shorthand
+      selectableItems: [],
+      // tslint:disable-next-line: object-literal-shorthand
+      customItemsKG: [],
+      // tslint:disable-next-line: object-literal-shorthand
+      customItemsPacks: []
+    };
+
+    Plugins.Storage.set({
+      key: "userSelectionCustomItems",
+      value: JSON.stringify(userSelectionCustomItems)
+    });
+
+    // Plugins.Storage.remove({ key: "userSelectionCustomItems" })
+    //   .then(removalSuccess => {})
+    //   .catch(err => {
+    //     console.log("removeUserSelectionFromLocalStorage failure", err);
+    //   });
   }
 
   async addShopOfferedNewItem(itemDetails): Promise<any> {

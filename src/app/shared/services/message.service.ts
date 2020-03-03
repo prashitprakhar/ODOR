@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 // import { Subject } from 'rxjs/Subject';
 
 @Injectable({
@@ -11,6 +12,7 @@ export class MessageService {
 
   private subject = new Subject<any>();
   private networkSubject = new Subject<any>();
+  private cartEmptyOnOrderSuccess = new Subject<any>();
 
     sendMessage(message: string) {
         this.subject.next({ text: message });
@@ -34,5 +36,18 @@ export class MessageService {
 
     getNetworkStatusMessage(): Observable<any> {
       return this.networkSubject.asObservable();
+    }
+
+    clearCartStatusAfterOrderPlaced() {
+      this.cartEmptyOnOrderSuccess.next();
+    }
+
+    sendCartStatusMessage(message) {
+      this.cartEmptyOnOrderSuccess.next({cartStatus : message});
+    }
+
+    getCartEmptyAfterOrderPlacedStatus(): Observable<any> {
+      return this.cartEmptyOnOrderSuccess.asObservable();
+      // .pipe(take(1));
     }
 }

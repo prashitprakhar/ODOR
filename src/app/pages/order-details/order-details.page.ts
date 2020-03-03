@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, Output, EventEmitter } from "@angular/core";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ICustomOrderItem } from "src/app/models/custom-order-items.model";
 import { ISelectableItemsOrder } from "src/app/models/selectable-items-orders.model";
@@ -11,9 +11,12 @@ import { ShopItemSelectionService } from "src/app/services/shop-item-selection.s
 import { IShopOfferedItemsData } from "src/app/models/shop-offered-items-data.model";
 import { IShopProfile } from "src/app/models/shop-profile.model";
 import { CurrentShopProfileService } from "src/app/shared/internal-services/current-shop-profile.service";
-import { AuthenticationService } from 'src/app/shared/internal-services/authentication.service';
-import { Subscription } from 'rxjs';
-import { LoginModalComponent } from 'src/app/shared/modals/login-modal/login-modal.component';
+import { AuthenticationService } from "src/app/shared/internal-services/authentication.service";
+import { Subscription } from "rxjs";
+import { LoginModalComponent } from "src/app/shared/modals/login-modal/login-modal.component";
+import { MessageService } from 'src/app/shared/services/message.service';
+import { ICustomerAddress } from 'src/app/models/customer-address.model';
+// import { LoginBottomModalComponent } from "src/app/modals/login-bottom-modal/login-bottom-modal.component";
 
 @Component({
   selector: "app-order-details",
@@ -42,6 +45,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
   public shopId: string;
   public authStateSubs: Subscription;
   public isUserLoggedIn: boolean = false;
+  public deliveryAddress: ICustomerAddress;
 
   constructor(
     private customOrderService: CustomOrderService,
@@ -52,7 +56,8 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     private shopItemSelectionService: ShopItemSelectionService,
     private currentShopProfileService: CurrentShopProfileService,
     private authenticationService: AuthenticationService,
-    private loginModalCtrl: ModalController
+    private loginModalCtrl: ModalController,
+    private messageService: MessageService
   ) {}
 
   ngOnInit() {
@@ -213,16 +218,73 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     return monthText;
   }
 
-  showLoginSignupScreen() {
+  async showLoginSignupScreen() {
     this.loginModalCtrl
       .create({
         component: LoginModalComponent,
+        componentProps: {
+          name: "loginModalComponent",
+          navigationFrom: 'CART'
+        },
         id: "loginModal"
       })
       .then(loginModalEl => {
         loginModalEl.present();
         return loginModalEl.onDidDismiss();
+      })
+      .then(data => {
+        if (data.role === 'closed') {
+          // this.orderDetails();
+          this.checkDeliveryAddress();
+        }
       });
+  }
+
+  async checkDeliveryAddress() {
+    const customerSavedAddressList = await this.userProfileService.getCustomerSavedAddressListFromLocalStorage();
+    // console.log(" customerSavedAddressList customerSavedAddressList customerSavedAddressList >>>>>", customerSavedAddressList);
+    if (customerSavedAddressList.length > 0) {
+      // tslint:disable-next-line: triple-equals
+      this.deliveryAddress = customerSavedAddressList.find(element => element.isCurrentlyUsed == true);
+      this.orderDetails();
+    } else {
+
+    }
+  }
+
+  orderDetails() {
+    this.isUserLoggedIn = true;
+    if (
+      this.customOrderService.customItemOrdersDetails &&
+      this.customOrderService.customItemsPacksOrdersDetails
+    ) {
+      if (
+        this.customOrderService.customItemOrdersDetails.length > 0 ||
+        this.customOrderService.customItemsPacksOrdersDetails.length > 0
+      ) {
+        this.actionSheetCtrl
+          .create({
+            header: "Place Order",
+            // tslint:disable-next-line: max-line-length
+            subHeader: "You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.",
+            buttons: [
+              {
+                text: "Ok. Got it. Place Order.",
+                handler: () => {
+                  this.confirmOrder();
+                }
+              }
+            ]
+          })
+          .then(actionSheetEl => {
+            actionSheetEl.present();
+          });
+      } else {
+        this.confirmOrder();
+      }
+    } else {
+      this.confirmOrder();
+    }
   }
 
   async placeOrder() {
@@ -232,46 +294,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
           this.isUserLoggedIn = false;
           this.showLoginSignupScreen();
         } else {
-          // const parsedAuthData = JSON.parse(userAuthState.value) as {
-          //   token: string;
-          //   userId: string;
-          //   tokenExpirationDate: string;
-          //   email: string;
-          //   username: string;
-          // };
-          // this.userProfile.email = parsedAuthData.email;
-          this.isUserLoggedIn = true;
-          if (
-            this.customOrderService.customItemOrdersDetails &&
-            this.customOrderService.customItemsPacksOrdersDetails
-          ) {
-            if (
-              this.customOrderService.customItemOrdersDetails.length > 0 ||
-              this.customOrderService.customItemsPacksOrdersDetails.length > 0
-            ) {
-              this.actionSheetCtrl
-                .create({
-                  header: "Place Order",
-                  // tslint:disable-next-line: max-line-length
-                  subHeader: "You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.",
-                  buttons: [
-                    {
-                      text: "Ok. Got it. Place Order.",
-                      handler: () => {
-                        this.confirmOrder();
-                      }
-                    }
-                  ]
-                })
-                .then(actionSheetEl => {
-                  actionSheetEl.present();
-                });
-            } else {
-              this.confirmOrder();
-            }
-          } else {
-            this.confirmOrder();
-          }
+          this.orderDetails();
         }
       }
     );
@@ -293,7 +316,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         this.deliveryTimeService.getManipulatedDeliveryTime()
           .deliveryTime1KTo2K + "mins",
       estimatedDeliveryDateTimeFull: this.deliveryDateTime,
-      deliveryAddress: "Test Address",
+      deliveryAddress: this.deliveryAddress,
       deliveryDate: date,
       deliveryTimeSlot: "within 30 minutes",
       deliveryCharge: "Free",
@@ -302,6 +325,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
       orderStatus: "PROGRESS",
       orderConfirmationStatus: "WAITING"
     };
+    console.log("this.userFinalOrder this.userFinalOrder", this.userFinalOrder)
     this.userProfileService.saveUserOrder(this.userFinalOrder);
     this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
     this.orderConfModalCtrl
@@ -323,6 +347,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         this.customOrderService.customItemOrdersDetails = [];
         this.customOrderService.selectableItemsOrders = [];
         this.selectableOrders = [];
+        this.messageService.sendCartStatusMessage('CART_EMPTY');
       });
   }
 }

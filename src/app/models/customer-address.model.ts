@@ -8,4 +8,5 @@ export interface ICustomerAddress {
     state: string;
     mobileNumber: number;
     isCurrentlyUsed: boolean;
+    createdAt: number;
   }

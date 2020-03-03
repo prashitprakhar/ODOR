@@ -54,7 +54,7 @@ export class CustomOrderService {
   public get selectedShopDetails(): IShopOfferedItemsData {
       return this._selectedShopDetails;
     }
-  
+
     public set selectedShopDetails(value: IShopOfferedItemsData) {
       this._selectedShopDetails = value;
     }

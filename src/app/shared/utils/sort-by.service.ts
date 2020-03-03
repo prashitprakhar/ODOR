@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ICustomOrderItem } from 'src/app/models/custom-order-items.model';
+import { ICustomerAddress } from 'src/app/models/customer-address.model';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,26 @@ export class SortByService {
       // names must be equal
       return 0;
     });
-    console.log(" sortedArray sortedArray >>>>>", sortedArray);
+    // console.log(" sortedArray sortedArray >>>>>", sortedArray);
+    return sortedArray;
+  }
+
+  sortCustomerAddress(arrayList: any[]): ICustomerAddress[] {
+    let sortedArray;
+    sortedArray = arrayList.sort((a, b) => {
+      const itemOne = a.createdAt; // .toUpperCase(); // ignore upper and lowercase
+      const itemTwo = b.createdAt; // .toUpperCase(); // ignore upper and lowercase
+      if (new Date(itemOne) < new Date(itemTwo)) {
+        return -1;
+      }
+      if (new Date(itemOne) > new Date(itemTwo)) {
+        return 1;
+      }
+      // names must be equal
+      return 0;
+      // return new Date(itemOne) - new Date(itemTwo);
+    });
+    // console.log(" sortedArray sortedArray >>>>>", sortedArray);
     return sortedArray;
   }
 

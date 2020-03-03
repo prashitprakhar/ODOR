@@ -50,7 +50,7 @@
   margin-top: 0px;
   margin-bottom: 0px;
   line-height: 20px;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
 }
 
@@ -69,4 +69,18 @@
  text-align: end;
 }
 
+.sc-ion-modal-md-h {
+  --background: none !important;
+}
+
+.modal_class {
+  top: 60vh;
+}
+
+.increase_decrease_button {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+}
 
