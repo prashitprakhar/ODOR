@@ -1,7 +1,8 @@
 export interface ICustomOrderItem {
   shopId: string;
   shopName: string;
-  itemId: string;
+  _id?: string;
+  itemId?: string;
   itemName: string;
   itemCount: number;
   itemUnit: string;

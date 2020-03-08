@@ -93,7 +93,7 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
     }
   }
 
-  confirmItemDeletion(header, message, itemId) {
+  confirmItemDeletion(header, message, _id) {
     const alert = this.confirmDeleteAlertCtrl
       .create({
         header,
@@ -114,7 +114,7 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
             cssClass: "secondary",
             handler: () => {
               this.shopItemSelectionService
-                .deteteShopItem(this.shopId.toString(), itemId)
+                .deteteShopItem(this.shopId.toString(), _id)
                 .then(data => {
                   console.log("Deteled Item from Shop", data);
                   Promise.all([
@@ -142,10 +142,10 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
       });
   }
 
-  deleteItem(itemId) {
+  deleteItem(_id) {
     const header = "Delete Item";
     const message = "Are you sure to delete the Item ?";
-    this.confirmItemDeletion(header, message, itemId);
+    this.confirmItemDeletion(header, message, _id);
   }
 
   editItemDetails(item, editEl: IonItemSliding) {
@@ -187,8 +187,9 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
   }
 
   setAvailability(item) {
-    const itemId = item.itemId;
-    this.shopItemSelectionService.setItemAvailability(this.shopId.toString(), item.itemId).then(data => {
+    const _id = item._id;
+    // console.log("Item Id", item);
+    this.shopItemSelectionService.setItemAvailability(this.shopId.toString(), item._id).then(data => {
       Promise.all([this.getShopProfile(), this.getShopOfferedItemsList()])
       .then(data => {})
       .catch(err => {

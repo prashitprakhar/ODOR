@@ -52,12 +52,13 @@ export class PartnerAddProductsPage implements OnInit {
         const itemName = itemDetailsForm.value.itemName;
         const itemBrand = itemDetailsForm.value.itemBrand;
         const itemCategory = itemDetailsForm.value.itemCategory;
-        const itemUndiscountedRate = itemDetailsForm.value.itemUndiscountedRate;
+        const itemUndiscountedRate = parseFloat(itemDetailsForm.value.itemUndiscountedRate);
         const discountPercentage = itemDetailsForm.value.discountPercentage;
         const itemWeight = itemDetailsForm.value.itemWeight;
 
         this.newItem = {
-          itemId: Math.random().toString(),
+          _id: Math.random().toString(),
+          // itemId: Math.random().toString(),
           itemName,
           itemBrand,
           itemDescription: "No Description",
@@ -68,8 +69,9 @@ export class PartnerAddProductsPage implements OnInit {
           isDiscountedAvailable:
             parseFloat(discountPercentage) > 0 ? true : false,
           itemDiscountedRate:
-            itemUndiscountedRate -
-            (parseFloat(discountPercentage) * itemUndiscountedRate) / 100,
+            // tslint:disable-next-line: radix
+            parseInt((itemUndiscountedRate -
+            (parseFloat(discountPercentage) * itemUndiscountedRate) / 100).toFixed(0)),
           discountAmount: 0,
           // tslint:disable-next-line: radix
           discountPercentage: parseInt(discountPercentage),
@@ -90,8 +92,9 @@ export class PartnerAddProductsPage implements OnInit {
           isDiscountedAvailable:
             parseFloat(discountPercentage) > 0 ? true : false,
           itemDiscountedRate:
-            itemUndiscountedRate -
-            (parseFloat(discountPercentage) * itemUndiscountedRate) / 100,
+            // tslint:disable-next-line: radix
+            parseInt((itemUndiscountedRate -
+            (parseFloat(discountPercentage) * itemUndiscountedRate) / 100).toFixed(0)),
           discountAmount: 0,
           // tslint:disable-next-line: radix
           discountPercentage: parseInt(discountPercentage),

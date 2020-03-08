@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { UserProfileService } from 'src/app/services/user-profile.service';
+import { IUserFinalOrder } from 'src/app/models/user-final-order.model';
 
 @Component({
   selector: 'app-all-my-orders-modal',
@@ -10,12 +11,21 @@ import { UserProfileService } from 'src/app/services/user-profile.service';
 export class AllMyOrdersModalComponent implements OnInit {
 
   // public myOrdersList
+  public myAllOrders: IUserFinalOrder[] = [];
+
   constructor(private allOrdersModalCtrl: ModalController,
               private userProfileService: UserProfileService) { }
 
   ngOnInit() {
-    const userOrders = this.userProfileService.getUserOrder();
-    console.log("User Orders *********",userOrders);
+    const userOrders = this.userProfileService.getCustomerAllOrder()
+    .then(allOrders => {
+      this.myAllOrders = allOrders;
+      console.log("this.myAllOrders >>>> this.myAllOrders >>>>", this.myAllOrders)
+    })
+    .catch (e => {
+      this.myAllOrders = [];
+    });
+    // console.log("User Orders *********",userOrders);
   }
 
   onClose() {

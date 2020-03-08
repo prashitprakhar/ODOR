@@ -1,5 +1,6 @@
 export interface IShopOfferedItems {
-    itemId: string;
+    _id?: string;
+    itemId?: string;
     itemName: string;
     itemBrand: string;
     itemDescription: string;

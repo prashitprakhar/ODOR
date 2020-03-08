@@ -67,6 +67,7 @@ export class ViewSavedAddressesModalComponent implements OnInit {
         this.savedAddressesList = this.sortByService.sortCustomerAddress(
           data.customerAddressList
         );
+        this.userProfileService.getAndSetCustomerProfile();
         this.successCurrentUsedAddressChange();
       })
       .catch(err => {

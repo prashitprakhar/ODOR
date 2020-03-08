@@ -58,10 +58,10 @@
                   >
                   <ion-input
                     type="text"
-                    name="{{ customItem.itemId }}"
+                    name="{{ customItem._id }}"
                     required
                     [(ngModel)]="customItem.itemName"
-                    (ionChange)="onItemNameChangeKG($event, customItem.itemId)"
+                    (ionChange)="onItemNameChangeKG($event, customItem._id)"
                   >
                   </ion-input>
                 </ion-item>
@@ -69,8 +69,20 @@
 
               <ion-col class="ion-no-padding" size="6">
                 <div class="custom_add_sub_style">
+                  
                   <ion-button
-                    (click)="incrementKG(customItem.itemId, customKGOrderForm)"
+                    (click)="decrementKG(customItem._id, customKGOrderForm)"
+                    [disabled]="customItem.itemCount <= 0.5"
+                    style="color: #228B22;"
+                    fill="clear"
+                    strong
+                  >
+                    <ion-icon name="remove" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  &nbsp;
+                  <ion-label>{{ customItem.itemCount }} kg</ion-label> &nbsp;
+                  <ion-button
+                    (click)="incrementKG(customItem._id, customKGOrderForm)"
                     [disabled]="
                       customItem.itemName === '' || customItem.itemCount == 5
                     "
@@ -80,24 +92,22 @@
                   >
                     <ion-icon name="add" slot="icon-only"></ion-icon>
                   </ion-button>
-                  &nbsp;
-                  <ion-label>{{ customItem.itemCount }} kg</ion-label> &nbsp;
-                  <ion-button
-                    (click)="decrementKG(customItem.itemId, customKGOrderForm)"
+                  <!-- <ion-button
+                    (click)="decrementKG(customItem._id, customKGOrderForm)"
                     [disabled]="customItem.itemCount <= 0.5"
                     style="color: #228B22;"
                     fill="clear"
                     strong
                   >
                     <ion-icon name="remove" slot="icon-only"></ion-icon>
-                  </ion-button>
+                  </ion-button> -->
                 </div>
               </ion-col>
             </ion-item>
             <ion-item-options side="end">
               <ion-item-option
                 color="danger"
-                (click)="removeItemKG(customItem.itemId, customKGOrderForm)"
+                (click)="removeItemKG(customItem._id, customKGOrderForm)"
                 [disabled]="customKilogramItemsArray.length === 1"
               >
                 <ion-icon name="close" slot="icon-only"></ion-icon>
@@ -153,11 +163,11 @@
                   >
                   <ion-input
                     type="text"
-                    name="{{ customItem.itemId }}"
+                    name="{{ customItem._id }}"
                     required
                     [(ngModel)]="customItem.itemName"
                     (ionChange)="
-                      onItemNameChangePacks($event, customItem.itemId)
+                      onItemNameChangePacks($event, customItem._id)
                     "
                   >
                   </ion-input>
@@ -166,9 +176,36 @@
 
               <ion-col class="ion-no-padding" size="6">
                 <div class="custom_add_sub_style">
+                  <!-- <ion-button
+                    (click)="
+                      incrementPacks(customItem._id, customPacksOrderForm)
+                    "
+                    [disabled]="
+                      customItem.itemName === '' || customItem.itemCount > 4
+                    "
+                    style="color: #228B22;"
+                    fill="clear"
+                    strong
+                  >
+                    <ion-icon name="add" slot="icon-only"></ion-icon>
+                  </ion-button> -->
                   <ion-button
                     (click)="
-                      incrementPacks(customItem.itemId, customPacksOrderForm)
+                      decrementPacks(customItem._id, customPacksOrderForm)
+                    "
+                    [disabled]="customItem.itemCount <= 1"
+                    style="color: #228B22;"
+                    fill="clear"
+                    strong
+                  >
+                    <ion-icon name="remove" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  &nbsp;
+                  <ion-label>{{ customItem.itemCount }} pks</ion-label> &nbsp;
+                  
+                  <ion-button
+                    (click)="
+                      incrementPacks(customItem._id, customPacksOrderForm)
                     "
                     [disabled]="
                       customItem.itemName === '' || customItem.itemCount > 4
@@ -179,19 +216,6 @@
                   >
                     <ion-icon name="add" slot="icon-only"></ion-icon>
                   </ion-button>
-                  &nbsp;
-                  <ion-label>{{ customItem.itemCount }} pks</ion-label> &nbsp;
-                  <ion-button
-                    (click)="
-                      decrementPacks(customItem.itemId, customPacksOrderForm)
-                    "
-                    [disabled]="customItem.itemCount <= 1"
-                    style="color: #228B22;"
-                    fill="clear"
-                    strong
-                  >
-                    <ion-icon name="remove" slot="icon-only"></ion-icon>
-                  </ion-button>
                 </div>
               </ion-col>
             </ion-item>
@@ -199,7 +223,7 @@
               <ion-item-option
                 color="danger"
                 (click)="
-                  removeItemPacks(customItem.itemId, customPacksOrderForm)
+                  removeItemPacks(customItem._id, customPacksOrderForm)
                 "
                 [disabled]="customPacketsItemsArray.length === 1"
               >

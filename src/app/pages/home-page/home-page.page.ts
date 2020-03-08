@@ -43,27 +43,32 @@ export class HomePagePage implements OnInit, OnDestroy {
     if (this.customOrderService.selectableItemsOrders) {
       if (this.customOrderService.selectableItemsOrders.length > 0) {
         this.isItemSelected = true;
-        console.log("Cam in if statement");
+        // console.log("Cam in if statement");
       } else {
         this.isItemSelected = false;
       }
     }
 
-    this.allShopListSubs = this.messageService
-      .getMessage()
-      .subscribe(message => {
-        this.message = message;
-        if (this.customOrderService.selectableItemsOrders.length > 0) {
-          this.isItemSelected = true;
-        } else {
-          this.isItemSelected = false;
-        }
-      });
+    // this.allShopListSubs = this.messageService
+    //   .getMessage()
+    //   .subscribe(message => {
+    //     // console.log("message message message", message);
+    //     this.message = message;
+    //     if (
+    //       this.customOrderService.selectableItemsOrders.length > 0 ||
+    //       this.customOrderService.customItemsPacksOrdersDetails.length ||
+    //       this.customOrderService.customItemOrdersDetails.length
+    //     ) {
+    //       this.isItemSelected = true;
+    //     } else {
+    //       this.isItemSelected = false;
+    //     }
+    //   });
   }
 
   ngOnInit() {
     this.messageService.getCartEmptyAfterOrderPlacedStatus().subscribe(data => {
-      console.log("Data for cart status Arrived", data);
+      // console.log("Data for cart status Arrived", data);
       if (data) {
         if (data.cartStatus === "CART_EMPTY") {
           this.isItemSelected = false;
@@ -158,9 +163,44 @@ export class HomePagePage implements OnInit, OnDestroy {
             this.currentShopProfileService.currentShopProfile = null;
           }
         } else {
+          this.shopItemSelectionService.addOrderedItemsToLocalStorage(
+            [],
+            [],
+            []
+          );
           this.shopIdFromSavedCartItems = "";
           this.currentShopProfileService.currentShopProfile = null;
         }
+      });
+    this.allShopListSubs = this.messageService
+      .getMessage()
+      .subscribe(message => {
+        // console.log("message message message", message);
+        this.message = message;
+        if (this.customOrderService.selectableItemsOrders) {
+          this.customOrderService.selectableItemsOrders.length > 0 ? this.isItemSelected = true : this.isItemSelected = false;
+        }
+        // else {
+
+        // }
+        if (this.customOrderService.customItemsPacksOrdersDetails) {
+          // tslint:disable-next-line: max-line-length
+          this.customOrderService.customItemsPacksOrdersDetails.length > 0 ? this.isItemSelected = true : this.isItemSelected = this.isItemSelected || false;
+         }
+
+        if (this.customOrderService.customItemOrdersDetails) {
+          // tslint:disable-next-line: max-line-length
+          this.customOrderService.customItemOrdersDetails.length > 0 ? this.isItemSelected = true : this.isItemSelected = this.isItemSelected || false;
+         }
+        // if (
+        //   this.customOrderService.selectableItemsOrders.length > 0 ||
+        //   this.customOrderService.customItemsPacksOrdersDetails.length ||
+        //   this.customOrderService.customItemOrdersDetails.length
+        // ) {
+        //   this.isItemSelected = true;
+        // } else {
+        //   this.isItemSelected = false;
+        // }
       });
   }
 

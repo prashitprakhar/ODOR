@@ -49,8 +49,8 @@
   .item_name {
     margin-top: 0px;
     margin-bottom: 0px;
-    line-height: 20px;
-    font-size: 16px;
+    line-height: 16px;
+    font-size: 14px;
     font-weight: bold;
   }
   
@@ -68,6 +68,21 @@
   .confirm_button_col {
    text-align: end;
   }
+
+  .delivery_address {
+    font-size: 11px;
+    line-height: 12px !important;
+  }
+
+  .sc-ion-label-md-s p {
+    // .delivery_address_label {
+    line-height: 14px !important;
+  // }
+}
+
+.item.sc-ion-label-md-h {
+  margin-bottom: 0 !important;
+}
   
   
   

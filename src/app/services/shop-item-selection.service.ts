@@ -111,19 +111,39 @@ export class ShopItemSelectionService {
     return this.httpAPIService.postAPI(url, payload);
   }
 
-  getShopOfferedItems(collectionId: string, shopId: string) {
-    return from(
-      this.db
-        .collection(collectionId, ref => ref.where("shopId", "==", shopId))
-        .valueChanges()
-    ).pipe(
-      take(1),
-      map(data => {
-        console.log("Data **********************", data);
-        // this._shopList.next(data as IShopData[]);
-        return data as IShopData[];
-      })
-    );
+  async saveSelectedShopProfileLocalStorage(shopProfile: IShopProfile) {
+    const shopProfileSaved = await Plugins.Storage.set({
+      key: "currentlySelecteShopProfile",
+      value: JSON.stringify(shopProfile)
+    });
+  }
+
+  async getCurrentShopProfileSelected(): Promise<IShopProfile> {
+    const shopProfile = await Plugins.Storage.get({ key: "currentlySelecteShopProfile" });
+    const shopProfileParsed = JSON.parse(shopProfile.value);
+    return shopProfileParsed;
+  }
+
+  async clearCurrentlySelectedShopDetails() {
+    const shopProfileSaved = await Plugins.Storage.set({
+      key: "currentlySelecteShopProfile",
+      value: JSON.stringify({})
+    });
+  }
+
+  // getShopOfferedItems(collectionId: string, shopId: string) {
+  //   return from(
+  //     this.db
+  //       .collection(collectionId, ref => ref.where("shopId", "==", shopId))
+  //       .valueChanges()
+  //   ).pipe(
+  //     take(1),
+  //     map(data => {
+  //       console.log("Data **********************", data);
+  //       // this._shopList.next(data as IShopData[]);
+  //       return data as IShopData[];
+  //     })
+  //   );
     // .pipe(
     //   take(1),
     //   map(shop => {
@@ -139,15 +159,15 @@ export class ShopItemSelectionService {
     //     return { ...shop.find(element => element.shopId === shopId) };
     //   })
     // );
-  }
+  // }
 
   async setItemAvailability(
     shopId: string,
-    itemId: string
+    _id: string
   ): Promise<IShopOfferedItemsData> {
     const payload = {
       shopId,
-      itemId
+      _id
     };
     const url = `${this.shopAPI}changeItemAvailability`;
     const userData = await Plugins.Storage.get({ key: "authData" });
@@ -175,7 +195,7 @@ export class ShopItemSelectionService {
   ): Promise<IShopOfferedItemsData> {
     const payload = {
       shopId,
-      itemId: updatedItemdetails.itemId,
+      _id: updatedItemdetails._id,
       itemName: updatedItemdetails.itemName,
       itemBrand: updatedItemdetails.itemBrand,
       itemDescription: updatedItemdetails.itemDescription,
@@ -199,10 +219,10 @@ export class ShopItemSelectionService {
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
-  async deteteShopItem(shopId: string, itemId: string): Promise<any> {
+  async deteteShopItem(shopId: string, _id: string): Promise<any> {
     const payload = {
       shopId,
-      itemId
+      _id
     };
     const url = `${this.shopAPI}deleteItem`;
     const userData = await Plugins.Storage.get({ key: "authData" });
@@ -347,7 +367,7 @@ export class ShopItemSelectionService {
   ) {
     const userSelectionCustomItems = {
       // tslint:disable-next-line: object-literal-shorthand
-      selectableItems: selectableItems,
+      selectableItems: selectableItems ? selectableItems : [],
       // tslint:disable-next-line: object-literal-shorthand
       customItemsKG: customItemsKG ? customItemsKG : [],
       // tslint:disable-next-line: object-literal-shorthand

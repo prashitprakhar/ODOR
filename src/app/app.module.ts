@@ -21,6 +21,8 @@ import { LoginModalComponent } from "./shared/modals/login-modal/login-modal.com
 import { SignupModalComponent } from "./shared/modals/signup-modal/signup-modal.component";
 import { SignupSuccessModalComponent } from "./shared/modals/signup-success-modal/signup-success-modal.component";
 import { PasswordResetModalComponent } from "./shared/modals/password-reset-modal/password-reset-modal.component";
+import { ViewSavedAddressesModalComponent } from './modals/view-saved-addresses-modal/view-saved-addresses-modal.component';
+import { AddNewAddressModalComponent } from './modals/add-new-address-modal/add-new-address-modal.component';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ",
@@ -41,13 +43,17 @@ const firebaseConfig = {
     LoginModalComponent,
     SignupModalComponent,
     SignupSuccessModalComponent,
-    PasswordResetModalComponent
+    PasswordResetModalComponent,
+    ViewSavedAddressesModalComponent,
+    AddNewAddressModalComponent
   ],
   entryComponents: [
     LoginModalComponent,
     SignupModalComponent,
     SignupSuccessModalComponent,
-    PasswordResetModalComponent
+    PasswordResetModalComponent,
+    ViewSavedAddressesModalComponent,
+    AddNewAddressModalComponent
   ],
   imports: [
     BrowserModule,
