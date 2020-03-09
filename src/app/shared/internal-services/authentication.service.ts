@@ -270,6 +270,7 @@ export class AuthenticationService {
     }
     this._user.next(null);
     const userDate = await Plugins.Storage.get({ key: "authData" });
+    await Plugins.Storage.remove({ key: 'customerProfileDetails'});
     const userDataFetched = JSON.parse(userDate.value);
 
     const userToken = userDataFetched.token;
@@ -286,6 +287,28 @@ export class AuthenticationService {
       this.router.navigateByUrl("/homepage/tabs");
       }, error => {
       });
+  }
+
+  async clearLoginDetailsLocalStorage() {
+    if (this.activeLogoutTimer) {
+      clearTimeout(this.activeLogoutTimer);
+    }
+    this._user.next(null);
+    // const authData = JSON.stringify({
+    //   userId,
+    //   token,
+    //   tokenExpirationDate,
+    //   email,
+    //   username,
+    //   role
+    // });
+    await Plugins.Storage.get({ key: "authData"}).then(async data => {
+      if (data) {
+        await Plugins.Storage.remove({ key: "authData" });
+        // await Plugins.Storage.remove({ key: 'customerProfileDetails'});
+      }
+    });
+    // Plugins.Storage.set({ key: "authData" });
   }
 
   resetPassword(email: string, password: string, securePIN: number): Promise<any> {

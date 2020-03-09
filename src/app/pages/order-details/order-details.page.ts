@@ -261,17 +261,23 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
 
   async checkDeliveryAddress() {
     const customerSavedAddressList = await this.userProfileService.getCustomerSavedAddressListFromLocalStorage();
-    // console.log(" customerSavedAddressList customerSavedAddressList customerSavedAddressList >>>>>", customerSavedAddressList);
     if (customerSavedAddressList.length > 0) {
-      // tslint:disable-next-line: triple-equals
-      this.deliveryAddress = customerSavedAddressList.find(
-        element => element.isCurrentlyUsed === true
-      );
-      this.confirmDeliveryAddress();
+      // if (customerSavedAddressList.length === 1) {
+      //   this.checkIfSingleAddressSavedIsdeliveryAddress()
+      // } else {
+        this.deliveryAddress = customerSavedAddressList.find(
+          element => element.isCurrentlyUsed === true
+        );
+        this.confirmDeliveryAddress();
+      // }
     } else {
       this.addNewAddress();
     }
   }
+
+  // checkIfSingleAddressSavedIsdeliveryAddress() {
+
+  // }
 
   addNewAddress() {
     const alert = this.noAddressAlertCtrl
@@ -366,7 +372,8 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
           this.isUserLoggedIn = false;
           this.showLoginSignupScreen();
         } else {
-          this.orderDetails();
+          // this.orderDetails();
+          this.checkDeliveryAddress();
         }
       }
     );

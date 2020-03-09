@@ -14,6 +14,8 @@ import {
 import { Platform } from "@ionic/angular";
 
 import { FCM } from "capacitor-fcm";
+import { AuthenticationService } from 'src/app/shared/internal-services/authentication.service';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 // import { FCM } from '@ionic-native/fcm/ngx';
 const fcm = new FCM();
 
@@ -38,7 +40,9 @@ export class HomePagePage implements OnInit, OnDestroy {
     private messageService: MessageService,
     private customOrderService: CustomOrderService,
     private currentShopProfileService: CurrentShopProfileService,
-    private platform: Platform
+    private platform: Platform,
+    private authenticationService: AuthenticationService,
+    private userProfileService: UserProfileService
   ) {
     if (this.customOrderService.selectableItemsOrders) {
       if (this.customOrderService.selectableItemsOrders.length > 0) {
@@ -48,6 +52,12 @@ export class HomePagePage implements OnInit, OnDestroy {
         this.isItemSelected = false;
       }
     }
+
+    // Clear the Local Storage for Login on First time Install
+    // Need to put this somewhere else so that this happens only when the application is installed first time
+    // Currently un comment this when testing on Mobile
+    this.authenticationService.clearLoginDetailsLocalStorage();
+    this.userProfileService.removeCustomerProfileFromLocalStorage();
 
     // this.allShopListSubs = this.messageService
     //   .getMessage()

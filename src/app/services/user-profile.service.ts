@@ -151,6 +151,15 @@ export class UserProfileService {
     return customerSavedAddressList;
   }
 
+  async removeCustomerProfileFromLocalStorage() {
+    // const nullData = JSON.stringify({
+    //   customerRating: ,
+    //   customerAddressList: userProfile.customerAddressList,
+    //   customerImageUrl: userProfile.customerImageUrl
+    // });
+    await Plugins.Storage.remove({ key: 'customerProfileDetails'});
+  }
+
   // async getCustomerSavedAddresses(): Observable<any> {
   //   const url = `${this.userAPI}customerSavedAddress`;
   //   const userData = await Plugins.Storage.get({ key: "authData" });
