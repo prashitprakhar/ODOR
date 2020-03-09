@@ -72,7 +72,7 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
                 selectableStorageItem => {
                   const storedItem = this.shopOfferedItemsList.find(
                     eachItem =>
-                      eachItem.itemId === selectableStorageItem["itemId"]
+                      eachItem._id === selectableStorageItem["_id"]
                   );
                   storedItem.itemCount = selectableStorageItem.itemCount;
                 }
@@ -120,7 +120,7 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
     this.searchItemModalCtrl.dismiss(null, "closed", "searchItemModal");
   }
 
-  checkForMultipleShopSelection(itemId, selectableItemsForm: NgForm) {
+  checkForMultipleShopSelection(_id, selectableItemsForm: NgForm) {
     this.resetCart = false;
     this.customOrderService.isResetAllOrdersNeeded = false;
     const customKGOrders = this.customOrderService.customItemOrdersDetails;
@@ -180,7 +180,7 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
                   this.customOrderService.customItemsPacksOrdersDetails = [];
                   this.customOrderService.selectableItemsOrders = [];
                   this.customOrderService.isResetAllOrdersNeeded = false;
-                  this.increment(itemId, selectableItemsForm);
+                  this.increment(_id, selectableItemsForm);
                 }
               }
             ]
@@ -189,21 +189,21 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
             alertEl.present();
           });
       } else {
-        this.increment(itemId, selectableItemsForm);
+        this.increment(_id, selectableItemsForm);
       }
     } else {
-      this.increment(itemId, selectableItemsForm);
+      this.increment(_id, selectableItemsForm);
     }
   }
 
-  decrement(itemId, selectableItemsForm: NgForm) {
+  decrement(_id, selectableItemsForm: NgForm) {
     const selectedItemFound = this.selectedItems.find(
-      selectedItem => selectedItem.itemId === itemId
+      selectedItem => selectedItem._id === _id
     );
     if (selectedItemFound) {
       if (selectedItemFound.itemCount > 0) {
         const currentSelectedItem = this.shopOfferedItemsList.filter(
-          item => item.itemId === itemId
+          item => item._id === _id
         );
         currentSelectedItem[0].itemCount--;
         selectedItemFound.itemCount--;
@@ -211,7 +211,7 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
           selectedItemFound.itemCount * selectedItemFound.itemDiscountedRate;
         if (selectedItemFound.itemCount === 0) {
           this.selectedItems = this.selectedItems.filter(
-            element => element.itemId !== itemId
+            element => element._id !== _id
           );
         }
       }
@@ -224,18 +224,18 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
     this.messageService.sendMessage("ITEM_REMOVED_IN_CART");
   }
 
-  increment(itemId, selectableItemsForm: NgForm) {
+  increment(_id, selectableItemsForm: NgForm) {
     let selectedItemFound;
     if (this.selectedItems) {
       selectedItemFound = this.selectedItems.find(selectedItem => {
-        return selectedItem.itemId === itemId;
+        return selectedItem._id === _id;
       });
     } else {
       this.selectedItems = [];
     }
     if (selectedItemFound) {
       const currentSelectedItem = this.shopOfferedItemsList.filter(
-        item => item.itemId === itemId
+        item => item._id === _id
       );
       currentSelectedItem[0].itemCount++;
       selectedItemFound.itemCount++;
@@ -243,13 +243,14 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
         selectedItemFound.itemCount * selectedItemFound.itemDiscountedRate;
     } else {
       const currentSelectedItem = this.shopOfferedItemsList.filter(
-        item => item.itemId === itemId
+        item => item._id === _id
       );
       currentSelectedItem[0].itemCount++;
       const selectedItem: ISelectableItemsOrder = {
         shopId: this.shopId,
         shopName: this.shopProfile.shopName,
-        itemId: currentSelectedItem[0].itemId,
+        _id: currentSelectedItem[0]._id,
+        itemId: currentSelectedItem[0]._id,
         itemName: currentSelectedItem[0].itemName,
         itemUnit: currentSelectedItem[0].itemUnit,
         itemCount: 1,

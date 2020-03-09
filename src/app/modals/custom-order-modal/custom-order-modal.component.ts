@@ -11,6 +11,7 @@ import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { UserProfileService } from "src/app/services/user-profile.service";
 import { ICustomOrderItem } from "./../../models/custom-order-items.model";
+import { MessageService } from 'src/app/shared/services/message.service';
 // import { ModalController, AlertController } from "@ionic/angular";
 
 @Component({
@@ -66,7 +67,8 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     private navParams: NavParams,
     private alertCtrl: AlertController,
     private userProfileService: UserProfileService,
-    private shopItemSelectionService: ShopItemSelectionService
+    private shopItemSelectionService: ShopItemSelectionService,
+    private messageService: MessageService
   ) {
     this.selectedShopId = navParams.get("selectedShopId");
     // this.shopOfferedItemsSubs = this.shopItemSelectionService
@@ -74,43 +76,43 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     //   .subscribe(shop => {
     //     this.shopName = shop.shopName;
     //   });
-    this.shopItemSelectionService.getShopProfileForCustomers(this.selectedShopId.toString()).then(shopProfile => {
-      this.shopName = shopProfile.shopName;
-    })
-    // .getShopOfferedItems(this.selectedShopId).subscribe(shop => {
-    //   this.shopName = shop.shopName;
+    // this.shopItemSelectionService.getShopProfileForCustomers(this.selectedShopId.toString()).then(shopProfile => {
+    //   this.shopName = shopProfile.shopName;
     // });
+    this.shopItemSelectionService.getCurrentShopProfileSelected().then(shopProfile => {
+      this.shopName = shopProfile.shopName;
+      this.customKilogramItemsArray = [
+        {
+          shopId: this.selectedShopId,
+          shopName: this.shopName,
+          _id: "Item" + Math.random() * Math.random(),
+          itemId: "Item" + Math.random() * Math.random(),
+          itemName: "",
+          itemCount: 0,
+          itemUnit: "KG",
+          totalPrice: 0,
+          itemDiscountedRate: 0,
+          itemWeight: 0,
+          orderType: "CUSTOM"
+        }
+      ];
 
-    // // console.log("constructor loaded",);
-    this.customKilogramItemsArray = [
-      {
-        shopId: this.selectedShopId,
-        shopName: this.shopName,
-        itemId: "Item" + Math.random() * Math.random(),
-        itemName: "",
-        itemCount: 0,
-        itemUnit: "KG",
-        totalPrice: 0,
-        itemDiscountedRate: 0,
-        itemWeight: 0,
-        orderType: "CUSTOM"
-      }
-    ];
-
-    this.customPacketsItemsArray = [
-      {
-        shopId: this.selectedShopId,
-        shopName: this.shopName,
-        itemId: "Item" + Math.random() * Math.random(),
-        itemName: "",
-        itemCount: 0,
-        itemUnit: "PACK",
-        totalPrice: 0,
-        itemDiscountedRate: 0,
-        itemWeight: 0,
-        orderType: "CUSTOM"
-      }
-    ];
+      this.customPacketsItemsArray = [
+        {
+          shopId: this.selectedShopId,
+          shopName: this.shopName,
+          _id: "Item" + Math.random() * Math.random(),
+          itemId: "Item" + Math.random() * Math.random(),
+          itemName: "",
+          itemCount: 0,
+          itemUnit: "PACK",
+          totalPrice: 0,
+          itemDiscountedRate: 0,
+          itemWeight: 0,
+          orderType: "CUSTOM"
+        }
+      ];
+    });
   }
 
   ngOnInit() {
@@ -167,7 +169,7 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
       .getOrderedItemsFromLocalStorage()
       .subscribe(localStorageUserCustomSelections => {
         // tslint:disable-next-line: max-line-length
-        console.log("localStorageUserCustomSelections localStorageUserCustomSelections >>>>>>", JSON.parse(localStorageUserCustomSelections.value));
+        // console.log("localStorageUserCustomSelections localStorageUserCustomSelections >>>>>>", JSON.parse(localStorageUserCustomSelections.value));
         const customItemsFromLocalStorageKG = JSON.parse(
           localStorageUserCustomSelections.value
         ).customItemsKG;
@@ -212,7 +214,7 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
       if (this.customKilogramItemsArrayFromLocalStorage.length > 0) {
         this.customKilogramItemsArrayFromLocalStorage.forEach(eachKGItem => {
           const kgItemStored = this.customKilogramItemsArray.find(
-            element => element.itemId === eachKGItem.itemId
+            element => element._id === eachKGItem._id
           );
           if (kgItemStored) {
             kgItemStored.itemCount = eachKGItem.itemCount;
@@ -231,7 +233,7 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
       if (this.customPacketsItemsArrayFromLocalStorage.length > 0) {
         this.customPacketsItemsArrayFromLocalStorage.forEach(eachKGItem => {
           const kgItemStored = this.customKilogramItemsArray.find(
-            element => element.itemId === eachKGItem.itemId
+            element => element._id === eachKGItem._id
           );
           if (kgItemStored) {
             kgItemStored.itemCount = eachKGItem.itemCount;
@@ -245,9 +247,6 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
         this.customKilogramItemsArray = this.customPacketsItemsArrayFromLocalStorage;
       }
     }
-
-    // // console.log("oninit Modal this.customKilogramItemsArray",this.customKilogramItemsArray);
-    // // console.log("oninit Modal this.customPacketsItemsArray",this.customPacketsItemsArray);
   }
 
   ngOnDestroy() {
@@ -268,7 +267,14 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     );
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
-    this.modalCtrl.dismiss(null, "closed", "customItemModal");
+    console.log("this.customKilogramItemsArray.length , this.customPacketsItemsArray.length", this.customKilogramItemsArray.length, this.customPacketsItemsArray.length);
+    if (this.customKilogramItemsArray.length > 0 || this.customPacketsItemsArray.length > 0) {
+      this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+      this.modalCtrl.dismiss(null, "closed", "customItemModal");
+    } else {
+      this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
+    }
+    
   }
 
   addNewItemKG(slidingItem: IonItemSliding) {
@@ -276,6 +282,7 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     this.customKilogramItemsArray.push({
       shopId: this.selectedShopId,
       shopName: this.shopName,
+      _id: "Item" + Math.random() * Math.random(),
       itemId: "Item" + Math.random() * Math.random(),
       itemName: "",
       itemCount: 0,
@@ -292,6 +299,7 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     this.customPacketsItemsArray.push({
       shopId: this.selectedShopId,
       shopName: this.shopName,
+      _id: "Item" + Math.random() * Math.random(),
       itemId: "Item" + Math.random() * Math.random(),
       itemName: "",
       itemCount: 0,
@@ -303,9 +311,9 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     });
   }
 
-  onItemNameChangeKG(event, itemId) {
+  onItemNameChangeKG(event, _id) {
     const itemValueChanged = this.customKilogramItemsArray.find(
-      arrayItem => arrayItem.itemId === itemId
+      arrayItem => arrayItem._id === _id
     );
     if (event.detail.value.length >= 1 && itemValueChanged.itemCount === 0) {
       itemValueChanged.itemCount = 0.5;
@@ -316,9 +324,9 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  onItemNameChangePacks(event, itemId) {
+  onItemNameChangePacks(event, _id) {
     const itemValueChanged = this.customPacketsItemsArray.find(
-      arrayItem => arrayItem.itemId === itemId
+      arrayItem => arrayItem._id === _id
     );
     if (event.detail.value.length >= 1 && itemValueChanged.itemCount === 0) {
       itemValueChanged.itemCount = 1;
@@ -329,88 +337,88 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     }
   }
 
-  incrementKG(itemId, form: NgForm) {
+  incrementKG(_id, form: NgForm) {
     if (!form.valid) {
       return;
     }
-    const itemIdList = Object.entries(form.value);
-    itemIdList.forEach(item => {
+    const _idList = Object.entries(form.value);
+    _idList.forEach(item => {
       const searchedItem = this.customKilogramItemsArray.find(
-        arrayItem => arrayItem.itemId === item[0]
+        arrayItem => arrayItem._id === item[0]
       );
       searchedItem.itemName = item[1].toString();
     });
     const customItem = this.customKilogramItemsArray.find(
-      item => item.itemId === itemId
+      item => item._id === _id
     );
     customItem.itemCount = customItem.itemCount + 0.5;
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
   }
 
-  incrementPacks(itemId, form: NgForm) {
+  incrementPacks(_id, form: NgForm) {
     if (!form.valid) {
       return;
     }
-    const itemIdList = Object.entries(form.value);
-    itemIdList.forEach(item => {
+    const _idList = Object.entries(form.value);
+    _idList.forEach(item => {
       const searchedItem = this.customPacketsItemsArray.find(
-        arrayItem => arrayItem.itemId === item[0]
+        arrayItem => arrayItem._id === item[0]
       );
       searchedItem.itemName = item[1].toString();
     });
     const customItem = this.customPacketsItemsArray.find(
-      item => item.itemId === itemId
+      item => item._id === _id
     );
     customItem.itemCount++;
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
   }
 
-  decrementKG(itemId, form: NgForm) {
+  decrementKG(_id, form: NgForm) {
     if (!form.valid) {
       return;
     }
-    const itemIdList = Object.entries(form.value);
-    itemIdList.forEach(item => {
+    const _idList = Object.entries(form.value);
+    _idList.forEach(item => {
       const searchedItem = this.customKilogramItemsArray.find(
-        arrayItem => arrayItem.itemId === item[0]
+        arrayItem => arrayItem._id === item[0]
       );
       searchedItem.itemName = item[1].toString();
     });
     const customItem = this.customKilogramItemsArray.find(
-      item => item.itemId === itemId
+      item => item._id === _id
     );
     customItem.itemCount = customItem.itemCount - 0.5;
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
   }
 
-  decrementPacks(itemId, form: NgForm) {
+  decrementPacks(_id, form: NgForm) {
     if (!form.valid) {
       return;
     }
-    const itemIdList = Object.entries(form.value);
-    itemIdList.forEach(item => {
+    const _idList = Object.entries(form.value);
+    _idList.forEach(item => {
       const searchedItem = this.customPacketsItemsArray.find(
-        arrayItem => arrayItem.itemId === item[0]
+        arrayItem => arrayItem._id === item[0]
       );
       searchedItem.itemName = item[1].toString();
     });
     const customItem = this.customPacketsItemsArray.find(
-      item => item.itemId === itemId
+      item => item._id === _id
     );
     customItem.itemCount--;
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
   }
 
-  removeItemKG(itemId, form: NgForm) {
+  removeItemKG(_id, form: NgForm) {
     this.customKilogramItemsArray = this.customKilogramItemsArray.filter(
-      item => item.itemId !== itemId
+      item => item._id !== _id
     );
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
   }
 
-  removeItemPacks(itemId, form: NgForm) {
+  removeItemPacks(_id, form: NgForm) {
     this.customPacketsItemsArray = this.customPacketsItemsArray.filter(
-      item => item.itemId !== itemId
+      item => item._id !== _id
     );
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
   }
@@ -419,20 +427,20 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     if (!kgForm.valid && !packsForm.valid) {
       return;
     }
-    const itemIdListKG = Object.entries(kgForm.value);
+    const _idListKG = Object.entries(kgForm.value);
 
-    itemIdListKG.forEach(item => {
+    _idListKG.forEach(item => {
       const searchedItem = this.customKilogramItemsArray.find(
-        arrayItem => arrayItem.itemId === item[0]
+        arrayItem => arrayItem._id === item[0]
       );
       searchedItem.itemName = item[1].toString();
     });
 
-    const itemIdListPacks = Object.entries(packsForm.value);
+    const _idListPacks = Object.entries(packsForm.value);
 
-    itemIdListPacks.forEach(item => {
+    _idListPacks.forEach(item => {
       const searchedItem = this.customPacketsItemsArray.find(
-        arrayItem => arrayItem.itemId === item[0]
+        arrayItem => arrayItem._id === item[0]
       );
       searchedItem.itemName = item[1].toString();
     });
@@ -445,13 +453,18 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     );
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
-    this.modalCtrl.dismiss(null, "confirm", "customItemModal");
+    if (this.customKilogramItemsArray.length > 0 || this.customPacketsItemsArray.length > 0) {
+      this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+      this.modalCtrl.dismiss(null, "confirm", "customItemModal");
+    } else {
+      this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
+    }
   }
 
   cancelCustomOrder() {
     this.customOrderService.customItemOrdersDetails = [];
     this.customOrderService.customItemsPacksOrdersDetails = [];
-    this.modalCtrl.dismiss(null, "Custom Order Cancelled", "customItemModal");
+    this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
   }
 
   removeItemSliding(form: NgForm) {}

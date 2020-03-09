@@ -11,6 +11,7 @@ import { ICityDetails } from "src/app/models/city-abbreviation-model";
 import { CommonUtilityService } from "src/app/shared/services/common-utility.service";
 import { SortByService } from "src/app/shared/utils/sort-by.service";
 import { EditAddressModalComponent } from "../edit-address-modal/edit-address-modal.component";
+import { AddNewAddressModalComponent } from '../add-new-address-modal/add-new-address-modal.component';
 
 @Component({
   selector: "app-view-saved-addresses-modal",
@@ -32,7 +33,8 @@ export class ViewSavedAddressesModalComponent implements OnInit {
     private deleteConfirmAlertlCtrl: AlertController,
     private deleteLoadingCtrl: LoadingController,
     private deleteAddressSuccessAlertCtrl: AlertController,
-    private deleteAddressFailAlertCtrl: AlertController
+    private deleteAddressFailAlertCtrl: AlertController,
+    private addNewAddressModalCtrl: ModalController
   ) {}
 
   ngOnInit() {
@@ -60,6 +62,30 @@ export class ViewSavedAddressesModalComponent implements OnInit {
     );
   }
 
+  addNewAddress() {
+    this.addNewAddressModalCtrl
+      .create({
+        component: AddNewAddressModalComponent,
+        id: "addNewAddressModal"
+      })
+      .then(modalEl => {
+        modalEl.present();
+        return modalEl.onDidDismiss();
+      })
+      .then(data => {
+        this.userProfileService
+      .getCustomerSavedAddresses()
+      .then(addressList => {
+        this.savedAddressesList = this.sortByService.sortCustomerAddress(
+          addressList.addressList
+        );
+      })
+      .catch(err => {
+        this.savedAddressesList = [];
+      });
+      });
+  }
+
   changeUsageFlag(address) {
     this.userProfileService
       .updateAddressUsageFlag(address._id)
@@ -67,6 +93,7 @@ export class ViewSavedAddressesModalComponent implements OnInit {
         this.savedAddressesList = this.sortByService.sortCustomerAddress(
           data.customerAddressList
         );
+        this.userProfileService.getAndSetCustomerProfile();
         this.successCurrentUsedAddressChange();
       })
       .catch(err => {

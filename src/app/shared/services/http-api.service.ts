@@ -27,6 +27,11 @@ export class HttpApiService {
     return this.http.post(url, payload, {headers}).toPromise();
   }
 
+  authenticatedGetAPI(url, headersData): Promise<any> {
+    const headers = new HttpHeaders({'Authorization': `Bearer ${headersData}`});
+    return this.http.get(url, {headers}).toPromise();
+  }
+
   uploadFile(url, payload, headersData): Promise<any>{
     // tslint:disable-next-line: object-literal-key-quotes
     const headers = new HttpHeaders({'Authorization': `Bearer ${headersData}`});

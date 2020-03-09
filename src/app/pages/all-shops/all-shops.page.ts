@@ -47,6 +47,7 @@ export class AllShopsPage implements OnInit, OnDestroy {
     this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {
       this.deviceFCMToken = deviceFCMToken;
     });
+    this.shopItemSelectionService.clearCurrentlySelectedShopDetails();
     // this.networkStatusSubs = this.networkService.checkNetworkStatus().subscribe(networkData => {
     //   console.log("Came inside Subscribe *********");
     //   if (!networkData.connected) {

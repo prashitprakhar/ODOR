@@ -124,6 +124,7 @@ export class AddNewAddressModalComponent implements OnInit {
             cssClass: "secondary",
             handler: cancel => {
               addressUpdateForm.reset();
+              this.onClose();
               // console.log("Shop is closed");
             }
           }
@@ -131,7 +132,6 @@ export class AddNewAddressModalComponent implements OnInit {
       })
       .then(alertEl => {
         alertEl.present();
-        this.onClose();
       });
   }
 }

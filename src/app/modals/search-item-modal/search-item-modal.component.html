@@ -74,7 +74,7 @@
                 <ion-button
                   (click)="
                     checkForMultipleShopSelection(
-                      product.itemId,
+                      product._id,
                       selectableItemsForm
                     )
                   "
@@ -87,7 +87,7 @@
                 </ion-button>
                 <ion-label>{{ product.itemCount }}</ion-label> &nbsp;
                 <ion-button
-                  (click)="decrement(product.itemId, selectableItemsForm)"
+                  (click)="decrement(product._id, selectableItemsForm)"
                   style="color: #228B22;"
                   fill="clear"
                   strong

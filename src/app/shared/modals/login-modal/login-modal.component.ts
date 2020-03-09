@@ -82,6 +82,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
             const userAuthInfo = loginResData["user"];
             const userRole = userAuthInfo["role"];
             await loadingEl.dismiss();
+            console.log("this.navigationFrom<<<<<>>>>>>", this.navigationFrom);
             if (this.navigationFrom && this.navigationFrom === "CART") {
               this.setUserProfileData();
               this.onClose();

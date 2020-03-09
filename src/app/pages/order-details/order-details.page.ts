@@ -1,8 +1,19 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter
+} from "@angular/core";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ICustomOrderItem } from "src/app/models/custom-order-items.model";
 import { ISelectableItemsOrder } from "src/app/models/selectable-items-orders.model";
-import { ActionSheetController, ModalController } from "@ionic/angular";
+import {
+  ActionSheetController,
+  ModalController,
+  AlertController,
+  LoadingController
+} from "@ionic/angular";
 import { IUserFinalOrder } from "src/app/models/user-final-order.model";
 import { DeliveryTimeService } from "src/app/services/delivery-time.service";
 import { UserProfileService } from "src/app/services/user-profile.service";
@@ -14,8 +25,10 @@ import { CurrentShopProfileService } from "src/app/shared/internal-services/curr
 import { AuthenticationService } from "src/app/shared/internal-services/authentication.service";
 import { Subscription } from "rxjs";
 import { LoginModalComponent } from "src/app/shared/modals/login-modal/login-modal.component";
-import { MessageService } from 'src/app/shared/services/message.service';
-import { ICustomerAddress } from 'src/app/models/customer-address.model';
+import { MessageService } from "src/app/shared/services/message.service";
+import { ICustomerAddress } from "src/app/models/customer-address.model";
+import { ViewSavedAddressesModalComponent } from "src/app/modals/view-saved-addresses-modal/view-saved-addresses-modal.component";
+import { AddNewAddressModalComponent } from "src/app/modals/add-new-address-modal/add-new-address-modal.component";
 // import { LoginBottomModalComponent } from "src/app/modals/login-bottom-modal/login-bottom-modal.component";
 
 @Component({
@@ -57,7 +70,13 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     private currentShopProfileService: CurrentShopProfileService,
     private authenticationService: AuthenticationService,
     private loginModalCtrl: ModalController,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private viewSavedAddressesModalCtrl: ModalController,
+    private addNewAddressModalCtrl: ModalController,
+    private noAddressAlertCtrl: AlertController, // private deliveryAddConfActionCtrl: ActionSheetController
+    private placingOrderLoadingCtrl: LoadingController,
+    private orderPlacementSuccessCtrl: AlertController,
+    private orderPlacementFailureCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -224,7 +243,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         component: LoginModalComponent,
         componentProps: {
           name: "loginModalComponent",
-          navigationFrom: 'CART'
+          navigationFrom: "CART"
         },
         id: "loginModal"
       })
@@ -233,7 +252,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         return loginModalEl.onDidDismiss();
       })
       .then(data => {
-        if (data.role === 'closed') {
+        if (data.role === "closed") {
           // this.orderDetails();
           this.checkDeliveryAddress();
         }
@@ -242,17 +261,75 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
 
   async checkDeliveryAddress() {
     const customerSavedAddressList = await this.userProfileService.getCustomerSavedAddressListFromLocalStorage();
-    // console.log(" customerSavedAddressList customerSavedAddressList customerSavedAddressList >>>>>", customerSavedAddressList);
     if (customerSavedAddressList.length > 0) {
-      // tslint:disable-next-line: triple-equals
-      this.deliveryAddress = customerSavedAddressList.find(element => element.isCurrentlyUsed == true);
-      this.orderDetails();
+      // if (customerSavedAddressList.length === 1) {
+      //   this.checkIfSingleAddressSavedIsdeliveryAddress()
+      // } else {
+        this.deliveryAddress = customerSavedAddressList.find(
+          element => element.isCurrentlyUsed === true
+        );
+        this.confirmDeliveryAddress();
+      // }
     } else {
-
+      this.addNewAddress();
     }
   }
 
-  orderDetails() {
+  // checkIfSingleAddressSavedIsdeliveryAddress() {
+
+  // }
+
+  addNewAddress() {
+    const alert = this.noAddressAlertCtrl
+      .create({
+        header: "Add a delivery address",
+        buttons: [
+          {
+            text: "OK",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: cancel => {
+              this.addNewAddressModalCtrl
+                .create({
+                  component: AddNewAddressModalComponent,
+                  id: "addNewAddressModal"
+                })
+                .then(modalEl => {
+                  modalEl.present();
+                  return modalEl.onDidDismiss();
+                })
+                .then(data => {
+                  this.orderDetails();
+                });
+            }
+          }
+        ]
+      })
+      .then(alertEl => {
+        alertEl.present();
+      });
+  }
+
+  confirmDeliveryAddress() {
+    this.viewSavedAddressesModalCtrl
+      .create({
+        component: ViewSavedAddressesModalComponent,
+        id: "viewSavedAddressesModal"
+      })
+      .then(viewSavedAddressModalEl => {
+        viewSavedAddressModalEl.present();
+        return viewSavedAddressModalEl.onDidDismiss();
+      })
+      .then(async data => {
+        this.orderDetails();
+      });
+  }
+
+  async orderDetails() {
+    const customerSavedAddressList = await this.userProfileService.getCustomerSavedAddressListFromLocalStorage();
+    this.deliveryAddress = customerSavedAddressList.find(
+      element => element.isCurrentlyUsed === true
+    );
     this.isUserLoggedIn = true;
     if (
       this.customOrderService.customItemOrdersDetails &&
@@ -265,8 +342,9 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         this.actionSheetCtrl
           .create({
             header: "Place Order",
-            // tslint:disable-next-line: max-line-length
-            subHeader: "You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.",
+            subHeader:
+              // tslint:disable-next-line: max-line-length
+              "You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.",
             buttons: [
               {
                 text: "Ok. Got it. Place Order.",
@@ -294,60 +372,78 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
           this.isUserLoggedIn = false;
           this.showLoginSignupScreen();
         } else {
-          this.orderDetails();
+          // this.orderDetails();
+          this.checkDeliveryAddress();
         }
       }
     );
   }
 
   confirmOrder() {
-    this.selectedShopDetails = this.customOrderService.selectedShopDetails;
-    this.customOrderService.isResetAllOrdersNeeded = true;
-    const randomInteger = Math.floor(Math.random() * 1299827);
-    const date = new Date();
-    this.userFinalOrder = {
-      orderId: this.allOrdersCombined[0].shopId + "-" + randomInteger,
-      shopId: this.allOrdersCombined[0].shopId,
-      shopName: this.shopProfile.shopName,
-      ordersList: this.allOrdersCombined,
-      selectedItemsTotalPrice: this.grandTotal,
-      customItemsEstimatedPrice: 0,
-      estimatedDeliveryTime:
-        this.deliveryTimeService.getManipulatedDeliveryTime()
-          .deliveryTime1KTo2K + "mins",
-      estimatedDeliveryDateTimeFull: this.deliveryDateTime,
-      deliveryAddress: this.deliveryAddress,
-      deliveryDate: date,
-      deliveryTimeSlot: "within 30 minutes",
-      deliveryCharge: "Free",
-      maxDistance: 1 + " KM.",
-      orderPlaced: true,
-      orderStatus: "PROGRESS",
-      orderConfirmationStatus: "WAITING"
-    };
-    console.log("this.userFinalOrder this.userFinalOrder", this.userFinalOrder)
-    this.userProfileService.saveUserOrder(this.userFinalOrder);
-    this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
-    this.orderConfModalCtrl
+    this.placingOrderLoadingCtrl
       .create({
-        component: OrderConfirmedModalComponent,
-        componentProps: {
-          name: "orderConfModal",
-          orderId: this.userFinalOrder.orderId
-        },
-        id: "orderConfModal"
+        message: "Placing your order ...."
       })
-      .then(orderConfModalEl => {
-        orderConfModalEl.present();
-        return orderConfModalEl.onDidDismiss();
-      })
-      .then(data => {
-        this.isOrderUnplaced = false;
-        this.customOrderService.customItemsPacksOrdersDetails = [];
-        this.customOrderService.customItemOrdersDetails = [];
-        this.customOrderService.selectableItemsOrders = [];
-        this.selectableOrders = [];
-        this.messageService.sendCartStatusMessage('CART_EMPTY');
+      .then(placingOrderEl => {
+        placingOrderEl.present();
+
+        this.selectedShopDetails = this.customOrderService.selectedShopDetails;
+        this.customOrderService.isResetAllOrdersNeeded = true;
+        const randomInteger = Math.floor(Math.random() * 1299827);
+        const date = new Date();
+        this.userFinalOrder = {
+          orderId: this.allOrdersCombined[0].shopId + "-" + randomInteger,
+          shopId: this.allOrdersCombined[0].shopId,
+          shopName: this.shopProfile.shopName,
+          orderedItemsList: this.allOrdersCombined,
+          selectedItemsTotalPrice: this.grandTotal,
+          customItemsEstimatedPrice: 0,
+          estimatedDeliveryTime:
+            this.deliveryTimeService.getManipulatedDeliveryTime()
+              .deliveryTime1KTo2K + "mins",
+          estimatedDeliveryDateTimeFull: this.deliveryDateTime,
+          deliveryAddress: this.deliveryAddress,
+          deliveryDate: date,
+          deliveryTimeSlot: "within 30 minutes",
+          deliveryCharge: "Free",
+          maxDistance: 1 + " KM.",
+          orderPlaced: true,
+          orderStatus: "PROGRESS",
+          orderConfirmationStatus: "CONFIRMED"
+        };
+        // console.log("this.userFinalOrder this.userFinalOrder", this.userFinalOrder);
+
+        this.userProfileService
+          .saveUserOrder(this.userFinalOrder)
+          .then(customerCurrentOrder => {
+            // console.log("User Current Order Details >>>>>>>", customerCurrentOrder);
+            this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
+            placingOrderEl.dismiss();
+            this.orderConfModalCtrl
+              .create({
+                component: OrderConfirmedModalComponent,
+                componentProps: {
+                  name: "orderConfModal",
+                  orderId: this.userFinalOrder.orderId
+                },
+                id: "orderConfModal"
+              })
+              .then(orderConfModalEl => {
+                orderConfModalEl.present();
+                return orderConfModalEl.onDidDismiss();
+              })
+              .then(data => {
+                this.isOrderUnplaced = false;
+                this.customOrderService.customItemsPacksOrdersDetails = [];
+                this.customOrderService.customItemOrdersDetails = [];
+                this.customOrderService.selectableItemsOrders = [];
+                this.selectableOrders = [];
+                this.messageService.sendCartStatusMessage("CART_EMPTY");
+              });
+          })
+          .catch(err => {
+            console.log("Error Occured while Placing order in DB", err);
+          });
       });
   }
 }

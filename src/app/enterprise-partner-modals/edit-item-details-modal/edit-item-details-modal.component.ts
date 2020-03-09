@@ -73,7 +73,8 @@ export class EditItemDetailsModalComponent implements OnInit {
     const itemUndiscountedRate = this.editForm.value.itemUndiscountedRate;
     const discountPercentage = this.editForm.value.discountPercentage;
     const updateItemDetails: IShopOfferedItems = {
-      itemId: this.product.itemId,
+      _id: this.product._id,
+      itemId: this.product._id,
       itemName: this.editForm.value.itemName,
       itemBrand: this.editForm.value.itemBrand,
       itemDescription: this.product.itemDescription,

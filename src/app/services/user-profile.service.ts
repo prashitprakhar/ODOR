@@ -3,13 +3,14 @@ import { IUserFinalOrder } from '../models/user-final-order.model';
 import { AuthService } from './auth.service';
 // import { from } from 'rxjs';
 import { AngularFirestore } from "@angular/fire/firestore";
-import { take } from 'rxjs/operators';
+import { take, map } from 'rxjs/operators';
 import { ICustomerAddress } from '../models/customer-address.model';
 import { environment } from 'src/environments/environment';
 import { Plugins } from "@capacitor/core";
 import { HttpApiService } from '../shared/services/http-api.service';
 import { ICustomerProfileDetails } from '../models/customer-profile-details.model';
-import { Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+// import { ICustomOrderItem } from '../models/custom-order-items.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,19 +19,72 @@ export class UserProfileService {
 
   private userAPI: string = environment.internalAPI.userAuth;
   public userOrderList: IUserFinalOrder[] = [];
+  // public _customerCurrentOrder = new BehaviorSubject<IUserFinalOrder>(null);
+  // private _shopList = new BehaviorSubject<IShopData[]>(null);
 
   constructor(
     // private authService: AuthService,
               private db: AngularFirestore,
               private httpAPIService: HttpApiService) { }
 
-  saveUserOrder(userCurrentOrder: IUserFinalOrder) {
-    this.userOrderList = [userCurrentOrder, ...this.userOrderList];
+  async saveUserOrder(userCurrentOrder: IUserFinalOrder): Promise<any> {
+    this.userOrderList = [];
+    this.userOrderList = [userCurrentOrder];
+    // console.log("userCurrentOrder userCurrentOrder >>>>>", userCurrentOrder);
+    const url = `${this.userAPI}placeOrder`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {userId, orderDetails: userCurrentOrder};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
   getUserOrder(): IUserFinalOrder[] {
     return [...this.userOrderList] ;
   }
+
+  async getCustomerAllOrder(): Promise<IUserFinalOrder[]> {
+    // return [...this.userOrderList] ;
+    const url = `${this.userAPI}getAllOrders`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {userId};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async getCustomerCurrentOrder(): Promise<IUserFinalOrder> {
+    const url = `${this.userAPI}customerCurrentOrder`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const payload = {userId};
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  // get getCustomerOrders() {
+  //   // this._customerCurrentOrder.subscribe(data => {});
+  //   // return this._customerCurrentOrder.asObservable();
+  //   return this._customerCurrentOrder.asObservable().pipe(
+  //     take(1),
+  //     map(customerOrder => {
+  //       if (customerOrder) {
+  //         console.log("customerOrder", customerOrder);
+  //         return customerOrder;
+  //       } else {
+  //         return null;
+  //       }
+  //       // if (user) {
+  //       //   return user.id;
+  //       // } else {
+  //       //   return null;
+  //       // }
+  //     })
+  //   );
+  // }
 
   // getUserProfile(email: string) {
   //   return this.db.collection('USER_PROFILE', ref => ref.where('email', '==', email)).valueChanges().pipe(
@@ -62,6 +116,14 @@ export class UserProfileService {
     // getCustomerProfile
   }
 
+  async getCurrentlyUsedAddress(): Promise<ICustomerAddress> {
+    const customerProfileData = await Plugins.Storage.get({ key: 'customerProfileDetails'});
+    const customerProfileParsedData = JSON.parse(customerProfileData.value);
+    const customerCurrentlyUsedAddress: ICustomerAddress = customerProfileParsedData.customerAddressList
+                                                              .find(element => element.isCurrentlyUsed === true);
+    return customerCurrentlyUsedAddress;
+  }
+
   async addNewAddress(addressDetails: ICustomerAddress): Promise<any> {
     const url = `${this.userAPI}addNewAddress`;
     const userData = await Plugins.Storage.get({ key: "authData" });
@@ -87,6 +149,15 @@ export class UserProfileService {
     const parsedCustomerProfile = JSON.parse(customerSavedProfile.value);
     const customerSavedAddressList = parsedCustomerProfile.customerAddressList;
     return customerSavedAddressList;
+  }
+
+  async removeCustomerProfileFromLocalStorage() {
+    // const nullData = JSON.stringify({
+    //   customerRating: ,
+    //   customerAddressList: userProfile.customerAddressList,
+    //   customerImageUrl: userProfile.customerImageUrl
+    // });
+    await Plugins.Storage.remove({ key: 'customerProfileDetails'});
   }
 
   // async getCustomerSavedAddresses(): Observable<any> {
