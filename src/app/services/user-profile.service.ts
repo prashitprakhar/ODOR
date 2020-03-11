@@ -92,6 +92,55 @@ export class UserProfileService {
   //   );
   // }
 
+  async getInitialCartItemsFromDB(): Promise<any> {
+    const url = `${this.userAPI}getInitialLoginCartItems`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userId = userDataFetched.userId;
+    const userToken = userDataFetched.token;
+    const payload = {
+      userId
+    };
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async updateDBWithCurrentCartItems(selectableItems, customPackItems, customKGItems): Promise<any> {
+    // selectableItem
+    // customPackItem
+    // customKGItem
+    // updateCartsOnLogin
+    const url = `${this.userAPI}updateCartsOnLogin`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userId = userDataFetched.userId;
+    const userToken = userDataFetched.token;
+    // const selectableItem = this.custom
+    // console.log("selectableItems, customPackItems, customKGItems", selectableItems, customPackItems, customKGItems);
+    const payload = {
+      userId,
+      selectableItems,
+      customPackItems,
+      customKGItems
+    };
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+    // return 0;
+  }
+
+  async removeItemsFromCartPostOrderPlacement(): Promise<any> {
+    // removeCartItemPostOrder
+    const url = `${this.userAPI}removeCartItemPostOrder`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userId = userDataFetched.userId;
+    const userToken = userDataFetched.token;
+    // const selectableItem = this.custom
+    // console.log("selectableItems, customPackItems, customKGItems", selectableItems, customPackItems, customKGItems);
+    const payload = {
+      userId
+    };
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
   async getAndSetCustomerProfile(): Promise<ICustomerProfileDetails> {
     const userProfile = await this.getCustomerProfile();
     const customerDetails = JSON.stringify({

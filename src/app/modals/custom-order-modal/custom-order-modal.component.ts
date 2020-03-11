@@ -12,6 +12,7 @@ import { ShopItemSelectionService } from "src/app/services/shop-item-selection.s
 import { UserProfileService } from "src/app/services/user-profile.service";
 import { ICustomOrderItem } from "./../../models/custom-order-items.model";
 import { MessageService } from 'src/app/shared/services/message.service';
+import { AuthenticationService } from 'src/app/shared/internal-services/authentication.service';
 // import { ModalController, AlertController } from "@ionic/angular";
 
 @Component({
@@ -23,33 +24,6 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
   public selectedShopId: string;
 
   public customItemsCount: number = 0;
-  // public customKilogramItemsArray: ICustomOrderItem[] = [
-  //   {
-  //     shopId: this.selectedShopId,
-  //     itemId: "Item" + Math.random() * Math.random(),
-  //     itemName: "",
-  //     itemCount: 0,
-  //     itemUnit: "KG",
-  //     totalPrice: 0,
-  //     itemDiscountedRate: 0,
-  //     itemWeight: 0,
-  //     orderType: "CUSTOM"
-  //   }
-  // ];
-
-  // public customPacketsItemsArray: ICustomOrderItem[] = [
-  //   {
-  //     shopId: this.selectedShopId,
-  //     itemId: "Item" + Math.random() * Math.random(),
-  //     itemName: "",
-  //     itemCount: 0,
-  //     itemUnit: "PACK",
-  //     totalPrice: 0,
-  //     itemDiscountedRate: 0,
-  //     itemWeight: 0,
-  //     orderType: "CUSTOM"
-  //   }
-  // ];
 
   // public otherCustomOrderInCartMessage: string = 'You have custom orders for other shop. Do you want to remove those and continu'
   public customKilogramItemsArray: ICustomOrderItem[] = [];
@@ -68,25 +42,20 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private userProfileService: UserProfileService,
     private shopItemSelectionService: ShopItemSelectionService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private authenticationService: AuthenticationService
   ) {
     this.selectedShopId = navParams.get("selectedShopId");
-    // this.shopOfferedItemsSubs = this.shopItemSelectionService
-    //   .getShopOfferedItemsForCustomer(this.selectedShopId)
-    //   .subscribe(shop => {
-    //     this.shopName = shop.shopName;
-    //   });
-    // this.shopItemSelectionService.getShopProfileForCustomers(this.selectedShopId.toString()).then(shopProfile => {
-    //   this.shopName = shopProfile.shopName;
-    // });
     this.shopItemSelectionService.getCurrentShopProfileSelected().then(shopProfile => {
       this.shopName = shopProfile.shopName;
+      const uniqueIdKG = this.authenticationService.getUniqueObjectId();
+      const uniqueIdPack = this.authenticationService.getUniqueObjectId();
       this.customKilogramItemsArray = [
         {
           shopId: this.selectedShopId,
           shopName: this.shopName,
-          _id: "Item" + Math.random() * Math.random(),
-          itemId: "Item" + Math.random() * Math.random(),
+          _id: uniqueIdKG,
+          itemId: uniqueIdKG,
           itemName: "",
           itemCount: 0,
           itemUnit: "KG",
@@ -101,8 +70,8 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
         {
           shopId: this.selectedShopId,
           shopName: this.shopName,
-          _id: "Item" + Math.random() * Math.random(),
-          itemId: "Item" + Math.random() * Math.random(),
+          _id: uniqueIdPack,
+          itemId: uniqueIdPack,
           itemName: "",
           itemCount: 0,
           itemUnit: "PACK",
@@ -116,10 +85,6 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // let checkOpenOrders = false;
-    // if(this.userProfileService.getUserOrder().length > 0) {
-    //   this.userProfileService.getUserOrder().filter(element => element.orderPlaced )
-    // }
     if (
       (this.userProfileService.getUserOrder() &&
         this.customOrderService.customItemsPacksOrdersDetails &&
@@ -146,7 +111,6 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
               role: "cancel",
               cssClass: "secondary",
               handler: cancel => {
-                // console.log("cancel ***");
                 this.modalCtrl.dismiss(null, "closed", "customItemModal");
               }
             },
@@ -168,15 +132,12 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     this.userOrdersFromLocalStorageSubs = this.shopItemSelectionService
       .getOrderedItemsFromLocalStorage()
       .subscribe(localStorageUserCustomSelections => {
-        // tslint:disable-next-line: max-line-length
-        // console.log("localStorageUserCustomSelections localStorageUserCustomSelections >>>>>>", JSON.parse(localStorageUserCustomSelections.value));
         const customItemsFromLocalStorageKG = JSON.parse(
           localStorageUserCustomSelections.value
         ).customItemsKG;
         const customItemsFromLocalStoragePack = JSON.parse(
           localStorageUserCustomSelections.value
         ).customItemsPacks;
-        // console.log("customItemsFromLocalStorageKG customItemsFromLocalStorageKG", customItemsFromLocalStorageKG);
         this.customPacketsItemsArrayFromLocalStorage =
         customItemsFromLocalStoragePack && customItemsFromLocalStoragePack.length > 0
             ? customItemsFromLocalStoragePack.filter(
@@ -267,23 +228,22 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     );
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
-    console.log("this.customKilogramItemsArray.length , this.customPacketsItemsArray.length", this.customKilogramItemsArray.length, this.customPacketsItemsArray.length);
     if (this.customKilogramItemsArray.length > 0 || this.customPacketsItemsArray.length > 0) {
       this.messageService.sendMessage("ITEM_ADDED_IN_CART");
       this.modalCtrl.dismiss(null, "closed", "customItemModal");
     } else {
       this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
     }
-    
   }
 
   addNewItemKG(slidingItem: IonItemSliding) {
+    const uniqueId = this.authenticationService.getUniqueObjectId();
     slidingItem.close();
     this.customKilogramItemsArray.push({
       shopId: this.selectedShopId,
       shopName: this.shopName,
-      _id: "Item" + Math.random() * Math.random(),
-      itemId: "Item" + Math.random() * Math.random(),
+      _id: uniqueId,
+      itemId: uniqueId,
       itemName: "",
       itemCount: 0,
       itemUnit: "KG",
@@ -295,12 +255,13 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
   }
 
   addNewItemPacks(slidingItem: IonItemSliding) {
+    const uniqueId = this.authenticationService.getUniqueObjectId();
     slidingItem.close();
     this.customPacketsItemsArray.push({
       shopId: this.selectedShopId,
       shopName: this.shopName,
-      _id: "Item" + Math.random() * Math.random(),
-      itemId: "Item" + Math.random() * Math.random(),
+      _id: uniqueId,
+      itemId: uniqueId,
       itemName: "",
       itemCount: 0,
       itemUnit: "PACK",

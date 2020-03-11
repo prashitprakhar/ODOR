@@ -56,8 +56,8 @@ export class HomePagePage implements OnInit, OnDestroy {
     // Clear the Local Storage for Login on First time Install
     // Need to put this somewhere else so that this happens only when the application is installed first time
     // Currently un comment this when testing on Mobile
-    this.authenticationService.clearLoginDetailsLocalStorage();
-    this.userProfileService.removeCustomerProfileFromLocalStorage();
+    // this.authenticationService.clearLoginDetailsLocalStorage();
+    // this.userProfileService.removeCustomerProfileFromLocalStorage();
 
     // this.allShopListSubs = this.messageService
     //   .getMessage()

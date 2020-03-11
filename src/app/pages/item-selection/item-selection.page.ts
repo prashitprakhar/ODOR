@@ -264,7 +264,7 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
         return modalEl.onDidDismiss();
       })
       .then(data => {
-        console.log("data on Custom Order Modal Close ----->>>>>>>", data);
+        // console.log("data on Custom Order Modal Close ----->>>>>>>", data);
         if (
           data.role === "CUSTOM_ORDER_CANCEL" &&
           this.customOrderService.selectableItemsOrders
@@ -411,7 +411,13 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
     }
 
     this.customOrderService.selectableItemsOrders = this.selectedItems;
-    this.messageService.sendMessage("ITEM_REMOVED_IN_CART");
+    if (
+      this.selectedItems.length === 0 &&
+      this.customOrderService.customItemOrdersDetails.length === 0 &&
+      this.customOrderService.customItemsPacksOrdersDetails.length === 0
+    ) {
+      this.messageService.clearMessage();
+    }
   }
 
   clearMessage(): void {

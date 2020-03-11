@@ -252,9 +252,14 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         return loginModalEl.onDidDismiss();
       })
       .then(data => {
+        // console.log("data.role data.role", data.role);
         if (data.role === "closed") {
           // this.orderDetails();
           this.checkDeliveryAddress();
+        } else if (data.role === "CART_UPDATE_FAILURE") {
+          const header = "Oops... Something went wrong.";
+          const message = "Please try again";
+          this.orderPlacementFailureAlert(header, message);
         }
       });
   }
@@ -265,14 +270,35 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
       // if (customerSavedAddressList.length === 1) {
       //   this.checkIfSingleAddressSavedIsdeliveryAddress()
       // } else {
-        this.deliveryAddress = customerSavedAddressList.find(
-          element => element.isCurrentlyUsed === true
-        );
-        this.confirmDeliveryAddress();
+      this.deliveryAddress = customerSavedAddressList.find(
+        element => element.isCurrentlyUsed === true
+      );
+      this.confirmDeliveryAddress();
       // }
     } else {
       this.addNewAddress();
     }
+  }
+
+  orderPlacementSuccessAlert() {}
+
+  orderPlacementFailureAlert(header, message) {
+    const alert = this.orderPlacementFailureCtrl
+      .create({
+        header,
+        message,
+        buttons: [
+          {
+            text: "OK",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: cancel => {}
+          }
+        ]
+      })
+      .then(alertEl => {
+        alertEl.present();
+      });
   }
 
   // checkIfSingleAddressSavedIsdeliveryAddress() {
@@ -418,32 +444,55 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
           .then(customerCurrentOrder => {
             // console.log("User Current Order Details >>>>>>>", customerCurrentOrder);
             this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
-            placingOrderEl.dismiss();
-            this.orderConfModalCtrl
-              .create({
-                component: OrderConfirmedModalComponent,
-                componentProps: {
-                  name: "orderConfModal",
-                  orderId: this.userFinalOrder.orderId
-                },
-                id: "orderConfModal"
+            this.userProfileService
+              .removeItemsFromCartPostOrderPlacement()
+              .then(cartClearanceResponse => {
+                // CART_ITEMS_CLEARED_POST_ORDER
+                if (cartClearanceResponse.message === "CART_ITEMS_CLEARED_POST_ORDER") {
+                  placingOrderEl.dismiss();
+                  this.orderConfModalCtrl
+                    .create({
+                      component: OrderConfirmedModalComponent,
+                      componentProps: {
+                        name: "orderConfModal",
+                        orderId: this.userFinalOrder.orderId
+                      },
+                      id: "orderConfModal"
+                    })
+                    .then(orderConfModalEl => {
+                      orderConfModalEl.present();
+                      return orderConfModalEl.onDidDismiss();
+                    })
+                    .then(data => {
+                      this.isOrderUnplaced = false;
+                      this.customOrderService.customItemsPacksOrdersDetails = [];
+                      this.customOrderService.customItemOrdersDetails = [];
+                      this.customOrderService.selectableItemsOrders = [];
+                      this.selectableOrders = [];
+                      this.messageService.sendCartStatusMessage("CART_EMPTY");
+                    });
+                }
               })
-              .then(orderConfModalEl => {
-                orderConfModalEl.present();
-                return orderConfModalEl.onDidDismiss();
-              })
-              .then(data => {
-                this.isOrderUnplaced = false;
-                this.customOrderService.customItemsPacksOrdersDetails = [];
-                this.customOrderService.customItemOrdersDetails = [];
-                this.customOrderService.selectableItemsOrders = [];
-                this.selectableOrders = [];
-                this.messageService.sendCartStatusMessage("CART_EMPTY");
+              .catch(e => {
+                console.log("Error Occured in Clearing DB carts");
+                this.retryClearingDBCart();
               });
           })
           .catch(err => {
-            console.log("Error Occured while Placing order in DB", err);
+            const header = 'Oops... Something went wrong.';
+            const message = 'Please try again';
+            this.orderPlacementFailureAlert(header, message);
+            // console.log("Error Occured while Placing order in DB", err);
           });
       });
+  }
+
+  retryClearingDBCart() {
+    this.userProfileService
+    .removeItemsFromCartPostOrderPlacement()
+    .then(dbClearanceRes => {
+    })
+    .catch(err => {
+    })
   }
 }

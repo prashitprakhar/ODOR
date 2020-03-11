@@ -16,7 +16,8 @@ import { SignupModalComponent } from "../signup-modal/signup-modal.component";
 import { SignupSuccessModalComponent } from "../signup-success-modal/signup-success-modal.component";
 import { AuthenticationService } from "../../internal-services/authentication.service";
 import { PasswordResetModalComponent } from "../password-reset-modal/password-reset-modal.component";
-import { UserProfileService } from 'src/app/services/user-profile.service';
+import { UserProfileService } from "src/app/services/user-profile.service";
+import { CustomOrderService } from "src/app/services/custom-order.service";
 
 @Component({
   selector: "app-login-modal",
@@ -38,15 +39,16 @@ export class LoginModalComponent implements OnInit, OnDestroy {
     private authenticationService: AuthenticationService,
     private passwordResetModalCtrl: ModalController,
     private navParams: NavParams,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private customOrderService: CustomOrderService
   ) {
     this.navigationFrom = navParams.get("navigationFrom");
   }
 
   ngOnInit() {}
 
-  onClose() {
-    this.loginModalCtrl.dismiss(null, "closed", "loginModal");
+  onClose(dataRole: string = "closed") {
+    this.loginModalCtrl.dismiss(null, dataRole, "loginModal");
   }
 
   onCloseLoginSuccess(userRole) {
@@ -61,6 +63,12 @@ export class LoginModalComponent implements OnInit, OnDestroy {
 
   setUserProfileData() {
     this.userProfileService.getAndSetCustomerProfile();
+  }
+
+  checkAndUpdateCartItemsInDB(dbCartData) {
+    console.log("dbCartData", dbCartData);
+    if (dbCartData) {
+    }
   }
 
   async onLogin(loginForm: NgForm) {
@@ -81,21 +89,65 @@ export class LoginModalComponent implements OnInit, OnDestroy {
           async loginResData => {
             const userAuthInfo = loginResData["user"];
             const userRole = userAuthInfo["role"];
-            await loadingEl.dismiss();
-            console.log("this.navigationFrom<<<<<>>>>>>", this.navigationFrom);
+            console.log("this.navigationFrom", this.navigationFrom);
             if (this.navigationFrom && this.navigationFrom === "CART") {
+              console.log("--------00000000000-------");
               this.setUserProfileData();
-              this.onClose();
-            }
-            if (userRole === "ENTERPRISE_PARTNER") {
+              const selectableItems = this.customOrderService
+                .selectableItemsOrders;
+              const customPackItems = this.customOrderService
+                .customItemsPacksOrdersDetails;
+              const customKGItems = this.customOrderService
+                .customItemOrdersDetails;
+              this.userProfileService
+                .updateDBWithCurrentCartItems(
+                  selectableItems,
+                  customPackItems,
+                  customKGItems
+                )
+                .then(async data => {
+                  console.log("11111111111", data);
+                  if (data.message === "SUCCESS") {
+                    console.log(
+                      "data.message === ",
+                      data.message === "SUCCESS"
+                    );
+                    await loadingEl.dismiss();
+                    this.onClose();
+                  }
+                })
+                .catch(async e => {
+                  console.log("22222222222", e);
+                  await loadingEl.dismiss();
+                  this.onClose("CART_UPDATE_FAILURE");
+                });
+
+              // this.userProfileService
+              //   .getInitialCartItemsFromDB()
+              //   .then(async dbCartData => {
+              //     console.log("DB Cart Data *****", dbCartData);
+              //     this.checkAndUpdateCartItemsInDB(dbCartData);
+              //     await loadingEl.dismiss();
+              //     this.onClose();
+              //   })
+              //   .catch(errDBCartData => {
+              //     console.log("DB Cart Data Fetch Error", errDBCartData);
+              //   });
+              // await loadingEl.dismiss();
+              // this.onClose();
+            } else if (userRole === "ENTERPRISE_PARTNER") {
+              await loadingEl.dismiss();
               this.loginSuccessToastControllerMessage();
               this.onCloseLoginSuccess("ENTERPRISE_PARTNER");
             } else if (userRole === "GENERAL_ADMIN") {
+              await loadingEl.dismiss();
               this.loginSuccessToastControllerMessage();
               this.onCloseLoginSuccess("GENERAL_ADMIN");
             } else {
               await this.authObjObsSubs.unsubscribe();
               this.setUserProfileData();
+              this.userProfileService.getInitialCartItemsFromDB();
+              await loadingEl.dismiss();
               this.loginSuccessToastControllerMessage();
               this.onCloseLoginSuccess("CUSTOMER");
             }
