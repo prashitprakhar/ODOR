@@ -7,8 +7,10 @@ import { Subscription } from "rxjs";
 import { AuthenticationService } from "src/app/shared/internal-services/authentication.service";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { UpdateUserProfileModalComponent } from "src/app/modals/update-user-profile-modal/update-user-profile-modal.component";
-import { ViewSavedAddressesModalComponent } from 'src/app/modals/view-saved-addresses-modal/view-saved-addresses-modal.component';
-import { AddNewAddressModalComponent } from 'src/app/modals/add-new-address-modal/add-new-address-modal.component';
+import { ViewSavedAddressesModalComponent } from "src/app/modals/view-saved-addresses-modal/view-saved-addresses-modal.component";
+import { AddNewAddressModalComponent } from "src/app/modals/add-new-address-modal/add-new-address-modal.component";
+import { UserProfileService } from "src/app/services/user-profile.service";
+import { CustomOrderService } from "src/app/services/custom-order.service";
 
 @Component({
   selector: "app-account-details",
@@ -29,7 +31,9 @@ export class AccountDetailsPage implements OnInit, OnDestroy {
     private authenticationService: AuthenticationService,
     private shopItemSelectionService: ShopItemSelectionService,
     private viewSavedAddressesModalCtrl: ModalController,
-    private addNewAddressModalCtrl: ModalController
+    private addNewAddressModalCtrl: ModalController,
+    private userProfileService: UserProfileService,
+    private customOrdersService: CustomOrderService
   ) {}
 
   ngOnInit() {}
@@ -101,6 +105,25 @@ export class AccountDetailsPage implements OnInit, OnDestroy {
   updateSecurePIN() {}
 
   onLogout() {
+    this.userProfileService.updateSelectableItemsInDB(
+      this.customOrdersService.selectableItemsOrders
+    ).then(successResponse => {
+
+    })
+    .catch(errorResopnse => {
+
+    });
+    const customCartUpdateInDB = this.userProfileService.updateCustomItemsOrderInDB(
+      this.customOrdersService.customItemOrdersDetails,
+      this.customOrdersService.customItemsPacksOrdersDetails
+    ).then(successResponse => {
+
+    })
+    .catch(errorResponse => {
+
+    });
+    // console.log("customCartUpdateInDB", customCartUpdateInDB);
+    // console.log("selectableCartUpdateInDB", selectableCartUpdateInDB);
     this.authenticationService.logout();
   }
 

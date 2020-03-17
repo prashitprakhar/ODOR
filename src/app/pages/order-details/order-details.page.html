@@ -6,21 +6,32 @@
 
 <ion-content>
   <ion-grid *ngIf="allOrdersCombined.length > 0 && isOrderUnplaced">
-    <ion-row *ngIf="shopProfile">
+    <ion-row *ngIf="cartItemsShopId">
       <ion-col>
         <ion-item>
-          <ion-label style="font-size: 14px;text-align: center;">
-            {{shopProfile.shopName}}
+          <ion-label style="font-size: 16px;text-align: center;">
+            {{cartItemsShopName | titlecase}}
           </ion-label>
         </ion-item>
       </ion-col>
     </ion-row>
+    <!-- <ion-row *ngIf="shopProfile">
+      <ion-col>
+        <ion-item>
+          <ion-label style="font-size: 16px;text-align: center;">
+            {{shopProfile.shopName}}
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row> -->
     <ion-row>
-      <ion-col class="ordered_items">
-        <ion-virtual-scroll [items]="allOrdersCombined" approxItemHeight="50px">
-          <ion-item *virtualItem="let product" lines="none">
-            <ion-label style="font-family: fantasy;">
-              <h5 class="item_name">{{ product.itemName }}</h5>
+      <!-- <ion-col class="ordered_items"> -->
+        <!-- <ion-virtual-scroll [items]="allOrdersCombined" approxItemHeight="50px"> -->
+          <!-- <ion-item *virtualItem="let product" lines="none"> -->
+            <ion-list class="ordered_items">
+            <ion-item *ngFor="let product of allOrdersCombined" lines="none">
+            <ion-label style="font-family: Arial, Helvetica, sans-serif;">
+              <h5 class="item_name">{{ product.itemName | titlecase}}</h5>
               <ion-text
                 *ngIf="product.orderType !== 'SELECT'"
                 style="font-size: 10px;"
@@ -55,14 +66,16 @@
                 }} = &#8377; {{ product.totalPrice.toFixed(2) }}
               </ion-text>
               <ion-text
-                style="font-family: fantasy; font-weight: bold;font-size: 10px;"
+                style="font-family: Arial, Helvetica, sans-serif; font-size: 11px;"
                 *ngIf="product.orderType !== 'SELECT'"
                 >Estimated Price to be sent
               </ion-text>
+              <!-- font-weight: bold; -->
             </div>
           </ion-item>
-        </ion-virtual-scroll>
-      </ion-col>
+        </ion-list>
+        <!-- </ion-virtual-scroll> -->
+      <!-- </ion-col> -->
     </ion-row>
   </ion-grid>
   <ion-grid *ngIf="allOrdersCombined.length === 0 || !isOrderUnplaced">

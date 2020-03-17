@@ -7,7 +7,7 @@ import { environment } from "./../../../environments/environment";
 import { UserClassModel } from "./../../shared/models/user-class.model";
 import { HttpApiService } from '../services/http-api.service';
 import { Router } from '@angular/router';
-import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
+// import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
 import ObjectID from "bson-objectid";
 
 @Injectable({
@@ -15,16 +15,15 @@ import ObjectID from "bson-objectid";
 })
 export class AuthenticationService {
   private userAuthAPI: string = environment.internalAPI.userAuth;
-  private _userIsEnterprisePartner: boolean = false;
-  private _userIsCustomer: boolean = false;
+  // private _userIsEnterprisePartner: boolean = false;
+  // private _userIsCustomer: boolean = false;
   private _user = new BehaviorSubject<UserClassModel>(null);
   private activeLogoutTimer: any;
-  private _userAuthState = new BehaviorSubject<any>(null);
+  // private _userAuthState = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient,
               private httpAPIService: HttpApiService,
-              private router: Router,
-              private shopItemSelectionService: ShopItemSelectionService) {}
+              private router: Router) {}
 
   get userAuthState() {
     return from(Plugins.Storage.get({ key: "authData" })).pipe(take(1));

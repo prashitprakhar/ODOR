@@ -39,7 +39,16 @@
   }
 
   .action-sheet-title.sc-ion-action-sheet-md {
-      min-height: 125px !important;
+      min-height: 150px !important;
+  }
+
+  .action-sheet-button.sc-ion-action-sheet-md {
+    // background: var(--ion-color-success);
+    // height: 6vh;
+    background: var(--ion-color-success);
+    height: 6vh;
+    width: 98vw;
+    margin: 1vw;
   }
 
 //   .confirm_button {

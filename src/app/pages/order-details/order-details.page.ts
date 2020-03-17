@@ -1,9 +1,7 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
-  Output,
-  EventEmitter
+  OnDestroy
 } from "@angular/core";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ICustomOrderItem } from "src/app/models/custom-order-items.model";
@@ -29,7 +27,6 @@ import { MessageService } from "src/app/shared/services/message.service";
 import { ICustomerAddress } from "src/app/models/customer-address.model";
 import { ViewSavedAddressesModalComponent } from "src/app/modals/view-saved-addresses-modal/view-saved-addresses-modal.component";
 import { AddNewAddressModalComponent } from "src/app/modals/add-new-address-modal/add-new-address-modal.component";
-// import { LoginBottomModalComponent } from "src/app/modals/login-bottom-modal/login-bottom-modal.component";
 
 @Component({
   selector: "app-order-details",
@@ -59,6 +56,8 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
   public authStateSubs: Subscription;
   public isUserLoggedIn: boolean = false;
   public deliveryAddress: ICustomerAddress;
+  public cartItemsShopId: string;
+  public cartItemsShopName: string;
 
   constructor(
     private customOrderService: CustomOrderService,
@@ -95,8 +94,31 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     }
   }
 
+  findShopIdFromCartItems() {
+    if (this.customOrderService.selectableItemsOrders) {
+      if (this.customOrderService.selectableItemsOrders.length > 0) {
+        // console.log("Shop ID 111111 Selectable-------", this.customOrderService.selectableItemsOrders[0].shopName);
+        this.cartItemsShopId = this.customOrderService.selectableItemsOrders[0].shopId;
+        this.cartItemsShopName = this.customOrderService.selectableItemsOrders[0].shopName;
+      }
+    } else if (this.customOrderService.customItemOrdersDetails) {
+      if (this.customOrderService.customItemOrdersDetails.length > 0) {
+        this.cartItemsShopId = this.customOrderService.customItemOrdersDetails[0].shopId;
+        this.cartItemsShopName = this.customOrderService.customItemOrdersDetails[0].shopName;
+        // console.log("Shop ID 2222222 KG-------", this.customOrderService.customItemOrdersDetails[0].shopName);
+      }
+    } else if (this.customOrderService.customItemsPacksOrdersDetails) {
+      if (this.customOrderService.customItemsPacksOrdersDetails.length > 0) {
+        this.cartItemsShopId = this.customOrderService.customItemsPacksOrdersDetails[0].shopId;
+        this.cartItemsShopName = this.customOrderService.customItemsPacksOrdersDetails[0].shopName;
+        // console.log("Shop ID 333333 PACK-------", this.customOrderService.customItemsPacksOrdersDetails[0].shopName);
+      }
+    }
+  }
+
   ionViewWillEnter() {
     this.shopProfile = this.currentShopProfileService.currentShopProfile;
+    this.findShopIdFromCartItems();
     const dateObj = new Date();
     this.currentDate = dateObj.getDate();
     const currentMinute = dateObj.getMinutes();
@@ -252,9 +274,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         return loginModalEl.onDidDismiss();
       })
       .then(data => {
-        // console.log("data.role data.role", data.role);
         if (data.role === "closed") {
-          // this.orderDetails();
           this.checkDeliveryAddress();
         } else if (data.role === "CART_UPDATE_FAILURE") {
           const header = "Oops... Something went wrong.";
@@ -267,14 +287,10 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
   async checkDeliveryAddress() {
     const customerSavedAddressList = await this.userProfileService.getCustomerSavedAddressListFromLocalStorage();
     if (customerSavedAddressList.length > 0) {
-      // if (customerSavedAddressList.length === 1) {
-      //   this.checkIfSingleAddressSavedIsdeliveryAddress()
-      // } else {
       this.deliveryAddress = customerSavedAddressList.find(
         element => element.isCurrentlyUsed === true
       );
       this.confirmDeliveryAddress();
-      // }
     } else {
       this.addNewAddress();
     }
@@ -300,10 +316,6 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         alertEl.present();
       });
   }
-
-  // checkIfSingleAddressSavedIsdeliveryAddress() {
-
-  // }
 
   addNewAddress() {
     const alert = this.noAddressAlertCtrl
@@ -370,7 +382,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
             header: "Place Order",
             subHeader:
               // tslint:disable-next-line: max-line-length
-              "You have custom orders in your cart. We will confirm the estimated price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop.",
+              "You have custom orders in your cart. We will confirm the final price for the custom items once the items are picked. The Grand total shown is only for the selected items offered by the Shop. We will send you the final bill once the items are delivered.",
             buttons: [
               {
                 text: "Ok. Got it. Place Order.",
@@ -420,7 +432,8 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         this.userFinalOrder = {
           orderId: this.allOrdersCombined[0].shopId + "-" + randomInteger,
           shopId: this.allOrdersCombined[0].shopId,
-          shopName: this.shopProfile.shopName,
+          // shopName: this.shopProfile.shopName,
+          shopName: this.cartItemsShopName,
           orderedItemsList: this.allOrdersCombined,
           selectedItemsTotalPrice: this.grandTotal,
           customItemsEstimatedPrice: 0,
@@ -435,19 +448,17 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
           maxDistance: 1 + " KM.",
           orderPlaced: true,
           orderStatus: "PROGRESS",
-          orderConfirmationStatus: "CONFIRMED"
+          orderConfirmationStatus: "CONFIRMED",
+          paymentStatus: false
         };
-        // console.log("this.userFinalOrder this.userFinalOrder", this.userFinalOrder);
 
         this.userProfileService
           .saveUserOrder(this.userFinalOrder)
           .then(customerCurrentOrder => {
-            // console.log("User Current Order Details >>>>>>>", customerCurrentOrder);
             this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
             this.userProfileService
               .removeItemsFromCartPostOrderPlacement()
               .then(cartClearanceResponse => {
-                // CART_ITEMS_CLEARED_POST_ORDER
                 if (cartClearanceResponse.message === "CART_ITEMS_CLEARED_POST_ORDER") {
                   placingOrderEl.dismiss();
                   this.orderConfModalCtrl
@@ -474,7 +485,6 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
                 }
               })
               .catch(e => {
-                console.log("Error Occured in Clearing DB carts");
                 this.retryClearingDBCart();
               });
           })
@@ -482,7 +492,6 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
             const header = 'Oops... Something went wrong.';
             const message = 'Please try again';
             this.orderPlacementFailureAlert(header, message);
-            // console.log("Error Occured while Placing order in DB", err);
           });
       });
   }
@@ -493,6 +502,6 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     .then(dbClearanceRes => {
     })
     .catch(err => {
-    })
+    });
   }
 }

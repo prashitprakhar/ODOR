@@ -1,47 +1,38 @@
-import { Injectable } from '@angular/core';
-import { IUserFinalOrder } from '../models/user-final-order.model';
-import { AuthService } from './auth.service';
-// import { from } from 'rxjs';
-import { AngularFirestore } from "@angular/fire/firestore";
-import { take, map } from 'rxjs/operators';
-import { ICustomerAddress } from '../models/customer-address.model';
-import { environment } from 'src/environments/environment';
+import { Injectable } from "@angular/core";
+import { IUserFinalOrder } from "../models/user-final-order.model";
+import { ICustomerAddress } from "../models/customer-address.model";
+import { environment } from "src/environments/environment";
 import { Plugins } from "@capacitor/core";
-import { HttpApiService } from '../shared/services/http-api.service';
-import { ICustomerProfileDetails } from '../models/customer-profile-details.model';
-import { BehaviorSubject } from 'rxjs';
-// import { ICustomOrderItem } from '../models/custom-order-items.model';
+import { HttpApiService } from "../shared/services/http-api.service";
+import { ICustomerProfileDetails } from "../models/customer-profile-details.model";
+import { ICustomOrderItem } from '../models/custom-order-items.model';
+import { ISelectableItemsOrder } from '../models/selectable-items-orders.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root"
 })
 export class UserProfileService {
-
   private userAPI: string = environment.internalAPI.userAuth;
   public userOrderList: IUserFinalOrder[] = [];
-  // public _customerCurrentOrder = new BehaviorSubject<IUserFinalOrder>(null);
-  // private _shopList = new BehaviorSubject<IShopData[]>(null);
 
   constructor(
-    // private authService: AuthService,
-              private db: AngularFirestore,
-              private httpAPIService: HttpApiService) { }
+    private httpAPIService: HttpApiService
+  ) {}
 
   async saveUserOrder(userCurrentOrder: IUserFinalOrder): Promise<any> {
     this.userOrderList = [];
     this.userOrderList = [userCurrentOrder];
-    // console.log("userCurrentOrder userCurrentOrder >>>>>", userCurrentOrder);
     const url = `${this.userAPI}placeOrder`;
     const userData = await Plugins.Storage.get({ key: "authData" });
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {userId, orderDetails: userCurrentOrder};
+    const payload = { userId, orderDetails: userCurrentOrder };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
   getUserOrder(): IUserFinalOrder[] {
-    return [...this.userOrderList] ;
+    return [...this.userOrderList];
   }
 
   async getCustomerAllOrder(): Promise<IUserFinalOrder[]> {
@@ -51,7 +42,7 @@ export class UserProfileService {
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {userId};
+    const payload = { userId };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
@@ -61,36 +52,9 @@ export class UserProfileService {
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {userId};
+    const payload = { userId };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
-
-  // get getCustomerOrders() {
-  //   // this._customerCurrentOrder.subscribe(data => {});
-  //   // return this._customerCurrentOrder.asObservable();
-  //   return this._customerCurrentOrder.asObservable().pipe(
-  //     take(1),
-  //     map(customerOrder => {
-  //       if (customerOrder) {
-  //         console.log("customerOrder", customerOrder);
-  //         return customerOrder;
-  //       } else {
-  //         return null;
-  //       }
-  //       // if (user) {
-  //       //   return user.id;
-  //       // } else {
-  //       //   return null;
-  //       // }
-  //     })
-  //   );
-  // }
-
-  // getUserProfile(email: string) {
-  //   return this.db.collection('USER_PROFILE', ref => ref.where('email', '==', email)).valueChanges().pipe(
-  //     take(1)
-  //   );
-  // }
 
   async getInitialCartItemsFromDB(): Promise<any> {
     const url = `${this.userAPI}getInitialLoginCartItems`;
@@ -104,18 +68,16 @@ export class UserProfileService {
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
-  async updateDBWithCurrentCartItems(selectableItems, customPackItems, customKGItems): Promise<any> {
-    // selectableItem
-    // customPackItem
-    // customKGItem
-    // updateCartsOnLogin
+  async updateDBWithCurrentCartItems(
+    selectableItems,
+    customPackItems,
+    customKGItems
+  ): Promise<any> {
     const url = `${this.userAPI}updateCartsOnLogin`;
     const userData = await Plugins.Storage.get({ key: "authData" });
     const userDataFetched = JSON.parse(userData.value);
     const userId = userDataFetched.userId;
     const userToken = userDataFetched.token;
-    // const selectableItem = this.custom
-    // console.log("selectableItems, customPackItems, customKGItems", selectableItems, customPackItems, customKGItems);
     const payload = {
       userId,
       selectableItems,
@@ -123,18 +85,46 @@ export class UserProfileService {
       customKGItems
     };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
-    // return 0;
+  }
+
+  async updateCustomItemsOrderInDB(customKGItem: ICustomOrderItem[], customPackItem: ICustomOrderItem[]): Promise<any> {
+    const url = `${this.userAPI}updateCustomOrdersCart`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userId = userDataFetched.userId;
+    const userToken = userDataFetched.token;
+    const customPackItems = customPackItem;
+    const customKGItems = customKGItem;
+    const payload = {
+      userId,
+      customPackItems,
+      customKGItems
+    };
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async updateSelectableItemsInDB(selectableItems: ISelectableItemsOrder[]): Promise<any> {
+    const url = `${this.userAPI}updateSelectableOrdersCart`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userId = userDataFetched.userId;
+    const userToken = userDataFetched.token;
+    const selectableItem = selectableItems;
+    // const customKGItems = customKGItem;
+    const payload = {
+      userId,
+      selectableItem,
+      // customKGItems
+    };
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
   async removeItemsFromCartPostOrderPlacement(): Promise<any> {
-    // removeCartItemPostOrder
     const url = `${this.userAPI}removeCartItemPostOrder`;
     const userData = await Plugins.Storage.get({ key: "authData" });
     const userDataFetched = JSON.parse(userData.value);
     const userId = userDataFetched.userId;
     const userToken = userDataFetched.token;
-    // const selectableItem = this.custom
-    // console.log("selectableItems, customPackItems, customKGItems", selectableItems, customPackItems, customKGItems);
     const payload = {
       userId
     };
@@ -149,7 +139,10 @@ export class UserProfileService {
       customerImageUrl: userProfile.customerImageUrl
     });
 
-    await Plugins.Storage.set({ key: 'customerProfileDetails', value: customerDetails});
+    await Plugins.Storage.set({
+      key: "customerProfileDetails",
+      value: customerDetails
+    });
 
     return userProfile;
   }
@@ -160,16 +153,18 @@ export class UserProfileService {
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {userId};
+    const payload = { userId };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
-    // getCustomerProfile
   }
 
   async getCurrentlyUsedAddress(): Promise<ICustomerAddress> {
-    const customerProfileData = await Plugins.Storage.get({ key: 'customerProfileDetails'});
+    const customerProfileData = await Plugins.Storage.get({
+      key: "customerProfileDetails"
+    });
     const customerProfileParsedData = JSON.parse(customerProfileData.value);
-    const customerCurrentlyUsedAddress: ICustomerAddress = customerProfileParsedData.customerAddressList
-                                                              .find(element => element.isCurrentlyUsed === true);
+    const customerCurrentlyUsedAddress: ICustomerAddress = customerProfileParsedData.customerAddressList.find(
+      element => element.isCurrentlyUsed === true
+    );
     return customerCurrentlyUsedAddress;
   }
 
@@ -179,7 +174,7 @@ export class UserProfileService {
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {...addressDetails, userId};
+    const payload = { ...addressDetails, userId };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
@@ -189,35 +184,24 @@ export class UserProfileService {
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {userId};
+    const payload = { userId };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
-  async getCustomerSavedAddressListFromLocalStorage(): Promise<ICustomerAddress[]> {
-    const customerSavedProfile = await Plugins.Storage.get({ key: 'customerProfileDetails'});
+  async getCustomerSavedAddressListFromLocalStorage(): Promise<
+    ICustomerAddress[]
+  > {
+    const customerSavedProfile = await Plugins.Storage.get({
+      key: "customerProfileDetails"
+    });
     const parsedCustomerProfile = JSON.parse(customerSavedProfile.value);
     const customerSavedAddressList = parsedCustomerProfile.customerAddressList;
     return customerSavedAddressList;
   }
 
   async removeCustomerProfileFromLocalStorage() {
-    // const nullData = JSON.stringify({
-    //   customerRating: ,
-    //   customerAddressList: userProfile.customerAddressList,
-    //   customerImageUrl: userProfile.customerImageUrl
-    // });
-    await Plugins.Storage.remove({ key: 'customerProfileDetails'});
+    await Plugins.Storage.remove({ key: "customerProfileDetails" });
   }
-
-  // async getCustomerSavedAddresses(): Observable<any> {
-  //   const url = `${this.userAPI}customerSavedAddress`;
-  //   const userData = await Plugins.Storage.get({ key: "authData" });
-  //   const userDataFetched = JSON.parse(userData.value);
-  //   const userToken = userDataFetched.token;
-  //   const userId = userDataFetched.userId;
-  //   const payload = {userId};
-  //   return from(this.httpAPIService.authenticatedPostAPI(url, payload, userToken)).asObservable();
-  // }
 
   async updateAddressUsageFlag(_id): Promise<any> {
     const url = `${this.userAPI}updateUsageFlag`;
@@ -225,35 +209,32 @@ export class UserProfileService {
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {userId, _id};
+    const payload = { userId, _id };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
-  async editAddressDetails(addressDetails: ICustomerAddress, _id): Promise<any> {
+  async editAddressDetails(
+    addressDetails: ICustomerAddress,
+    _id
+  ): Promise<any> {
     const url = `${this.userAPI}editAddressDetails`;
     const userData = await Plugins.Storage.get({ key: "authData" });
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {...addressDetails, userId, _id};
+    const payload = { ...addressDetails, userId, _id };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
-  async deleteAddress(_id) : Promise<any> {
+  async deleteAddress(_id): Promise<any> {
     const url = `${this.userAPI}deleteAddress`;
     const userData = await Plugins.Storage.get({ key: "authData" });
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = {userId, _id};
+    const payload = { userId, _id };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
-
-  // getUserProfile() {
-  //   this.authService.getAuthState().subscribe(userProfileData => {
-  //     console.log("Userprofile Data *****",userProfileData.toJSON());
-  //   })
-  // }
 
   // db string -> orderitserviceprivatelimited+jan+2020
   // username -> orderitservice@gmail.com // firebase creds
@@ -274,5 +255,4 @@ export class UserProfileService {
   // FCM Device Token (My Android Device Nokia 8.1) - dh0cQiSUj_Y:APA91bGwljiA94hz1OAd2f4wtMcu3RpplT5ezf5QXqg7J_MPE9PpAVcHQFy5y2w5kf0JQAN4-xECbbUkORkLlXV8mel4pAuV4rdoYXyG6D_5UICFOQ95YdBicZFLMd9GhNipJQ7IYoyn
 
   // Shop - mahalakshmikiranastore@gmail.com
-
 }

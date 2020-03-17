@@ -23,7 +23,7 @@ export class OrderDetailsConfirmationPage implements OnInit {
       if (!paramMap.has("orderId")) {
         return;
       }
-      console.log("Order ID ***",paramMap.get('orderId'))
+      console.log("Order ID ***", paramMap.get('orderId'));
       // console.log("paramMap order Id",paramMap)
       this.currentOrderDetails  = this.userProfileService.getUserOrder();
       // console.log("Order Details final ************",this.currentOrderDetails)
@@ -32,7 +32,6 @@ export class OrderDetailsConfirmationPage implements OnInit {
       //   this.shopId
       // );
       // this.customOrderService.selectedShopDetails = this.selectedShopDetails;
-      
       // this.shopOfferedItemsList = this.selectedShopDetails.shopOfferedItemsList;
     });
   }

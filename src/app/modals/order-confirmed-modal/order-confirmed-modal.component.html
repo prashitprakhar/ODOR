@@ -47,7 +47,7 @@
       <ion-col>
         <ion-item lines="none">
           <ion-label class="delivery_address_label">
-            <p>Delivery Address :</p>
+            <p><u>Delivery Address :</u></p>
             <p>
               <ion-text class="delivery_address">{{
                 deliveryAddress.houseNumber
@@ -91,13 +91,18 @@
       </ion-col>
     </ion-row>
     <ion-row style="border-bottom: 1px solid #c5c5c5;">
-      <ion-col>
+      <!-- <ion-col>
         <ion-virtual-scroll
           [items]="currentOrderDetails[0].orderedItemsList"
-          approxItemHeight="70px"
+          approxItemHeight="100px"
         >
-          <ion-item *virtualItem="let product" lines="none">
-            <ion-label style="font-family: fantasy; margin-top: 0 !important; margin-bottom: 0 !important;">
+          <ion-item *virtualItem="let product" lines="none"> -->
+            <!-- <ion-col> -->
+              <ion-list style="width: 100vw;padding-bottom: 20px;">
+                <!-- [items]="currentOrderDetails[0].orderedItemsList"
+                approxItemHeight="100px" -->
+            <ion-item *ngFor="let product of currentOrderDetails[0].orderedItemsList" lines="none">
+            <ion-label style="font-family: Arial, Helvetica, sans-serif; margin-top: 0 !important; margin-bottom: 0 !important;">
               <h5 class="item_name">{{ product.itemName }}</h5>
               <ion-text
                 *ngIf="product.orderType !== 'SELECT'"
@@ -134,14 +139,14 @@
                 {{ product.totalPrice.toFixed(2) }}</ion-text
               >
               <ion-text
-                style="font-family: fantasy; font-weight: bold;font-size: 10px;"
+                style="font-family: Arial, Helvetica, sans-serif; font-size: 11px;"
                 *ngIf="product.orderType !== 'SELECT'"
                 >Estimated Price to be sent
-              </ion-text>
+              </ion-text><!--  font-weight: bold; -->
             </div>
           </ion-item>
-        </ion-virtual-scroll>
-      </ion-col>
+        </ion-list>
+      <!-- </ion-col> -->
     </ion-row>
   </ion-grid>
 </ion-content>

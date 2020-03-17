@@ -1,7 +1,5 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { NgForm } from "@angular/forms";
-// import { AuthService } from 'src/app/services/auth.service';
-// import { Router } from '@angular/router';
 import {
   LoadingController,
   ModalController,
@@ -9,7 +7,6 @@ import {
   ToastController,
   NavParams
 } from "@ionic/angular";
-// import { UserProfileService } from 'src/app/services/user-profile.service';
 import { Plugins } from "@capacitor/core";
 import { Observable, Subscription } from "rxjs";
 import { SignupModalComponent } from "../signup-modal/signup-modal.component";
@@ -18,6 +15,8 @@ import { AuthenticationService } from "../../internal-services/authentication.se
 import { PasswordResetModalComponent } from "../password-reset-modal/password-reset-modal.component";
 import { UserProfileService } from "src/app/services/user-profile.service";
 import { CustomOrderService } from "src/app/services/custom-order.service";
+import { CartUtilityService } from "src/app/utils/cart-utility.service";
+import { MessageService } from "../../services/message.service";
 
 @Component({
   selector: "app-login-modal",
@@ -40,7 +39,9 @@ export class LoginModalComponent implements OnInit, OnDestroy {
     private passwordResetModalCtrl: ModalController,
     private navParams: NavParams,
     private userProfileService: UserProfileService,
-    private customOrderService: CustomOrderService
+    private customOrderService: CustomOrderService,
+    private cartUtilityService: CartUtilityService,
+    private messageService: MessageService
   ) {
     this.navigationFrom = navParams.get("navigationFrom");
   }
@@ -89,9 +90,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
           async loginResData => {
             const userAuthInfo = loginResData["user"];
             const userRole = userAuthInfo["role"];
-            console.log("this.navigationFrom", this.navigationFrom);
             if (this.navigationFrom && this.navigationFrom === "CART") {
-              console.log("--------00000000000-------");
               this.setUserProfileData();
               const selectableItems = this.customOrderService
                 .selectableItemsOrders;
@@ -106,35 +105,16 @@ export class LoginModalComponent implements OnInit, OnDestroy {
                   customKGItems
                 )
                 .then(async data => {
-                  console.log("11111111111", data);
+                  // console.log("11111111111", data);
                   if (data.message === "SUCCESS") {
-                    console.log(
-                      "data.message === ",
-                      data.message === "SUCCESS"
-                    );
                     await loadingEl.dismiss();
                     this.onClose();
                   }
                 })
                 .catch(async e => {
-                  console.log("22222222222", e);
                   await loadingEl.dismiss();
                   this.onClose("CART_UPDATE_FAILURE");
                 });
-
-              // this.userProfileService
-              //   .getInitialCartItemsFromDB()
-              //   .then(async dbCartData => {
-              //     console.log("DB Cart Data *****", dbCartData);
-              //     this.checkAndUpdateCartItemsInDB(dbCartData);
-              //     await loadingEl.dismiss();
-              //     this.onClose();
-              //   })
-              //   .catch(errDBCartData => {
-              //     console.log("DB Cart Data Fetch Error", errDBCartData);
-              //   });
-              // await loadingEl.dismiss();
-              // this.onClose();
             } else if (userRole === "ENTERPRISE_PARTNER") {
               await loadingEl.dismiss();
               this.loginSuccessToastControllerMessage();
@@ -146,7 +126,48 @@ export class LoginModalComponent implements OnInit, OnDestroy {
             } else {
               await this.authObjObsSubs.unsubscribe();
               this.setUserProfileData();
-              this.userProfileService.getInitialCartItemsFromDB();
+              // add Local Storage Cart Items Check Here
+              if (this.cartUtilityService.hasLocalStorageCartItems()) {
+                this.cartUtilityService
+                  .onLoginUpdateDBCartsWhenLocalStorageItemsAvailable()
+                  .then(updatedResponse => {
+                    console.log(
+                      "updatedResponse updatedResponse :::::::",
+                      updatedResponse
+                    );
+                  })
+                  .catch(errResponse => {
+                    console.log("Error Response When DB Update");
+                  });
+              } else {
+                this.userProfileService
+                  .getInitialCartItemsFromDB()
+                  .then(async dbCartItemsRes => {
+                    // console.log("dbCartItemsRes dbCartItemsRes - No Local Cart Item ::::", dbCartItemsRes);
+                    // this.customOrderService.selectableItemsOrders = dbCartItemsRes.selectableItems.selectableItemsList;
+                    // check if the items added in cart previously are currently available or not
+                    this.customOrderService.selectableItemsOrders =
+                      await this.cartUtilityService.updateSelectableItemsAsPerAvailabilityCurrently(
+                      dbCartItemsRes.selectableItems.selectableItemsList
+                    );
+                    this.customOrderService.customItemOrdersDetails =
+                      dbCartItemsRes.customItemsKG.customKGItemList;
+                    this.customOrderService.customItemsPacksOrdersDetails =
+                      dbCartItemsRes.customItemsPacks.customPackItemList;
+                    if (this.cartUtilityService.hasLocalStorageCartItems()) {
+                      // this.messa
+                      this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+                    }
+                  })
+                  .catch(errDBCartItemRes => {
+                    console.log(
+                      "errDBCartItemRes errDBCartItemRes - No Local Cart Items Error ::::",
+                      errDBCartItemRes
+                    );
+                  });
+              }
+              // this.userProfileService.getInitialCartItemsFromDB();
+
               await loadingEl.dismiss();
               this.loginSuccessToastControllerMessage();
               this.onCloseLoginSuccess("CUSTOMER");

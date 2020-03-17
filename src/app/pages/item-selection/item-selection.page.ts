@@ -15,7 +15,9 @@ import { NetworkService } from "src/app/shared/services/network.service";
 import { IShopOfferedItemsData } from "src/app/models/shop-offered-items-data.model";
 import { IShopProfile } from "src/app/models/shop-profile.model";
 import { CurrentShopProfileService } from "src/app/shared/internal-services/current-shop-profile.service";
-import { SortByService } from "src/app/shared/utils/sort-by.service";
+// import { SortByService } from "src/app/shared/utils/sort-by.service";
+// import { CartUtilityService } from 'src/app/utils/cart-utility.service';
+import { UserProfileService } from 'src/app/services/user-profile.service';
 
 @Component({
   selector: "app-item-selection",
@@ -44,7 +46,7 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     private shopItemSelectionService: ShopItemSelectionService,
-    private router: Router,
+    // private router: Router,
     private modalCtrl: ModalController,
     private searchItemModalCtrl: ModalController,
     private alertCtrl: AlertController,
@@ -52,7 +54,10 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
     private messageService: MessageService,
     private networkService: NetworkService,
     private currentShopProfileService: CurrentShopProfileService,
-    private sortByService: SortByService
+    // private sortByService: SortByService,
+    private userProfileService: UserProfileService
+    // private cartUtilityService: CartUtilityService
+
   ) {}
 
   // doRefresh(event) {
@@ -220,6 +225,14 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
     }
 
     this.shopItemSelectionService.clearCurrentlySelectedShopDetails();
+
+    this.userProfileService.updateSelectableItemsInDB(this.customOrderService.selectableItemsOrders)
+      .then(successResponse => {
+        // console.log("Successfuly added in DB cart", successResponse);
+      })
+      .catch(errResponse => {
+        // console.log("Failed to add in DB cart", errResponse);
+      });
   }
 
   ionViewDidLeave() {}
