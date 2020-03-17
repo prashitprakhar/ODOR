@@ -21,6 +21,7 @@ import { HttpApiService } from "../shared/services/http-api.service";
 })
 export class ShopItemSelectionService {
   private shopAPI: string = environment.internalAPI.shopFunctions;
+  private userAPI: string = environment.internalAPI.userAuth;
   private _shopList = new BehaviorSubject<IShopData[]>(null);
 
   constructor(

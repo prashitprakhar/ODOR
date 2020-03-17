@@ -60,6 +60,7 @@
                     type="text"
                     name="{{ customItem._id }}"
                     required
+                    maxlength="30"
                     [(ngModel)]="customItem.itemName"
                     (ionChange)="onItemNameChangeKG($event, customItem._id)"
                   >
@@ -165,6 +166,7 @@
                     type="text"
                     name="{{ customItem._id }}"
                     required
+                    maxlength="30"
                     [(ngModel)]="customItem.itemName"
                     (ionChange)="
                       onItemNameChangePacks($event, customItem._id)

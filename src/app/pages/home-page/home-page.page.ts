@@ -56,8 +56,12 @@ export class HomePagePage implements OnInit, OnDestroy {
     // Clear the Local Storage for Login on First time Install
     // Need to put this somewhere else so that this happens only when the application is installed first time
     // Currently un comment this when testing on Mobile
-    this.authenticationService.clearLoginDetailsLocalStorage();
-    this.userProfileService.removeCustomerProfileFromLocalStorage();
+    // Correct and Better Solution
+    // android:allowBackup="false" in AndroidManifest.xml
+    // by default, this value is true
+    // note this is not any issue rather this is a feature of Android > 6
+    // this.authenticationService.clearLoginDetailsLocalStorage();
+    // this.userProfileService.removeCustomerProfileFromLocalStorage();
 
     // this.allShopListSubs = this.messageService
     //   .getMessage()

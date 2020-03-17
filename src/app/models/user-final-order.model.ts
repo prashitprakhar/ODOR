@@ -19,4 +19,5 @@ export interface IUserFinalOrder {
     orderPlaced: boolean;
     orderStatus: string;
     orderConfirmationStatus: string;
+    paymentStatus: boolean;
 }

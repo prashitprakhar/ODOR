@@ -6,6 +6,7 @@
     ion-item {
         --background: transparent;
       }
+    width: 100vw;
 }
 
 .grand_total{
@@ -84,3 +85,6 @@
   align-items: center;
 }
 
+.action-sheet-button.sc-ion-action-sheet-md {
+  --background: #0adc22;
+}

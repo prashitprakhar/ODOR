@@ -221,7 +221,14 @@ export class SearchItemModalComponent implements OnInit, OnDestroy {
         element => element.itemCount > 0
       );
     }
-    this.messageService.sendMessage("ITEM_REMOVED_IN_CART");
+    if (
+      this.selectedItems.length === 0 &&
+      this.customOrderService.customItemOrdersDetails.length === 0 &&
+      this.customOrderService.customItemsPacksOrdersDetails.length === 0
+    ) {
+      this.messageService.clearMessage();
+    }
+    // this.messageService.sendMessage("ITEM_REMOVED_IN_CART");
   }
 
   increment(_id, selectableItemsForm: NgForm) {

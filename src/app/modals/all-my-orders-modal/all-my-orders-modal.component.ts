@@ -20,7 +20,7 @@ export class AllMyOrdersModalComponent implements OnInit {
     const userOrders = this.userProfileService.getCustomerAllOrder()
     .then(allOrders => {
       this.myAllOrders = allOrders;
-      console.log("this.myAllOrders >>>> this.myAllOrders >>>>", this.myAllOrders)
+      console.log("this.myAllOrders >>>> this.myAllOrders >>>>", this.myAllOrders);
     })
     .catch (e => {
       this.myAllOrders = [];

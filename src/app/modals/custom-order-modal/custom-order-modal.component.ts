@@ -4,14 +4,16 @@ import {
   AlertController,
   IonItemSliding,
   ModalController,
-  NavParams
+  NavParams,
+  LoadingController
 } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { UserProfileService } from "src/app/services/user-profile.service";
 import { ICustomOrderItem } from "./../../models/custom-order-items.model";
-import { MessageService } from 'src/app/shared/services/message.service';
+import { MessageService } from "src/app/shared/services/message.service";
+import { AuthenticationService } from "src/app/shared/internal-services/authentication.service";
 // import { ModalController, AlertController } from "@ionic/angular";
 
 @Component({
@@ -23,33 +25,6 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
   public selectedShopId: string;
 
   public customItemsCount: number = 0;
-  // public customKilogramItemsArray: ICustomOrderItem[] = [
-  //   {
-  //     shopId: this.selectedShopId,
-  //     itemId: "Item" + Math.random() * Math.random(),
-  //     itemName: "",
-  //     itemCount: 0,
-  //     itemUnit: "KG",
-  //     totalPrice: 0,
-  //     itemDiscountedRate: 0,
-  //     itemWeight: 0,
-  //     orderType: "CUSTOM"
-  //   }
-  // ];
-
-  // public customPacketsItemsArray: ICustomOrderItem[] = [
-  //   {
-  //     shopId: this.selectedShopId,
-  //     itemId: "Item" + Math.random() * Math.random(),
-  //     itemName: "",
-  //     itemCount: 0,
-  //     itemUnit: "PACK",
-  //     totalPrice: 0,
-  //     itemDiscountedRate: 0,
-  //     itemWeight: 0,
-  //     orderType: "CUSTOM"
-  //   }
-  // ];
 
   // public otherCustomOrderInCartMessage: string = 'You have custom orders for other shop. Do you want to remove those and continu'
   public customKilogramItemsArray: ICustomOrderItem[] = [];
@@ -68,58 +43,54 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private userProfileService: UserProfileService,
     private shopItemSelectionService: ShopItemSelectionService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private authenticationService: AuthenticationService,
+    private savingCartDetailsLoadingCtrl: LoadingController,
+    private customItemsAddToCartSuccessAlertCtrl: AlertController,
+    private customItemsAddToCartFailAlertCtrl: AlertController
   ) {
     this.selectedShopId = navParams.get("selectedShopId");
-    // this.shopOfferedItemsSubs = this.shopItemSelectionService
-    //   .getShopOfferedItemsForCustomer(this.selectedShopId)
-    //   .subscribe(shop => {
-    //     this.shopName = shop.shopName;
-    //   });
-    // this.shopItemSelectionService.getShopProfileForCustomers(this.selectedShopId.toString()).then(shopProfile => {
-    //   this.shopName = shopProfile.shopName;
-    // });
-    this.shopItemSelectionService.getCurrentShopProfileSelected().then(shopProfile => {
-      this.shopName = shopProfile.shopName;
-      this.customKilogramItemsArray = [
-        {
-          shopId: this.selectedShopId,
-          shopName: this.shopName,
-          _id: "Item" + Math.random() * Math.random(),
-          itemId: "Item" + Math.random() * Math.random(),
-          itemName: "",
-          itemCount: 0,
-          itemUnit: "KG",
-          totalPrice: 0,
-          itemDiscountedRate: 0,
-          itemWeight: 0,
-          orderType: "CUSTOM"
-        }
-      ];
+    this.shopItemSelectionService
+      .getCurrentShopProfileSelected()
+      .then(shopProfile => {
+        this.shopName = shopProfile.shopName;
+        const uniqueIdKG = this.authenticationService.getUniqueObjectId();
+        const uniqueIdPack = this.authenticationService.getUniqueObjectId();
+        this.customKilogramItemsArray = [
+          {
+            shopId: this.selectedShopId,
+            shopName: this.shopName,
+            _id: uniqueIdKG,
+            itemId: uniqueIdKG,
+            itemName: "",
+            itemCount: 0,
+            itemUnit: "KG",
+            totalPrice: 0,
+            itemDiscountedRate: 0,
+            itemWeight: 0,
+            orderType: "CUSTOM"
+          }
+        ];
 
-      this.customPacketsItemsArray = [
-        {
-          shopId: this.selectedShopId,
-          shopName: this.shopName,
-          _id: "Item" + Math.random() * Math.random(),
-          itemId: "Item" + Math.random() * Math.random(),
-          itemName: "",
-          itemCount: 0,
-          itemUnit: "PACK",
-          totalPrice: 0,
-          itemDiscountedRate: 0,
-          itemWeight: 0,
-          orderType: "CUSTOM"
-        }
-      ];
-    });
+        this.customPacketsItemsArray = [
+          {
+            shopId: this.selectedShopId,
+            shopName: this.shopName,
+            _id: uniqueIdPack,
+            itemId: uniqueIdPack,
+            itemName: "",
+            itemCount: 0,
+            itemUnit: "PACK",
+            totalPrice: 0,
+            itemDiscountedRate: 0,
+            itemWeight: 0,
+            orderType: "CUSTOM"
+          }
+        ];
+      });
   }
 
   ngOnInit() {
-    // let checkOpenOrders = false;
-    // if(this.userProfileService.getUserOrder().length > 0) {
-    //   this.userProfileService.getUserOrder().filter(element => element.orderPlaced )
-    // }
     if (
       (this.userProfileService.getUserOrder() &&
         this.customOrderService.customItemsPacksOrdersDetails &&
@@ -146,7 +117,6 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
               role: "cancel",
               cssClass: "secondary",
               handler: cancel => {
-                // console.log("cancel ***");
                 this.modalCtrl.dismiss(null, "closed", "customItemModal");
               }
             },
@@ -168,23 +138,22 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     this.userOrdersFromLocalStorageSubs = this.shopItemSelectionService
       .getOrderedItemsFromLocalStorage()
       .subscribe(localStorageUserCustomSelections => {
-        // tslint:disable-next-line: max-line-length
-        // console.log("localStorageUserCustomSelections localStorageUserCustomSelections >>>>>>", JSON.parse(localStorageUserCustomSelections.value));
         const customItemsFromLocalStorageKG = JSON.parse(
           localStorageUserCustomSelections.value
         ).customItemsKG;
         const customItemsFromLocalStoragePack = JSON.parse(
           localStorageUserCustomSelections.value
         ).customItemsPacks;
-        // console.log("customItemsFromLocalStorageKG customItemsFromLocalStorageKG", customItemsFromLocalStorageKG);
         this.customPacketsItemsArrayFromLocalStorage =
-        customItemsFromLocalStoragePack && customItemsFromLocalStoragePack.length > 0
+          customItemsFromLocalStoragePack &&
+          customItemsFromLocalStoragePack.length > 0
             ? customItemsFromLocalStoragePack.filter(
                 element => element.itemUnit === "PACK"
               )
             : [];
         this.customKilogramItemsArrayFromLocalStorage =
-        customItemsFromLocalStorageKG && customItemsFromLocalStorageKG.length > 0
+          customItemsFromLocalStorageKG &&
+          customItemsFromLocalStorageKG.length > 0
             ? customItemsFromLocalStorageKG.filter(
                 element => element.itemUnit === "KG"
               )
@@ -192,8 +161,8 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
       });
 
     this.customKilogramItemsArray =
-      (this.customOrderService.customItemOrdersDetails &&
-        this.customOrderService.customItemOrdersDetails.length > 0)
+      this.customOrderService.customItemOrdersDetails &&
+      this.customOrderService.customItemOrdersDetails.length > 0
         ? this.customOrderService.customItemOrdersDetails[0].shopId !==
           this.selectedShopId
           ? this.customKilogramItemsArray
@@ -201,8 +170,8 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
         : this.customKilogramItemsArray;
 
     this.customPacketsItemsArray =
-      (this.customOrderService.customItemsPacksOrdersDetails &&
-        this.customOrderService.customItemsPacksOrdersDetails.length > 0)
+      this.customOrderService.customItemsPacksOrdersDetails &&
+      this.customOrderService.customItemsPacksOrdersDetails.length > 0
         ? this.customOrderService.customItemsPacksOrdersDetails[0].shopId !==
           this.selectedShopId
           ? this.customPacketsItemsArray
@@ -267,23 +236,142 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     );
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
-    console.log("this.customKilogramItemsArray.length , this.customPacketsItemsArray.length", this.customKilogramItemsArray.length, this.customPacketsItemsArray.length);
-    if (this.customKilogramItemsArray.length > 0 || this.customPacketsItemsArray.length > 0) {
+    if (
+      this.customKilogramItemsArray.length > 0 ||
+      this.customPacketsItemsArray.length > 0
+    ) {
       this.messageService.sendMessage("ITEM_ADDED_IN_CART");
-      this.modalCtrl.dismiss(null, "closed", "customItemModal");
+      this.savingCartDetailsLoadingCtrl
+        .create({
+          message: "Adding to cart... Please wait..."
+        })
+        .then(loadingEl => {
+          loadingEl.present();
+          this.userProfileService
+            .updateCustomItemsOrderInDB(
+              this.customOrderService.customItemOrdersDetails,
+              this.customOrderService.customItemsPacksOrdersDetails
+            )
+            .then(successResponse => {
+              loadingEl.dismiss();
+              this.modalCtrl.dismiss(null, "closed", "customItemModal");
+            })
+            .catch(errResponse => {
+              loadingEl.dismiss();
+              this.modalCtrl.dismiss(null, "closed", "customItemModal");
+              // Removing this
+              /*
+              ** Reasons
+              ** 1. We try saving Once
+              ** 2. If Not saved, then already we try saving it at the time of Logging Out everything
+              ** So this case will be covered under that
+              ** If then also not saved, then there is slight chance that Cart item was not saved in DB
+              ** And application Logged out
+              ** and cart data lost
+              ** We need to understand that DB is a backup basiacally for the cart items
+              ** Most important part is the order part.
+              ** At that time data loss should not occur
+              ** there Exception handling needs to be robust
+              */
+              // const header = "Oops... Something went wrong";
+              // const message =
+              //   "Items couldn't be added to cart. please try again";
+              // this.addToCartCustomOrderDetailsToCartFailure(header, message);
+            });
+        });
     } else {
       this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
     }
-    
+  }
+
+  updateCustomCartItemInDB() {
+    this.savingCartDetailsLoadingCtrl
+        .create({
+          message: "Adding to cart... Please wait..."
+        })
+        .then(loadingEl => {
+          loadingEl.present();
+          this.userProfileService
+            .updateCustomItemsOrderInDB(
+              this.customOrderService.customItemOrdersDetails,
+              this.customOrderService.customItemsPacksOrdersDetails
+            )
+            .then(successResponse => {
+              loadingEl.dismiss();
+              this.modalCtrl.dismiss(null, "closed", "customItemModal");
+            })
+            .catch(errResponse => {
+              loadingEl.dismiss();
+              const header = "Oops... Something went wrong";
+              const message =
+                "Items couldn't be added to cart. please try again";
+              this.addToCartCustomOrderDetailsToCartFailure(header, message);
+            });
+        });
+  }
+
+  addToCartCustomOrderDetailsToCartFailure(header, message) {
+    const alert = this.customItemsAddToCartFailAlertCtrl
+          .create({
+            header,
+            message,
+            buttons: [
+              {
+                text: "Retry",
+                // role: "cancel",
+                cssClass: "secondary",
+                handler: cancel => {
+                  this.updateCustomCartItemInDB();
+                }
+              },
+              {
+                text: "Cancel",
+                role: "cancel",
+                cssClass: "secondary",
+                handler: cancel => {
+                }
+              }
+            ]
+          })
+          .then(alertEl => {
+            alertEl.present();
+          });
+
+          /*
+buttons: [
+          {
+            text: "Add Another Item",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: cancel => {
+              itemDetailsForm.reset();
+            }
+          },
+          {
+            text: "OK",
+            handler: () => {
+              itemDetailsForm.reset();
+              this.router.navigateByUrl(
+                "/partnerHomePage/partnerTabs/partnerMyShop"
+              );
+              // this.customOrderService.customItemOrdersDetails = [];
+              // this.customOrderService.customItemsPacksOrdersDetails = [];
+              // this.customOrderService.selectableItemsOrders = [];
+              // this.customOrderService.isResetAllOrdersNeeded = true;
+            }
+          }
+        ]
+          */
   }
 
   addNewItemKG(slidingItem: IonItemSliding) {
+    const uniqueId = this.authenticationService.getUniqueObjectId();
     slidingItem.close();
     this.customKilogramItemsArray.push({
       shopId: this.selectedShopId,
       shopName: this.shopName,
-      _id: "Item" + Math.random() * Math.random(),
-      itemId: "Item" + Math.random() * Math.random(),
+      _id: uniqueId,
+      itemId: uniqueId,
       itemName: "",
       itemCount: 0,
       itemUnit: "KG",
@@ -295,12 +383,13 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
   }
 
   addNewItemPacks(slidingItem: IonItemSliding) {
+    const uniqueId = this.authenticationService.getUniqueObjectId();
     slidingItem.close();
     this.customPacketsItemsArray.push({
       shopId: this.selectedShopId,
       shopName: this.shopName,
-      _id: "Item" + Math.random() * Math.random(),
-      itemId: "Item" + Math.random() * Math.random(),
+      _id: uniqueId,
+      itemId: uniqueId,
       itemName: "",
       itemCount: 0,
       itemUnit: "PACK",
@@ -453,9 +542,58 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
     );
     this.customOrderService.customItemOrdersDetails = this.customKilogramItemsArray;
     this.customOrderService.customItemsPacksOrdersDetails = this.customPacketsItemsArray;
-    if (this.customKilogramItemsArray.length > 0 || this.customPacketsItemsArray.length > 0) {
+    // if (
+    //   this.customKilogramItemsArray.length > 0 ||
+    //   this.customPacketsItemsArray.length > 0
+    // ) {
+    //   this.messageService.sendMessage("ITEM_ADDED_IN_CART");
+    //   this.modalCtrl.dismiss(null, "confirm", "customItemModal");
+    // } else {
+    //   this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
+    // }
+    if (
+      this.customKilogramItemsArray.length > 0 ||
+      this.customPacketsItemsArray.length > 0
+    ) {
       this.messageService.sendMessage("ITEM_ADDED_IN_CART");
-      this.modalCtrl.dismiss(null, "confirm", "customItemModal");
+      this.savingCartDetailsLoadingCtrl
+        .create({
+          message: "Adding to cart... Please wait..."
+        })
+        .then(loadingEl => {
+          loadingEl.present();
+          this.userProfileService
+            .updateCustomItemsOrderInDB(
+              this.customOrderService.customItemOrdersDetails,
+              this.customOrderService.customItemsPacksOrdersDetails
+            )
+            .then(successResponse => {
+              loadingEl.dismiss();
+              this.modalCtrl.dismiss(null, "closed", "customItemModal");
+            })
+            .catch(errResponse => {
+              loadingEl.dismiss();
+              this.modalCtrl.dismiss(null, "closed", "customItemModal");
+              /*
+              ** Reasons
+              ** 1. We try saving Once
+              ** 2. If Not saved, then already we try saving it at the time of Logging Out everything
+              ** So this case will be covered under that
+              ** If then also not saved, then there is slight chance that Cart item was not saved in DB
+              ** And application Logged out
+              ** and cart data lost
+              ** We need to understand that DB is a backup basiacally for the cart items
+              ** Most important part is the order part.
+              ** At that time data loss should not occur
+              ** there Exception handling needs to be robust
+              */
+              // Removing this
+              // const header = "Oops... Something went wrong";
+              // const message =
+              // // "Items couldn't be added to cart. please try again";
+              // this.addToCartCustomOrderDetailsToCartFailure(header, message);
+            });
+        });
     } else {
       this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
     }
@@ -464,6 +602,13 @@ export class CustomOrderModalComponent implements OnInit, OnDestroy {
   cancelCustomOrder() {
     this.customOrderService.customItemOrdersDetails = [];
     this.customOrderService.customItemsPacksOrdersDetails = [];
+    this.userProfileService.updateCustomItemsOrderInDB([], [])
+    .then(successResponse => {
+      console.log("SuccessFully Cleared Custom Carts", successResponse);
+    })
+    .catch(errResponse => {
+      console.log("Failure Clearance Custom Carts", errResponse);
+    })
     this.modalCtrl.dismiss(null, "CUSTOM_ORDER_CANCEL", "customItemModal");
   }
 

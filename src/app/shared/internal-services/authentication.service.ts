@@ -7,17 +7,19 @@ import { environment } from "./../../../environments/environment";
 import { UserClassModel } from "./../../shared/models/user-class.model";
 import { HttpApiService } from '../services/http-api.service';
 import { Router } from '@angular/router';
+// import { ShopItemSelectionService } from 'src/app/services/shop-item-selection.service';
+import ObjectID from "bson-objectid";
 
 @Injectable({
   providedIn: "root"
 })
 export class AuthenticationService {
   private userAuthAPI: string = environment.internalAPI.userAuth;
-  private _userIsEnterprisePartner: boolean = false;
-  private _userIsCustomer: boolean = false;
+  // private _userIsEnterprisePartner: boolean = false;
+  // private _userIsCustomer: boolean = false;
   private _user = new BehaviorSubject<UserClassModel>(null);
   private activeLogoutTimer: any;
-  private _userAuthState = new BehaviorSubject<any>(null);
+  // private _userAuthState = new BehaviorSubject<any>(null);
 
   constructor(private http: HttpClient,
               private httpAPIService: HttpApiService,
@@ -178,7 +180,25 @@ export class AuthenticationService {
     };
     return from(
       this.http.post(`${this.userAuthAPI}login`, payload)
-    ).pipe(take(1), tap(this.setUserData.bind(this)));
+    ).pipe(take(1),
+      // map(data => {
+      //   console.log("Data Data Data Data *****", data);
+      //   if (!data) {
+      //     return null;
+      //   } else {
+      //     this.shopItemSelectionService.getCartItemsFromDB(data["user"]._id, data["token"])
+      //       .then(CustomerCartData => {
+      //         console.log("CustomerCart Data ***********", CustomerCartData);
+      //       })
+      //   }
+      //   return data;
+      // }),
+    tap(this.setUserData.bind(this))
+    // map(data => {
+    //   console.log("Data*****", data)
+    //   this.shopItemSelectionService.getCartItemsFromDB(data);
+    // })
+    );
     // )
     // .pipe(take(1),
     // map(loginData => {
@@ -320,4 +340,9 @@ export class AuthenticationService {
     // resetPassword
     return this.httpAPIService.postAPI(`${this.userAuthAPI}resetPassword`, payload);
   }
+
+  getUniqueObjectId(): string {
+    return new ObjectID().toHexString();
+  }
+
 }

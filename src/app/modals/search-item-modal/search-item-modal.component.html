@@ -72,6 +72,17 @@
               </ion-label>
               <div class="custom_add_sub_item_quantity_section">
                 <ion-button
+                  (click)="decrement(product._id, selectableItemsForm)"
+                  style="color: #228B22;"
+                  fill="clear"
+                  strong
+                  [disabled]="!product.itemAvailable"
+                >
+                  <ion-icon name="remove" slot="icon-only"></ion-icon>
+                </ion-button>
+                <ion-label>{{ product.itemCount }}</ion-label> &nbsp;
+                
+                <ion-button
                   (click)="
                     checkForMultipleShopSelection(
                       product._id,
@@ -84,16 +95,6 @@
                   [disabled]="!product.itemAvailable"
                 >
                   <ion-icon name="add" slot="icon-only"></ion-icon>
-                </ion-button>
-                <ion-label>{{ product.itemCount }}</ion-label> &nbsp;
-                <ion-button
-                  (click)="decrement(product._id, selectableItemsForm)"
-                  style="color: #228B22;"
-                  fill="clear"
-                  strong
-                  [disabled]="!product.itemAvailable"
-                >
-                  <ion-icon name="remove" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
             </ion-item>
