@@ -155,6 +155,7 @@ export class ItemSelectionPage implements OnInit, OnDestroy {
           this.getInitialData();
         }
       });
+      // this is for FMC Push Notification
     this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {
       this.deviceFCMToken = deviceFCMToken;
     });
