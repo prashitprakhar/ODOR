@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
 import { IShopOfferedItems } from "src/app/models/shop-offered-items.model";
-import { IShopList } from "src/app/models/shop-list.model";
+// import { IShopList } from "src/app/models/shop-list.model";
 import { IShopData } from "src/app/models/shop-data.model";
 import { IShopOfferedItemsData } from "./../../models/shop-offered-items-data.model";
-import { Plugins } from "@capacitor/core";
+import { Plugins,
+  PushNotification,
+  PushNotificationToken,
+  PushNotificationActionPerformed } from "@capacitor/core";
 import { Subscription } from "rxjs";
 import {
   ModalController,
@@ -14,6 +17,23 @@ import {
 import { EditItemDetailsModalComponent } from "src/app/enterprise-partner-modals/edit-item-details-modal/edit-item-details-modal.component";
 import { IShopProfile } from "src/app/models/shop-profile.model";
 import { SortByService } from 'src/app/shared/utils/sort-by.service';
+// import {
+//   Plugins,
+//   PushNotification,
+//   PushNotificationToken,
+//   PushNotificationActionPerformed
+// } from "@capacitor/core";
+
+import { Platform } from "@ionic/angular";
+
+import { FCM } from "capacitor-fcm";
+import { IUserMobileDetails } from 'src/app/models/user-mobile-details-model';
+import { CommonUtilityService } from 'src/app/shared/services/common-utility.service';
+
+const fcm = new FCM();
+
+const { PushNotifications } = Plugins;
+const { FCMPlugin } = Plugins;
 
 @Component({
   selector: "app-partner-my-shop",
@@ -29,13 +49,16 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
   // New Functions
   public shopOfferedItemsData: IShopOfferedItemsData;
   public shopProfile: IShopProfile;
+  public userMobileDetails: IUserMobileDetails;
 
   constructor(
     private shopItemSelectionService: ShopItemSelectionService,
     private editItemDetailsModalCtrl: ModalController,
     private confirmDeleteAlertCtrl: AlertController,
     private itemAvailabilirtAlertCtrl: AlertController,
-    private sortByService: SortByService
+    private sortByService: SortByService,
+    private platform: Platform,
+    private commonUtilityService: CommonUtilityService
   ) {}
 
   ngOnInit() {
@@ -44,6 +67,76 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
       const userDataFetched = JSON.parse(data.value);
       this.shopId = userDataFetched.userId;
     });
+  }
+
+  ionViewWillEnter() {
+    /*
+     ** Push Notification Code Goes Here
+     */
+    // console.log("this.platform >>>>>>", this.platform.platforms());
+      // if (this.platform.is("android")) {
+      //   // fcm.deleteInstance();
+      //   PushNotifications.register();
+
+      //   PushNotifications.addListener(
+      //     "registration",
+      //     (token: PushNotificationToken) => {
+      //       // alert("Push registration success, token: " + token.value);
+      //     }
+      //   );
+
+      //   PushNotifications.addListener("registrationError", (error: any) => {
+      //     // alert("Error on registration: " + JSON.stringify(error));
+      //   });
+
+      //   fcm
+      //     .getToken()
+      //     .then(async r => {
+      //       // alert(`Token ${r.token}`)
+      //       const userDetails = await Plugins.Storage.get({key: 'authData'});
+      //       const userDetailsParsed = JSON.parse(userDetails.value);
+      //       this.userMobileDetails = {
+      //         userId: userDetailsParsed.userId,
+      //         fcmToken: r.token
+      //       };
+      //       Plugins.Storage.set({
+      //         key: "user_fcm_token",
+      //         value: JSON.stringify(this.userMobileDetails)
+      //       });
+
+      //       this.commonUtilityService.setFCMToken(userDetailsParsed.userId, r.token, userDetailsParsed.token)
+      //         .then(successfullyUpdateMobileDetail => {
+
+      //         })
+      //         .catch(err => {
+
+      //         });
+
+      //     })
+      //     .catch(err => {
+      //       Plugins.Storage.set({
+      //         key: "user_fcm_token",
+      //         value: null
+      //       });
+      //     });
+
+      //   PushNotifications.addListener(
+      //     "pushNotificationReceived",
+      //     (notification: PushNotification) => {
+      //       // alert("Push received: " + JSON.stringify(notification));
+      //     }
+      //   );
+
+      //   PushNotifications.addListener(
+      //     "pushNotificationActionPerformed",
+      //     (notification: PushNotificationActionPerformed) => {
+      //       // alert("Push action performed: " + JSON.stringify(notification));
+      //     }
+      //   );
+      // }
+    /*
+     ** Push Notification Code till here
+     */
   }
 
   getShopProfile(): Promise<IShopProfile> {

@@ -31,6 +31,21 @@ export class UserProfileService {
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
+  async sendOrderConfPushNotificationToShop(shopFCMToken: string): Promise<any> {
+    // const userFCMToken = await Plugins.Storage.get({ key: "user_fcm_token" });
+    // const userFCMTokenParsed = JSON.parse(userFCMToken.value);
+    const url = `${this.userAPI}sendOrderStatusPushNotification`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const payload = {
+      fcmToken: shopFCMToken,
+      notificationTitle: 'New Order Received',
+      notificationBody: 'You have received a new order. Please check.'
+    };
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
   getUserOrder(): IUserFinalOrder[] {
     return [...this.userOrderList];
   }

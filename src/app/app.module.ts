@@ -57,7 +57,7 @@ const firebaseConfig = {
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(),
+    IonicModule.forRoot({hardwareBackButton: false}),
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,

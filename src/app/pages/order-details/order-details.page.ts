@@ -1,8 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy
-} from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ICustomOrderItem } from "src/app/models/custom-order-items.model";
 import { ISelectableItemsOrder } from "src/app/models/selectable-items-orders.model";
@@ -27,6 +23,7 @@ import { MessageService } from "src/app/shared/services/message.service";
 import { ICustomerAddress } from "src/app/models/customer-address.model";
 import { ViewSavedAddressesModalComponent } from "src/app/modals/view-saved-addresses-modal/view-saved-addresses-modal.component";
 import { AddNewAddressModalComponent } from "src/app/modals/add-new-address-modal/add-new-address-modal.component";
+import { CommonUtilityService } from 'src/app/shared/services/common-utility.service';
 
 @Component({
   selector: "app-order-details",
@@ -75,7 +72,8 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     private noAddressAlertCtrl: AlertController, // private deliveryAddConfActionCtrl: ActionSheetController
     private placingOrderLoadingCtrl: LoadingController,
     private orderPlacementSuccessCtrl: AlertController,
-    private orderPlacementFailureCtrl: AlertController
+    private orderPlacementFailureCtrl: AlertController,
+    private commonUtilityService: CommonUtilityService
   ) {}
 
   ngOnInit() {
@@ -454,12 +452,17 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
 
         this.userProfileService
           .saveUserOrder(this.userFinalOrder)
-          .then(customerCurrentOrder => {
+          .then(async customerCurrentOrder => {
+            const shopMobileDetails = await this.commonUtilityService.getUserMobileDetails(this.cartItemsShopId);
+            this.userProfileService.sendOrderConfPushNotificationToShop(shopMobileDetails.fcmToken);
             this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
             this.userProfileService
               .removeItemsFromCartPostOrderPlacement()
               .then(cartClearanceResponse => {
-                if (cartClearanceResponse.message === "CART_ITEMS_CLEARED_POST_ORDER") {
+                if (
+                  cartClearanceResponse.message ===
+                  "CART_ITEMS_CLEARED_POST_ORDER"
+                ) {
                   placingOrderEl.dismiss();
                   this.orderConfModalCtrl
                     .create({
@@ -485,23 +488,25 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
                 }
               })
               .catch(e => {
+                alert("Internal catch Error: " + JSON.stringify(e));
                 this.retryClearingDBCart();
               });
           })
           .catch(err => {
-            const header = 'Oops... Something went wrong.';
-            const message = 'Please try again';
+            placingOrderEl.dismiss();
+            alert("External catch Error: " + JSON.stringify(err));
+            const header = "Oops... Something went wrong.";
+            const message = "Please try again";
             this.orderPlacementFailureAlert(header, message);
           });
       });
+    // const orderConfPushushNotification = this.userProfileService.sendOrderConfPushNotification();
   }
 
   retryClearingDBCart() {
     this.userProfileService
-    .removeItemsFromCartPostOrderPlacement()
-    .then(dbClearanceRes => {
-    })
-    .catch(err => {
-    });
+      .removeItemsFromCartPostOrderPlacement()
+      .then(dbClearanceRes => {})
+      .catch(err => {});
   }
 }

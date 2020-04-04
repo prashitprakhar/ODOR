@@ -105,7 +105,6 @@ export class LoginModalComponent implements OnInit, OnDestroy {
                   customKGItems
                 )
                 .then(async data => {
-                  // console.log("11111111111", data);
                   if (data.message === "SUCCESS") {
                     await loadingEl.dismiss();
                     this.onClose();
@@ -116,6 +115,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
                   this.onClose("CART_UPDATE_FAILURE");
                 });
             } else if (userRole === "ENTERPRISE_PARTNER") {
+              // this.
               await loadingEl.dismiss();
               this.loginSuccessToastControllerMessage();
               this.onCloseLoginSuccess("ENTERPRISE_PARTNER");
@@ -131,13 +131,13 @@ export class LoginModalComponent implements OnInit, OnDestroy {
                 this.cartUtilityService
                   .onLoginUpdateDBCartsWhenLocalStorageItemsAvailable()
                   .then(updatedResponse => {
-                    console.log(
-                      "updatedResponse updatedResponse :::::::",
-                      updatedResponse
-                    );
+                    // console.log(
+                    //   "updatedResponse updatedResponse :::::::",
+                    //   updatedResponse
+                    // );
                   })
                   .catch(errResponse => {
-                    console.log("Error Response When DB Update");
+                    // console.log("Error Response When DB Update");
                   });
               } else {
                 this.userProfileService
