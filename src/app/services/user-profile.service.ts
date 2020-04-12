@@ -13,6 +13,7 @@ import { ISelectableItemsOrder } from '../models/selectable-items-orders.model';
 })
 export class UserProfileService {
   private userAPI: string = environment.internalAPI.userAuth;
+  private shopAPI: string = environment.internalAPI.shopFunctions;
   public userOrderList: IUserFinalOrder[] = [];
 
   constructor(
@@ -27,7 +28,21 @@ export class UserProfileService {
     const userDataFetched = JSON.parse(userData.value);
     const userToken = userDataFetched.token;
     const userId = userDataFetched.userId;
-    const payload = { userId, orderDetails: userCurrentOrder };
+    const shopId = userCurrentOrder.shopId;
+    const payload = { userId, shopId, orderDetails: userCurrentOrder };
+    return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
+  }
+
+  async addOrderToShopDB(userCurrentOrder: IUserFinalOrder): Promise<any> {
+    this.userOrderList = [];
+    this.userOrderList = [userCurrentOrder];
+    const url = `${this.shopAPI}addNewOrderToShop`;
+    const userData = await Plugins.Storage.get({ key: "authData" });
+    const userDataFetched = JSON.parse(userData.value);
+    const userToken = userDataFetched.token;
+    const userId = userDataFetched.userId;
+    const shopId = userCurrentOrder.shopId;
+    const payload = { shopId, userId, orderDetails: userCurrentOrder };
     return this.httpAPIService.authenticatedPostAPI(url, payload, userToken);
   }
 
