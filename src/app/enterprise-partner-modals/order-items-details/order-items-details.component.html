@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Ordered Items Details
+    </ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onClose()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content fullscreen>
+<div class="ordered_items_details_conatiner">
+  <div class="content_header">
+    <ion-text style="font-size: 20px;font-weight: 600;">Ordered items</ion-text>
+  </div>
+  <div class="content_body">
+    <ion-list *ngFor="let item of product.orderedItemsList">
+      <ion-item>
+      <div class="item_content">
+        <div class="left_panel">
+      <div class="item_details_text"><ion-text style="font-size: 16px !important;font-weight: 600;">Item Name : {{item.itemName}}</ion-text></div>
+      <div class="item_details_text"><ion-text>Item Count : {{item.itemCount}}</ion-text></div>
+      <div class="item_details_text"><ion-text>Item Unit Weight : {{item.itemWeight}} {{item.itemUnit}}</ion-text></div>
+      <div class="item_details_text"><ion-text>Item Total Weight : {{item.itemCount * item.itemWeight}} {{item.itemUnit}}</ion-text></div>
+      <div class="item_details_text"><ion-text>Rate : &#8377; {{item.itemDiscountedRate}}</ion-text></div>
+      <div class="item_details_text"><ion-text>Item Price : &#8377; {{item.totalPrice}}</ion-text></div>
+    </div>
+    <div class="mark_inprogress" (click)="markDone($event)" [ngClass]="{'mark_done': false, 'mark_inprogress': true}">
+        <ion-text style="font-size: 16px;font-weight: 600;">Total Price</ion-text>
+        <ion-text style="font-size: 14px;font-weight: 600;">&#8377; {{item.totalPrice}}</ion-text>
+    </div>
+    </div>
+    </ion-item>
+    </ion-list>
+    <!-- <div class="button_container">
+    <ion-list lines="none" style="width: 100%;">
+      <ion-item style="width: 100%;">
+        <div class="mark_packaged"> -->
+          <ion-button *ngIf="product.orderStatus === 'PROGRESS'" color="warning" expand="block" (click)="markOrderPacked()">MARK PACKED</ion-button>
+          <ion-button *ngIf="product.orderStatus === 'PACKED'" color="success" expand="block" disabled="true">PACKED</ion-button>
+        <!-- </div>
+      </ion-item>
+    </ion-list>
+  </div> -->
+  </div>
+  <div class="content_footer"></div>
+</div>
+</ion-content>

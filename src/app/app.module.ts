@@ -23,6 +23,7 @@ import { SignupSuccessModalComponent } from "./shared/modals/signup-success-moda
 import { PasswordResetModalComponent } from "./shared/modals/password-reset-modal/password-reset-modal.component";
 import { ViewSavedAddressesModalComponent } from './modals/view-saved-addresses-modal/view-saved-addresses-modal.component';
 import { AddNewAddressModalComponent } from './modals/add-new-address-modal/add-new-address-modal.component';
+// import { OrderItemsDetailsComponent } from './enterprise-partner-modals/order-items-details/order-items-details.component';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAL4mqXZ-hE9qr1winLtaeGO9kW2BfiVKQ",

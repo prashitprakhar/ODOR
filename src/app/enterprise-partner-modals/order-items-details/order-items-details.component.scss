@@ -1,0 +1,84 @@
+.content_header {
+    min-height: 48px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background: #BF6900;
+    color: #FFFFFF;
+    padding-bottom: 5px;
+}
+
+.item_content {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-height: 80px;
+    padding-bottom: 10px;
+}
+
+.item_details_text {
+    font-size: 14px;
+}
+
+.left_panel {
+    width: 65%;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.right_panel {
+    width: 30%;
+    background: orange;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    box-shadow: -3px 3px 5px 0px;
+}
+
+.mark_done {
+    width: 30%;
+    background: green;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    box-shadow: -3px 3px 5px 0px;
+}
+
+.mark_inprogress {
+    width: 30%;
+    background: orange;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 15px;
+    box-shadow: -3px 3px 5px 0px;
+}
+
+.mark_packaged {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.button_container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}

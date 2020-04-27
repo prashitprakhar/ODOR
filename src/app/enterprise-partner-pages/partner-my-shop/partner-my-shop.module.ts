@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { PartnerMyShopPage } from './partner-my-shop.page';
 import { EditItemDetailsModalComponent } from 'src/app/enterprise-partner-modals/edit-item-details-modal/edit-item-details-modal.component';
+import { OrderItemsDetailsComponent } from 'src/app/enterprise-partner-modals/order-items-details/order-items-details.component';
 
 const routes: Routes = [
   {

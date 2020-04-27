@@ -1,3 +1,116 @@
 .custom_skeleton_content {
     width: 100%;
 }
+
+.active_orders_content {
+    width: 100%;
+}
+
+.active_orders_content_empty {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    min-height: 40px;
+    align-items: center;
+}
+
+.ion_item_custom {
+    min-height: 90px;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    align-items: baseline !important;
+}
+
+.ion_item_element {
+    font-size: 12px;
+}
+
+.item_container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 110px;
+    // border-right: 1px solid #252525;
+}
+
+.details_content {
+    padding-left: 10px;
+    width: 70%;
+    // border-right: 1px solid #252525;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
+::ng-deep .ion-list {
+    padding-bottom: 0 !important;
+}
+
+.ion_list_custom {
+    padding-bottom: 10px !important;
+    padding-top: 10px !important;
+}
+
+.status_bar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.all_orders_content {
+    width: 100%;
+}
+
+.progress_container_all_orders {
+    width: 30%;
+    // display: flex;
+    // flex-direction: row;
+    // justify-content: center;
+    // align-items: center;
+    // // border: 1px solid #252525;
+    // // background: orange;
+    // min-height: 80px;
+}
+
+.payment_status_bar {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.payment_pending {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: #ff7a00;
+    min-height: 80px;
+    border-radius: 10px;
+}
+
+.payment_complete {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: #00b300;
+    min-height: 80px;
+    border-radius: 10px;
+}
+
+.payment_complete_div {
+    border-bottom: 2px solid #252525;
+    padding-top: 10px;
+}

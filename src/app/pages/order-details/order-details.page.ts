@@ -115,12 +115,70 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     }
   }
 
+  formDeliveryTime() {
+    const dateObj = new Date();
+    const currentDate = dateObj.getDate();
+    const currentMinute = dateObj.getMinutes();
+    const currentYear = dateObj.getFullYear();
+    const currentMonth = dateObj.getMonth();
+    const currentHour = dateObj.getHours();
+    let formattedDeliveryHour;
+    let formattedDeliveryDate;
+    let formattedDeliveryYear;
+    let formattedDeliveryMonth;
+    let formattedDeliveryMinute;
+
+    // Hour Converter / Date Converter / Year Converter / Month Converter
+    if (currentHour < 9 || currentHour > 16) {
+      formattedDeliveryHour = 11;
+      formattedDeliveryMinute = '01';
+      if (currentHour > 16) {
+        if (currentDate === 31 && currentMonth === 12) {
+          formattedDeliveryYear = currentYear + 1;
+          formattedDeliveryMonth = 1;
+        } else {
+          formattedDeliveryYear = currentYear;
+          formattedDeliveryMonth = currentMonth;
+        }
+        formattedDeliveryDate = currentDate + 1;
+      } else {
+        formattedDeliveryDate = currentDate;
+        formattedDeliveryYear = currentYear;
+        formattedDeliveryMonth = currentMonth;
+      }
+    } else {
+      if (currentMinute < 10) {
+        formattedDeliveryMinute = `0${currentMinute}`;
+      } else {
+        formattedDeliveryMinute = `${currentMinute}`;
+      }
+      if (currentHour > 9 && currentHour <= 12) {
+        formattedDeliveryHour = currentHour + 1;
+        formattedDeliveryYear = currentYear;
+        formattedDeliveryMonth = currentMonth;
+        formattedDeliveryDate = currentDate;
+      } else if (currentHour > 12 && currentHour <= 4) {
+        formattedDeliveryHour = currentHour - 12;
+        formattedDeliveryYear = currentYear;
+        formattedDeliveryMonth = currentMonth;
+        formattedDeliveryDate = currentDate;
+      }
+    }
+
+    const formattedDeliveryDateTime = `${formattedDeliveryHour}:${
+      formattedDeliveryMinute
+    } ${this.amPmTracker()}, ${formattedDeliveryDate} ${this.monthConverter(formattedDeliveryMonth)} ${formattedDeliveryYear}`;
+
+    return formattedDeliveryDateTime;
+  }
+
   ionViewWillEnter() {
     this.shopProfile = this.currentShopProfileService.currentShopProfile;
     this.findShopIdFromCartItems();
     const dateObj = new Date();
     this.currentDate = dateObj.getDate();
     const currentMinute = dateObj.getMinutes();
+    // const deliveryTime = this.formDeliveryTime();
     if (currentMinute < 10) {
       this.currentMin = `0${currentMinute}`;
     } else {
@@ -129,12 +187,21 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     this.currentYear = dateObj.getFullYear();
     this.deliveryHour = this.hourConverter();
     this.currentMonth = this.monthConverter(dateObj.getMonth());
+    // let deliveryTime = `${this.deliveryHour}:${
+    //   this.currentMin
+    // } ${this.amPmTracker()}, ${this.currentDate} ${this.currentMonth} ${
+    //   this.currentYear
+    // }`;
+    const deliveryTime = this.formDeliveryTime();
+    // this.checkTimeFor4PMTo10AMAndUpdateSlot(deliveryTime);
     // tslint:disable-next-line: max-line-length
-    this.deliveryDateTime = `${this.deliveryHour}:${
-      this.currentMin
-    } ${this.amPmTracker()}, ${this.currentDate} ${this.currentMonth} ${
-      this.currentYear
-    }`;
+    // this.deliveryDateTime = `${this.deliveryHour}:${
+    //   this.currentMin
+    // } ${this.amPmTracker()}, ${this.dateCalculator(
+    //   this.currentDate
+    // )} ${this.monthCalculator(this.currentMonth)} ${this.currentYear}`;
+    console.log("deliveryTime deliveryTime", deliveryTime);
+    this.deliveryDateTime = `${deliveryTime}`;
 
     this.allOrdersCombined = [];
     const allOrders = this.userProfileService.getUserOrder();
@@ -196,11 +263,19 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     const currentHour = dateObj.getHours() + 1;
     let twelveHourFormatDate = 0;
     if (currentHour <= 12) {
+      // currentHour <= 12
       twelveHourFormatDate = currentHour;
     } else {
       twelveHourFormatDate = currentHour - 12;
     }
     return twelveHourFormatDate;
+  }
+
+  checkTimeFor4PMTo10AMAndUpdateSlot(deliveryTime) {
+    console.log(
+      "deliveryTime checkTimeFor4PMTo10AMAndUpdateSlot",
+      deliveryTime
+    );
   }
 
   amPmTracker(): string {
@@ -216,6 +291,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
   }
 
   monthConverter(monthNumber): string {
+    console.log("Month Number", monthNumber)
     let monthText = "";
     switch (monthNumber) {
       case 0:
@@ -486,7 +562,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
 
         this.userProfileService
           .saveUserOrder(this.userFinalOrder)
-        // this.saveUserOrder(this.userFinalOrder)
+          // this.saveUserOrder(this.userFinalOrder)
           .then(async (customerCurrentOrder) => {
             // For Sending PUSH NOTIFICATION
             // UNCOMMENT WHEN PUSHING TO MOBILE

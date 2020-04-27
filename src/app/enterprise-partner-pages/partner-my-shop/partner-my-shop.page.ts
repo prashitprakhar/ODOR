@@ -259,7 +259,7 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
       })
       .then(data => {
         Promise.all([this.getShopProfile(), this.getShopOfferedItemsList()])
-          .then(data => {})
+          .then(dataRes => {})
           .catch(err => {
             this.shopOfferedItemsData = {
               shopId: this.shopId,

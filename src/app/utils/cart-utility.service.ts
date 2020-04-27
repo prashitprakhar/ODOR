@@ -12,9 +12,9 @@ import { ShopItemSelectionService } from "../services/shop-item-selection.servic
 })
 export class CartUtilityService {
   private userAPI: string = environment.internalAPI.userAuth;
-  private selectableCartItems: ICustomOrderItem;
-  private customKGCartItems: ICustomOrderItem;
-  private customPacksCartItems: ICustomOrderItem;
+  // private selectableCartItems: ICustomOrderItem;
+  // private customKGCartItems: ICustomOrderItem;
+  // private customPacksCartItems: ICustomOrderItem;
   private hasLocalStorageCartItem: boolean = false;
 
   constructor(
