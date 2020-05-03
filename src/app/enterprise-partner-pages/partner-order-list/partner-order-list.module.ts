@@ -6,6 +6,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { PartnerOrderListPage } from './partner-order-list.page';
+import { OrderItemsDetailsComponent } from 'src/app/enterprise-partner-modals/order-items-details/order-items-details.component';
 
 const routes: Routes = [
   {
@@ -21,6 +22,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [PartnerOrderListPage]
+  declarations: [PartnerOrderListPage, OrderItemsDetailsComponent],
+  entryComponents: [OrderItemsDetailsComponent]
 })
 export class PartnerOrderListPageModule {}

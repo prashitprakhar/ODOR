@@ -51,4 +51,46 @@ export class SortByService {
     return sortedArray;
   }
 
+  sortOrdersByTimestamp(arrayList: any[]) {
+    const sortedArray = arrayList.sort((a, b) => {
+      const itemOne = a.createdAt;
+      const itemTwo = b.createdAt;
+      if (new Date(itemOne) < new Date(itemTwo)) {
+        return -1;
+      }
+      if (new Date(itemOne) > new Date(itemTwo)) {
+        return 1;
+      }
+      // names must be equal
+      return 0;
+      // return new Date(itemOne) - new Date(itemTwo);
+    });
+    // console.log(" sortedArray sortedArray >>>>>", sortedArray);
+    // return 0;
+    // });
+    return sortedArray;
+      // return 0;
+  }
+
+  sortLatestToOld(arrayList: any[]) {
+    const sortedArray = arrayList.sort((a, b) => {
+      const itemOne = a.createdAt;
+      const itemTwo = b.createdAt;
+      if (new Date(itemOne) < new Date(itemTwo)) {
+        return 1;
+      }
+      if (new Date(itemOne) > new Date(itemTwo)) {
+        return -1;
+      }
+      // names must be equal
+      return 0;
+      // return new Date(itemOne) - new Date(itemTwo);
+    });
+    // console.log(" sortedArray sortedArray >>>>>", sortedArray);
+    // return 0;
+    // });
+    return sortedArray;
+      // return 0;
+  }
+
 }

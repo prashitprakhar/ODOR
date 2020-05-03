@@ -1,8 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy
-} from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { CustomOrderService } from "src/app/services/custom-order.service";
 import { ICustomOrderItem } from "src/app/models/custom-order-items.model";
 import { ISelectableItemsOrder } from "src/app/models/selectable-items-orders.model";
@@ -10,7 +6,7 @@ import {
   ActionSheetController,
   ModalController,
   AlertController,
-  LoadingController
+  LoadingController,
 } from "@ionic/angular";
 import { IUserFinalOrder } from "src/app/models/user-final-order.model";
 import { DeliveryTimeService } from "src/app/services/delivery-time.service";
@@ -27,11 +23,12 @@ import { MessageService } from "src/app/shared/services/message.service";
 import { ICustomerAddress } from "src/app/models/customer-address.model";
 import { ViewSavedAddressesModalComponent } from "src/app/modals/view-saved-addresses-modal/view-saved-addresses-modal.component";
 import { AddNewAddressModalComponent } from "src/app/modals/add-new-address-modal/add-new-address-modal.component";
+import { CommonUtilityService } from "src/app/shared/services/common-utility.service";
 
 @Component({
   selector: "app-order-details",
   templateUrl: "./order-details.page.html",
-  styleUrls: ["./order-details.page.scss"]
+  styleUrls: ["./order-details.page.scss"],
 })
 export class OrderDetailsPage implements OnInit, OnDestroy {
   public customOrdersPacks: ICustomOrderItem[] = [];
@@ -75,7 +72,9 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     private noAddressAlertCtrl: AlertController, // private deliveryAddConfActionCtrl: ActionSheetController
     private placingOrderLoadingCtrl: LoadingController,
     private orderPlacementSuccessCtrl: AlertController,
-    private orderPlacementFailureCtrl: AlertController
+    private orderPlacementFailureCtrl: AlertController,
+    private commonUtilityService: CommonUtilityService,
+    private otherOrderInProgressFailureCtrl: AlertController
   ) {}
 
   ngOnInit() {
@@ -116,12 +115,70 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     }
   }
 
+  formDeliveryTime() {
+    const dateObj = new Date();
+    const currentDate = dateObj.getDate();
+    const currentMinute = dateObj.getMinutes();
+    const currentYear = dateObj.getFullYear();
+    const currentMonth = dateObj.getMonth();
+    const currentHour = dateObj.getHours();
+    let formattedDeliveryHour;
+    let formattedDeliveryDate;
+    let formattedDeliveryYear;
+    let formattedDeliveryMonth;
+    let formattedDeliveryMinute;
+
+    // Hour Converter / Date Converter / Year Converter / Month Converter
+    if (currentHour < 9 || currentHour > 16) {
+      formattedDeliveryHour = 11;
+      formattedDeliveryMinute = '01';
+      if (currentHour > 16) {
+        if (currentDate === 31 && currentMonth === 12) {
+          formattedDeliveryYear = currentYear + 1;
+          formattedDeliveryMonth = 1;
+        } else {
+          formattedDeliveryYear = currentYear;
+          formattedDeliveryMonth = currentMonth;
+        }
+        formattedDeliveryDate = currentDate + 1;
+      } else {
+        formattedDeliveryDate = currentDate;
+        formattedDeliveryYear = currentYear;
+        formattedDeliveryMonth = currentMonth;
+      }
+    } else {
+      if (currentMinute < 10) {
+        formattedDeliveryMinute = `0${currentMinute}`;
+      } else {
+        formattedDeliveryMinute = `${currentMinute}`;
+      }
+      if (currentHour > 9 && currentHour <= 12) {
+        formattedDeliveryHour = currentHour + 1;
+        formattedDeliveryYear = currentYear;
+        formattedDeliveryMonth = currentMonth;
+        formattedDeliveryDate = currentDate;
+      } else if (currentHour > 12 && currentHour <= 4) {
+        formattedDeliveryHour = currentHour - 12;
+        formattedDeliveryYear = currentYear;
+        formattedDeliveryMonth = currentMonth;
+        formattedDeliveryDate = currentDate;
+      }
+    }
+
+    const formattedDeliveryDateTime = `${formattedDeliveryHour}:${
+      formattedDeliveryMinute
+    } ${this.amPmTracker()}, ${formattedDeliveryDate} ${this.monthConverter(formattedDeliveryMonth)} ${formattedDeliveryYear}`;
+
+    return formattedDeliveryDateTime;
+  }
+
   ionViewWillEnter() {
     this.shopProfile = this.currentShopProfileService.currentShopProfile;
     this.findShopIdFromCartItems();
     const dateObj = new Date();
     this.currentDate = dateObj.getDate();
     const currentMinute = dateObj.getMinutes();
+    // const deliveryTime = this.formDeliveryTime();
     if (currentMinute < 10) {
       this.currentMin = `0${currentMinute}`;
     } else {
@@ -130,18 +187,27 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     this.currentYear = dateObj.getFullYear();
     this.deliveryHour = this.hourConverter();
     this.currentMonth = this.monthConverter(dateObj.getMonth());
+    // let deliveryTime = `${this.deliveryHour}:${
+    //   this.currentMin
+    // } ${this.amPmTracker()}, ${this.currentDate} ${this.currentMonth} ${
+    //   this.currentYear
+    // }`;
+    const deliveryTime = this.formDeliveryTime();
+    // this.checkTimeFor4PMTo10AMAndUpdateSlot(deliveryTime);
     // tslint:disable-next-line: max-line-length
-    this.deliveryDateTime = `${this.deliveryHour}:${
-      this.currentMin
-    } ${this.amPmTracker()}, ${this.currentDate} ${this.currentMonth} ${
-      this.currentYear
-    }`;
+    // this.deliveryDateTime = `${this.deliveryHour}:${
+    //   this.currentMin
+    // } ${this.amPmTracker()}, ${this.dateCalculator(
+    //   this.currentDate
+    // )} ${this.monthCalculator(this.currentMonth)} ${this.currentYear}`;
+    console.log("deliveryTime deliveryTime", deliveryTime);
+    this.deliveryDateTime = `${deliveryTime}`;
 
     this.allOrdersCombined = [];
     const allOrders = this.userProfileService.getUserOrder();
     const openOrder =
       allOrders.length > 0
-        ? allOrders.find(element => element.orderPlaced === false)
+        ? allOrders.find((element) => element.orderPlaced === false)
         : true;
     this.isOrderUnplaced = true;
     this.allOrdersCombined = [];
@@ -153,27 +219,27 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
       this.hasCustomOrders = true;
       this.allOrdersCombined = [
         ...this.allOrdersCombined,
-        ...this.customOrderService.customItemOrdersDetails
+        ...this.customOrderService.customItemOrdersDetails,
       ];
     }
     if (this.customOrderService.customItemsPacksOrdersDetails) {
       this.hasCustomOrders = true;
       this.allOrdersCombined = [
         ...this.allOrdersCombined,
-        ...this.customOrderService.customItemsPacksOrdersDetails
+        ...this.customOrderService.customItemsPacksOrdersDetails,
       ];
     }
     if (this.customOrderService.selectableItemsOrders) {
       const relevantSelectableOrders = this.customOrderService.selectableItemsOrders.filter(
-        element => element.itemCount > 0
+        (element) => element.itemCount > 0
       );
       this.allOrdersCombined = [
         ...this.allOrdersCombined,
-        ...relevantSelectableOrders
+        ...relevantSelectableOrders,
       ];
     }
     const checkCustomItems = this.allOrdersCombined.find(
-      element => element.orderType === "CUSTOM"
+      (element) => element.orderType === "CUSTOM"
     );
     if (checkCustomItems) {
       this.hasCustomOrders = true;
@@ -182,7 +248,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     }
     if (this.selectableOrders) {
       // tslint:disable-next-line: only-arrow-functions
-      this.grandTotal = this.selectableOrders.reduce(function(
+      this.grandTotal = this.selectableOrders.reduce(function (
         accumulator,
         item
       ) {
@@ -197,11 +263,19 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     const currentHour = dateObj.getHours() + 1;
     let twelveHourFormatDate = 0;
     if (currentHour <= 12) {
+      // currentHour <= 12
       twelveHourFormatDate = currentHour;
     } else {
       twelveHourFormatDate = currentHour - 12;
     }
     return twelveHourFormatDate;
+  }
+
+  checkTimeFor4PMTo10AMAndUpdateSlot(deliveryTime) {
+    console.log(
+      "deliveryTime checkTimeFor4PMTo10AMAndUpdateSlot",
+      deliveryTime
+    );
   }
 
   amPmTracker(): string {
@@ -217,6 +291,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
   }
 
   monthConverter(monthNumber): string {
+    console.log("Month Number", monthNumber)
     let monthText = "";
     switch (monthNumber) {
       case 0:
@@ -265,15 +340,15 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         component: LoginModalComponent,
         componentProps: {
           name: "loginModalComponent",
-          navigationFrom: "CART"
+          navigationFrom: "CART",
         },
-        id: "loginModal"
+        id: "loginModal",
       })
-      .then(loginModalEl => {
+      .then((loginModalEl) => {
         loginModalEl.present();
         return loginModalEl.onDidDismiss();
       })
-      .then(data => {
+      .then((data) => {
         if (data.role === "closed") {
           this.checkDeliveryAddress();
         } else if (data.role === "CART_UPDATE_FAILURE") {
@@ -288,7 +363,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     const customerSavedAddressList = await this.userProfileService.getCustomerSavedAddressListFromLocalStorage();
     if (customerSavedAddressList.length > 0) {
       this.deliveryAddress = customerSavedAddressList.find(
-        element => element.isCurrentlyUsed === true
+        (element) => element.isCurrentlyUsed === true
       );
       this.confirmDeliveryAddress();
     } else {
@@ -308,11 +383,30 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
             text: "OK",
             role: "cancel",
             cssClass: "secondary",
-            handler: cancel => {}
-          }
-        ]
+            handler: (cancel) => {},
+          },
+        ],
       })
-      .then(alertEl => {
+      .then((alertEl) => {
+        alertEl.present();
+      });
+  }
+
+  otherOrderInProgressFailureAlert(header, message) {
+    const alert = this.otherOrderInProgressFailureCtrl
+      .create({
+        header,
+        message,
+        buttons: [
+          {
+            text: "OK",
+            role: "cancel",
+            cssClass: "secondary",
+            handler: (cancel) => {},
+          },
+        ],
+      })
+      .then((alertEl) => {
         alertEl.present();
       });
   }
@@ -326,24 +420,24 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
             text: "OK",
             role: "cancel",
             cssClass: "secondary",
-            handler: cancel => {
+            handler: (cancel) => {
               this.addNewAddressModalCtrl
                 .create({
                   component: AddNewAddressModalComponent,
-                  id: "addNewAddressModal"
+                  id: "addNewAddressModal",
                 })
-                .then(modalEl => {
+                .then((modalEl) => {
                   modalEl.present();
                   return modalEl.onDidDismiss();
                 })
-                .then(data => {
+                .then((data) => {
                   this.orderDetails();
                 });
-            }
-          }
-        ]
+            },
+          },
+        ],
       })
-      .then(alertEl => {
+      .then((alertEl) => {
         alertEl.present();
       });
   }
@@ -352,13 +446,13 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     this.viewSavedAddressesModalCtrl
       .create({
         component: ViewSavedAddressesModalComponent,
-        id: "viewSavedAddressesModal"
+        id: "viewSavedAddressesModal",
       })
-      .then(viewSavedAddressModalEl => {
+      .then((viewSavedAddressModalEl) => {
         viewSavedAddressModalEl.present();
         return viewSavedAddressModalEl.onDidDismiss();
       })
-      .then(async data => {
+      .then(async (data) => {
         this.orderDetails();
       });
   }
@@ -366,7 +460,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
   async orderDetails() {
     const customerSavedAddressList = await this.userProfileService.getCustomerSavedAddressListFromLocalStorage();
     this.deliveryAddress = customerSavedAddressList.find(
-      element => element.isCurrentlyUsed === true
+      (element) => element.isCurrentlyUsed === true
     );
     this.isUserLoggedIn = true;
     if (
@@ -388,11 +482,11 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
                 text: "Ok. Got it. Place Order.",
                 handler: () => {
                   this.confirmOrder();
-                }
-              }
-            ]
+                },
+              },
+            ],
           })
-          .then(actionSheetEl => {
+          .then((actionSheetEl) => {
             actionSheetEl.present();
           });
       } else {
@@ -405,7 +499,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
 
   async placeOrder() {
     this.authStateSubs = this.authenticationService.userAuthState.subscribe(
-      userAuthState => {
+      (userAuthState) => {
         if (!userAuthState || !userAuthState.value) {
           this.isUserLoggedIn = false;
           this.showLoginSignupScreen();
@@ -417,12 +511,27 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
     );
   }
 
+  saveUserOrder(userFinalOrder): Promise<any> {
+    return new Promise((resolve, reject) => {
+      Promise.all([
+        this.userProfileService.saveUserOrder(userFinalOrder),
+        this.userProfileService.addOrderToShopDB(userFinalOrder),
+      ])
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+
   confirmOrder() {
     this.placingOrderLoadingCtrl
       .create({
-        message: "Placing your order ...."
+        message: "Placing your order ....",
       })
-      .then(placingOrderEl => {
+      .then((placingOrderEl) => {
         placingOrderEl.present();
 
         this.selectedShopDetails = this.customOrderService.selectedShopDetails;
@@ -432,14 +541,13 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
         this.userFinalOrder = {
           orderId: this.allOrdersCombined[0].shopId + "-" + randomInteger,
           shopId: this.allOrdersCombined[0].shopId,
-          // shopName: this.shopProfile.shopName,
           shopName: this.cartItemsShopName,
           orderedItemsList: this.allOrdersCombined,
           selectedItemsTotalPrice: this.grandTotal,
           customItemsEstimatedPrice: 0,
           estimatedDeliveryTime:
             this.deliveryTimeService.getManipulatedDeliveryTime()
-              .deliveryTime1KTo2K + "mins",
+              .deliveryTime7KTo8K + "mins",
           estimatedDeliveryDateTimeFull: this.deliveryDateTime,
           deliveryAddress: this.deliveryAddress,
           deliveryDate: date,
@@ -449,32 +557,44 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
           orderPlaced: true,
           orderStatus: "PROGRESS",
           orderConfirmationStatus: "CONFIRMED",
-          paymentStatus: false
+          paymentStatus: false,
         };
 
         this.userProfileService
           .saveUserOrder(this.userFinalOrder)
-          .then(customerCurrentOrder => {
+          // this.saveUserOrder(this.userFinalOrder)
+          .then(async (customerCurrentOrder) => {
+            // For Sending PUSH NOTIFICATION
+            // UNCOMMENT WHEN PUSHING TO MOBILE
+            // const shopMobileDetails = await this.commonUtilityService.getUserMobileDetails(
+            //   this.cartItemsShopId
+            // );
+            // this.userProfileService.sendOrderConfPushNotificationToShop(
+            //   shopMobileDetails.fcmToken
+            // );
             this.shopItemSelectionService.removeUserSelectionFromLocalStorage();
             this.userProfileService
               .removeItemsFromCartPostOrderPlacement()
-              .then(cartClearanceResponse => {
-                if (cartClearanceResponse.message === "CART_ITEMS_CLEARED_POST_ORDER") {
+              .then((cartClearanceResponse) => {
+                if (
+                  cartClearanceResponse.message ===
+                  "CART_ITEMS_CLEARED_POST_ORDER"
+                ) {
                   placingOrderEl.dismiss();
                   this.orderConfModalCtrl
                     .create({
                       component: OrderConfirmedModalComponent,
                       componentProps: {
                         name: "orderConfModal",
-                        orderId: this.userFinalOrder.orderId
+                        orderId: this.userFinalOrder.orderId,
                       },
-                      id: "orderConfModal"
+                      id: "orderConfModal",
                     })
-                    .then(orderConfModalEl => {
+                    .then((orderConfModalEl) => {
                       orderConfModalEl.present();
                       return orderConfModalEl.onDidDismiss();
                     })
-                    .then(data => {
+                    .then((data) => {
                       this.isOrderUnplaced = false;
                       this.customOrderService.customItemsPacksOrdersDetails = [];
                       this.customOrderService.customItemOrdersDetails = [];
@@ -484,24 +604,36 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
                     });
                 }
               })
-              .catch(e => {
+              .catch((e) => {
+                alert("Internal catch Error: " + JSON.stringify(e));
                 this.retryClearingDBCart();
               });
           })
-          .catch(err => {
-            const header = 'Oops... Something went wrong.';
-            const message = 'Please try again';
-            this.orderPlacementFailureAlert(header, message);
+          .catch((err) => {
+            placingOrderEl.dismiss();
+            if (err.error === "Error: OTHER_ORDER_IN_PROGRESS") {
+              const header = `Order can't be placed.`;
+              const message = `You have another order in progress. Please place order once this is delivered.`;
+              this.otherOrderInProgressFailureAlert(header, message);
+            } else {
+              // Here We need to add code to revert the partial changes made to the DB
+              // Firstly check which step failed
+              // Retry doing it
+              // If 2 retries failed, then throw Error Message and ask for again placing the order after sometime
+              // alert("External catch Error: " + JSON.stringify(err));
+              const header = "Oops... Something went wrong.";
+              const message = "Please try again";
+              this.orderPlacementFailureAlert(header, message);
+            }
           });
       });
+    // const orderConfPushushNotification = this.userProfileService.sendOrderConfPushNotification();
   }
 
   retryClearingDBCart() {
     this.userProfileService
-    .removeItemsFromCartPostOrderPlacement()
-    .then(dbClearanceRes => {
-    })
-    .catch(err => {
-    });
+      .removeItemsFromCartPostOrderPlacement()
+      .then((dbClearanceRes) => {})
+      .catch((err) => {});
   }
 }

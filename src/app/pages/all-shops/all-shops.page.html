@@ -4,7 +4,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content style="background-color: #040103;">
   <!-- <ion-refresher
     slot="fixed"
     (ionRefresh)="doRefresh($event)"
@@ -12,6 +12,48 @@
   >
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher> -->
+  <ion-grid style="padding-bottom: 10px;">
+  <div>
+    <ion-slides pager="true" [options]="slideOpts"><!-- pager="true"  -->
+      <ion-slide>
+        <ion-card color="primary" style="width: 100%;">
+          <ion-card-header class="ion_card_header">
+            <ion-card-subtitle>Step One</ion-card-subtitle>
+            <!-- <ion-card-title style="font-size: 14px;">Choose your Preferred Shop</ion-card-title> -->
+          </ion-card-header>
+        
+          <ion-card-content class="ion_card_content">
+            Choose your Preferred Shop
+          </ion-card-content>
+        </ion-card>
+      </ion-slide>
+      <ion-slide>
+        <ion-card color="primary" style="width: 100%;">
+          <ion-card-header class="ion_card_header">
+            <ion-card-subtitle>Step Two</ion-card-subtitle>
+            <!-- <ion-card-title style="font-size: 14px;">Select Items</ion-card-title> -->
+          </ion-card-header>
+        
+          <ion-card-content class="ion_card_content">
+            Select Items
+          </ion-card-content>
+        </ion-card>
+      </ion-slide>
+      <ion-slide>
+        <ion-card color="primary" style="width: 100%;">
+          <ion-card-header class="ion_card_header">
+            <ion-card-subtitle>Step Three</ion-card-subtitle>
+            <!-- <ion-card-title style="font-size: 14px;">Order & Keep your family safe from COVID-19</ion-card-title> -->
+          </ion-card-header>
+        
+          <ion-card-content class="ion_card_content">
+            Order & Keep your family safe from COVID-19
+          </ion-card-content>
+        </ion-card>
+      </ion-slide>
+    </ion-slides>
+  </div>
+</ion-grid>
   
   <ion-grid class="ion-no-padding">
     <!-- <ion-row *ngIf="!networkStatus" style="min-width: 100vw;background-color: black;"> -->
@@ -73,7 +115,7 @@
               <ion-text class="space_left">{{ shop.shopRating }}</ion-text>
               <ion-text class="space_dot">&#8226;</ion-text>
               <ion-text class="space_left_delivery"
-                >{{currentDeliveryTimeSchedule.deliveryTime1KTo2K}}
+                >{{currentDeliveryTimeSchedule.deliveryTime7KTo8K}}
                 mins</ion-text
               >
               <!-- <ion-text class="space_dot">&#8226;</ion-text> -->

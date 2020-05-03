@@ -50,3 +50,38 @@ margin-top: 10vh;
     // background-color: black;
     background-color: #a9a9a9;
 }
+
+ion-slides {
+    // --bullet-background: var(--ion-color-light);
+    --bullet-background-active: var(--ion-color-light);
+    height: 160px;
+    // .swiper-pagination-bullet-active {
+    //     --bullet-background: #FFFFFF;
+    // }
+}
+
+ion-card {
+    height: 160px;
+}
+
+.ion_card_header {
+    height: 60px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.ion_card_content {
+    height: 100px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+// ion-slides {}
+
+// .swiper-pagination-bullet-active {
+//     background: var(--ion-color-light);
+// }

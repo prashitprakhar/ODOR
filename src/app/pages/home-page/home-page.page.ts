@@ -14,8 +14,9 @@ import {
 import { Platform } from "@ionic/angular";
 
 import { FCM } from "capacitor-fcm";
-import { AuthenticationService } from 'src/app/shared/internal-services/authentication.service';
-import { UserProfileService } from 'src/app/services/user-profile.service';
+import { AuthenticationService } from "src/app/shared/internal-services/authentication.service";
+import { UserProfileService } from "src/app/services/user-profile.service";
+import { CommonUtilityService } from 'src/app/shared/services/common-utility.service';
 // import { FCM } from '@ionic-native/fcm/ngx';
 const fcm = new FCM();
 
@@ -42,7 +43,8 @@ export class HomePagePage implements OnInit, OnDestroy {
     private currentShopProfileService: CurrentShopProfileService,
     private platform: Platform,
     private authenticationService: AuthenticationService,
-    private userProfileService: UserProfileService
+    private userProfileService: UserProfileService,
+    private commonUtilityService: CommonUtilityService
   ) {
     if (this.customOrderService.selectableItemsOrders) {
       if (this.customOrderService.selectableItemsOrders.length > 0) {
@@ -94,7 +96,7 @@ export class HomePagePage implements OnInit, OnDestroy {
      ** Push Notification Code Goes Here
      */
     // console.log("this.platform >>>>>>", this.platform.platforms());
-    //   if (this.platform.is('android')) {
+    // if (this.platform.is("android")) {
     //   // fcm.deleteInstance();
     //   PushNotifications.register();
 
@@ -109,20 +111,21 @@ export class HomePagePage implements OnInit, OnDestroy {
     //     // alert("Error on registration: " + JSON.stringify(error));
     //   });
 
-    //   fcm.getToken()
-    //   .then(r => {
-    //     // alert(`Token ${r.token}`)
-    //     Plugins.Storage.set({
-    //       key: "user_fcm_token",
-    //       value: JSON.stringify(r.token)
+    //   fcm
+    //     .getToken()
+    //     .then(r => {
+    //       // alert(`Token ${r.token}`)
+    //       Plugins.Storage.set({
+    //         key: "user_fcm_token",
+    //         value: JSON.stringify(r.token)
+    //       });
+    //     })
+    //     .catch(err => {
+    //       Plugins.Storage.set({
+    //         key: "user_fcm_token",
+    //         value: null
+    //       });
     //     });
-    //   })
-    //   .catch(err => {
-    //     Plugins.Storage.set({
-    //       key: "user_fcm_token",
-    //       value: null
-    //     });
-    //   });
 
     //   PushNotifications.addListener(
     //     "pushNotificationReceived",
@@ -192,20 +195,26 @@ export class HomePagePage implements OnInit, OnDestroy {
         // console.log("message message message", message);
         this.message = message;
         if (this.customOrderService.selectableItemsOrders) {
-          this.customOrderService.selectableItemsOrders.length > 0 ? this.isItemSelected = true : this.isItemSelected = false;
+          this.customOrderService.selectableItemsOrders.length > 0
+            ? (this.isItemSelected = true)
+            : (this.isItemSelected = false);
         }
         // else {
 
         // }
         if (this.customOrderService.customItemsPacksOrdersDetails) {
           // tslint:disable-next-line: max-line-length
-          this.customOrderService.customItemsPacksOrdersDetails.length > 0 ? this.isItemSelected = true : this.isItemSelected = this.isItemSelected || false;
-         }
+          this.customOrderService.customItemsPacksOrdersDetails.length > 0
+            ? (this.isItemSelected = true)
+            : (this.isItemSelected = this.isItemSelected || false);
+        }
 
         if (this.customOrderService.customItemOrdersDetails) {
           // tslint:disable-next-line: max-line-length
-          this.customOrderService.customItemOrdersDetails.length > 0 ? this.isItemSelected = true : this.isItemSelected = this.isItemSelected || false;
-         }
+          this.customOrderService.customItemOrdersDetails.length > 0
+            ? (this.isItemSelected = true)
+            : (this.isItemSelected = this.isItemSelected || false);
+        }
         // if (
         //   this.customOrderService.selectableItemsOrders.length > 0 ||
         //   this.customOrderService.customItemsPacksOrdersDetails.length ||
@@ -216,6 +225,75 @@ export class HomePagePage implements OnInit, OnDestroy {
         //   this.isItemSelected = false;
         // }
       });
+  }
+
+  ionViewWillEnter() {
+    /*
+     ** Push Notification Code Goes Here
+     */
+    // console.log("this.platform >>>>>>", this.platform.platforms());
+    // if (this.platform.is("android")) {
+    //   // fcm.deleteInstance();
+    //   PushNotifications.register();
+
+    //   PushNotifications.addListener(
+    //     "registration",
+    //     (token: PushNotificationToken) => {
+    //       // alert("Push registration success, token: " + token.value);
+    //     }
+    //   );
+
+    //   PushNotifications.addListener("registrationError", (error: any) => {
+    //     // alert("Error on registration: " + JSON.stringify(error));
+    //   });
+
+    //   if (this.authenticationService.userIsAuthenticated) {
+    //     fcm
+    //       .getToken()
+    //       .then(r => {
+    //         // alert(`Token ${r.token}`)
+    //         Plugins.Storage.set({
+    //           key: "user_fcm_token",
+    //           value: JSON.stringify(r.token)
+    //         });
+    //         // userId: string, fcmToken: string, userToken: string
+    //         Plugins.Storage.get({key: 'authData'})
+    //         .then(async userData => {
+    //           const userDataParsed = JSON.parse(userData.value);
+    //           const settingUserMobileData =
+    //             await this.commonUtilityService.setFCMToken(userDataParsed.userId, r.token, userDataParsed.token);
+    //         });
+    //       })
+    //       .catch(err => {
+    //         Plugins.Storage.set({
+    //           key: "user_fcm_token",
+    //           value: null
+    //         });
+    //       });
+    //   } else {
+    //     Plugins.Storage.set({
+    //       key: "user_fcm_token",
+    //       value: null
+    //     });
+    //   }
+
+    //   PushNotifications.addListener(
+    //     "pushNotificationReceived",
+    //     (notification: PushNotification) => {
+    //       // alert("Push received: " + JSON.stringify(notification));
+    //     }
+    //   );
+
+    //   PushNotifications.addListener(
+    //     "pushNotificationActionPerformed",
+    //     (notification: PushNotificationActionPerformed) => {
+    //       // alert("Push action performed: " + JSON.stringify(notification));
+    //     }
+    //   );
+    // }
+    /*
+     ** Push Notification Code till here
+     */
   }
 
   clearMessage(): void {

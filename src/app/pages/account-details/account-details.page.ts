@@ -166,7 +166,7 @@ export class AccountDetailsPage implements OnInit, OnDestroy {
   }
 
   updateUserProfile() {
-    console.log("Update Profile clicked ***");
+    // console.log("Update Profile clicked ***");
     this.updateProfileModalCtrl
       .create({
         component: UpdateUserProfileModalComponent,

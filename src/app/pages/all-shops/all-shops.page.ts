@@ -11,6 +11,7 @@ import { NetworkService } from "src/app/shared/services/network.service";
 import { MessageService } from "src/app/shared/services/message.service";
 // tslint:disable-next-line: max-line-length
 import { NoInternetConnectivityModalComponent } from "src/app/shared/modals/no-internet-connectivity-modal/no-internet-connectivity-modal.component";
+import { GeoLocationService } from 'src/app/shared/services/geo-location.service';
 
 @Component({
   selector: "app-all-shops",
@@ -26,6 +27,11 @@ export class AllShopsPage implements OnInit, OnDestroy {
   public networkStatus: boolean = true;
   public deviceFCMToken: string;
 
+  public slideOpts = {
+    initialSlide: 0,
+    speed: 400
+  };
+
   constructor(
     private shopItemSelectionService: ShopItemSelectionService,
     private deliveryTimeService: DeliveryTimeService,
@@ -33,7 +39,8 @@ export class AllShopsPage implements OnInit, OnDestroy {
     private shopClosedAlertCtrl: AlertController,
     private networkService: NetworkService,
     private messageService: MessageService,
-    private noInternetConnModal: ModalController
+    private noInternetConnModal: ModalController,
+    private geoLocationService: GeoLocationService
   ) {}
 
   ngOnInit() {
@@ -42,6 +49,9 @@ export class AllShopsPage implements OnInit, OnDestroy {
     //   this.shopList = shops;
     //   this.handleRefresher(event);
     // });
+    // this.geoLocationService.getCurrentPosition();
+    // this.geoLocationService.watchPosition();
+    this.geoLocationService.checkUserPermission();
     this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
     this.checkNetworkStatus();
     this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {

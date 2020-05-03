@@ -1,9 +1,793 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>partner-order-list</ion-title>
+    <ion-title>Orders Menu</ion-title>
   </ion-toolbar>
+
+  <ion-segment
+    value="ACTIVE_ORDERS"
+    (ionChange)="segmentChanged($event)"
+    color="dark"
+  >
+    <ion-segment-button value="ACTIVE_ORDERS">
+      <ion-label>Active</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="COMPLETED_ORDERS">
+      <ion-label>Completed</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="ALL_ORDERS">
+      <ion-label>All</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 </ion-header>
-
 <ion-content>
+  <!-- Page refresher -->
+  <!-- *ngIf="!networkStatus" -->
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
+  <ion-grid class="ion-no-padding">
+    <ion-row class="ion-no-padding" *ngIf="isActiveOrdersSelected">
+      <!-- Skeleton Loader -->
+      <div *ngIf="!isAllOrdersDataLoaded" class="custom_skeleton_content">
+        <div class="ion-padding custom-skeleton">
+          <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          <ion-skeleton-text animated></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 88%;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+        </div>
+
+        <ion-list>
+          <ion-list-header>
+            <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
+          </ion-list-header>
+          <ion-item>
+            <ion-avatar slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-avatar>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-thumbnail slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-skeleton-text
+              animated
+              style="width: 27px; height: 27px;"
+              slot="start"
+            ></ion-skeleton-text>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-thumbnail slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-skeleton-text
+              animated
+              style="width: 27px; height: 27px;"
+              slot="start"
+            ></ion-skeleton-text>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+      <!-- All Active Orders Display -->
+      <div
+        *ngIf="isAllOrdersDataLoaded && allActiveOrders.length > 0"
+        class="active_orders_content"
+      ><!--allOrders-->
+        <ion-list
+          *ngFor="let acitveOrders of allActiveOrders"
+          approxItemHeight="70px;"
+          class="ion-no-padding ion_list_custom"
+        >
+          <ion-item
+            class="ion-no-padding"
+            (click)="seeOrderDetails(acitveOrders)"
+            lines="none"
+          >
+            <div class="item_container">
+              <div class="details_content">
+                <div class="ion_item_custom">
+                  <div class="ion_item_element">
+                    <ion-text
+                      style="
+                        font-size: 16px;
+                        font-weight: 500;
+                        border-bottom: 1px solid #252525;
+                      "
+                      >Delivery Address</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      >Flat/House No. :
+                      {{acitveOrders.deliveryAddress.houseNumber}}</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      >{{acitveOrders.deliveryAddress.addressLineOne}}</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      *ngIf="acitveOrders.deliveryAddress.addressLineTwo"
+                      >{{acitveOrders.deliveryAddress.addressLineTwo}}</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text style="font-weight: 600;"
+                      >Delivery Due Time : {{acitveOrders.estimatedDeliveryDateTimeFull}}</ion-text
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="progress_container">
+                <ion-button
+                  *ngIf="calculateRemianingTime(acitveOrders.estimatedDeliveryDateTimeFull) > 20"
+                  color="success"
+                  style="min-height: 90px;"
+                  >{{calculateRemianingTime(acitveOrders.estimatedDeliveryDateTimeFull)}}
+                  mins.</ion-button
+                >
+                <ion-button
+                  *ngIf="calculateRemianingTime(acitveOrders.estimatedDeliveryDateTimeFull) > 0 && calculateRemianingTime(acitveOrders.estimatedDeliveryDateTimeFull) <= 20"
+                  color="warning"
+                  style="min-height: 90px;"
+                  >{{calculateRemianingTime(acitveOrders.estimatedDeliveryDateTimeFull)}}
+                  mins.</ion-button
+                >
+                <ion-button
+                  *ngIf="calculateRemianingTime(acitveOrders.estimatedDeliveryDateTimeFull) <= 0"
+                  color="danger"
+                  style="min-height: 90px;"
+                  >{{calculateRemianingTime(acitveOrders.estimatedDeliveryDateTimeFull)}}
+                  mins.</ion-button
+                >
+              </div>
+            </div>
+          </ion-item>
+          <ion-item>
+            <div class="status_bar">
+              <ion-button
+                *ngIf="acitveOrders.orderStatus === 'PROGRESS'"
+                color="warning"
+                disabled="true"
+              >
+                PROGRESS
+              </ion-button>
+
+              <ion-button
+                *ngIf="acitveOrders.orderStatus === 'PACKED' || acitveOrders.orderStatus === 'OUTFORDELIVERY'"
+                color="success"
+                disabled="true"
+                >PACKED</ion-button
+              >
+
+              <ion-button
+                *ngIf="acitveOrders.orderStatus === 'PACKED' || acitveOrders.orderStatus === 'PROGRESS'"
+                color="warning"
+                [disabled]="acitveOrders.orderStatus === 'PROGRESS'"
+                (click)="outForDelivery(acitveOrders.orderId)"
+              >
+                START DELIVERY
+              </ion-button>
+
+              <ion-button
+                *ngIf="acitveOrders.orderStatus === 'OUTFORDELIVERY'"
+                color="success"
+                disabled="true"
+              >
+                DELIVERING
+              </ion-button>
+
+              <ion-button
+                *ngIf="acitveOrders.orderStatus === 'OUTFORDELIVERY' || acitveOrders.orderStatus === 'PACKED' || acitveOrders.orderStatus === 'PROGRESS'"
+                color="warning"
+                [disabled]="acitveOrders.orderStatus != 'OUTFORDELIVERY'"
+                (click)="markOrderComplete(acitveOrders.orderId)"
+                >COMPLETE</ion-button
+              >
+            </div>
+          </ion-item>
+        </ion-list>
+      </div>
+      <!-- No Active Orders -->
+      <div
+        *ngIf="isAllOrdersDataLoaded && allActiveOrders.length == 0"
+        class="active_orders_content_empty"
+      >
+        <ion-text>All Orders Delivered. Good Job.</ion-text>
+      </div>
+    </ion-row>
+
+    <!-- ALL COMPLETED ORDERS FOR THE SHOP -->
+    <ion-row *ngIf="isCompletedOrdersSelected">
+      <!-- Skeleton Loader -->
+      <div *ngIf="!showCompletedOrders && allCompletedOrders" class="custom_skeleton_content">
+        <div class="ion-padding custom-skeleton">
+          <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          <ion-skeleton-text animated></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 88%;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+        </div>
+
+        <ion-list>
+          <ion-list-header>
+            <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
+          </ion-list-header>
+          <ion-item>
+            <ion-avatar slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-avatar>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-thumbnail slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-skeleton-text
+              animated
+              style="width: 27px; height: 27px;"
+              slot="start"
+            ></ion-skeleton-text>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-thumbnail slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-skeleton-text
+              animated
+              style="width: 27px; height: 27px;"
+              slot="start"
+            ></ion-skeleton-text>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+
+      <div
+        *ngIf="showCompletedOrders && allCompletedOrders.length > 0"
+        class="all_orders_content"
+      >
+      <ion-list
+          *ngFor="let allOrders of allCompletedOrders"
+          approxItemHeight="70px;"
+          class="ion-no-padding ion_list_custom"
+        >
+          <ion-item
+            class="ion-no-padding"
+            (click)="seeOrderDetails(allOrders)"
+            lines="none"
+          >
+            <div class="item_container">
+              <div class="details_content">
+                <div class="ion_item_custom">
+                  <div class="ion_item_element">
+                    <ion-text
+                      style="
+                        font-size: 16px;
+                        font-weight: 500;
+                        border-bottom: 1px solid #252525;
+                      "
+                      >Delivery Address</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      >Flat/House No. :
+                      {{allOrders.deliveryAddress.houseNumber}}</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      >{{allOrders.deliveryAddress.addressLineOne}}</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      *ngIf="allOrders.deliveryAddress.addressLineTwo"
+                      >{{allOrders.deliveryAddress.addressLineTwo}}</ion-text
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="progress_container_all_orders">
+                <div>
+                  <div class="payment_pending" *ngIf="!allOrders.paymentStatus">
+                    <span style="font-size: 12px;">Payment Status</span>
+                    <span style="font-size: 14px;padding-top: 5px;">PENDING</span>
+                    <span style="font-size: 14px;padding-top: 5px;">&#8377; {{allOrders.selectedItemsTotalPrice}}</span>
+                  </div>
+                  <div class="payment_complete" *ngIf="allOrders.paymentStatus">
+                    <span style="font-size: 12px;">Payment Status</span>
+                    <span style="font-size: 14px;padding-top: 5px;">COMPLETE</span>
+                    <span style="font-size: 14px;padding-top: 5px;">&#8377; {{allOrders.selectedItemsTotalPrice}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ion-item>
+          <ion-item *ngIf="!allOrders.paymentStatus">
+            <div  class="payment_status_bar">
+              <ion-button
+                *ngIf="!allOrders.paymentStatus"
+                color="warning"
+                (click)="markPaymentComplete(allOrders.orderId)"
+                expand="block"
+              >
+                MARK PAYMENT COMPLETE
+              </ion-button>
+            </div>
+          </ion-item>
+          <div *ngIf="allOrders.paymentStatus" class="payment_complete_div">
+          </div>
+        </ion-list>
+    </div>
+
+      <div
+        *ngIf="!showCompletedOrders && allCompletedOrders.length == 0"
+        class="active_orders_content_empty"
+      >
+        No Orders till now.
+      </div>
+
+      <div
+        *ngIf="showCompletedOrders && allCompletedOrders.length == 0"
+        class="active_orders_content_empty"
+      >
+        No Orders till now.
+      </div>
+
+    </ion-row>
+
+    <!-- ALL ORDERS FOR THE SHOP -->
+    <ion-row *ngIf="isAllOrdersSelected">
+      <!-- All Orders Skeleton -->
+      <div *ngIf="!showAllOrders && allOrdersArray" class="custom_skeleton_content">
+        <div class="ion-padding custom-skeleton">
+          <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+          <ion-skeleton-text animated></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 88%;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+          <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+        </div>
+
+        <ion-list>
+          <ion-list-header>
+            <ion-skeleton-text animated style="width: 20%;"></ion-skeleton-text>
+          </ion-list-header>
+          <ion-item>
+            <ion-avatar slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-avatar>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-thumbnail slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-skeleton-text
+              animated
+              style="width: 27px; height: 27px;"
+              slot="start"
+            ></ion-skeleton-text>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-thumbnail slot="start">
+              <ion-skeleton-text animated></ion-skeleton-text>
+            </ion-thumbnail>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-skeleton-text
+              animated
+              style="width: 27px; height: 27px;"
+              slot="start"
+            ></ion-skeleton-text>
+            <ion-label>
+              <h3>
+                <ion-skeleton-text
+                  animated
+                  style="width: 50%;"
+                ></ion-skeleton-text>
+              </h3>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 80%;"
+                ></ion-skeleton-text>
+              </p>
+              <p>
+                <ion-skeleton-text
+                  animated
+                  style="width: 60%;"
+                ></ion-skeleton-text>
+              </p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
+      <!-- All Orders Display -->
+      <div
+        *ngIf="showAllOrders && allOrdersArray.length > 0"
+        class="all_orders_content"
+      >
+      <ion-list
+          *ngFor="let allOrders of allOrdersArray"
+          approxItemHeight="70px;"
+          class="ion-no-padding ion_list_custom"
+        >
+          <ion-item
+            class="ion-no-padding"
+            (click)="seeOrderDetails(allOrders)"
+            lines="none"
+          >
+            <div class="item_container">
+              <div class="details_content">
+                <div class="ion_item_custom">
+                  <div class="ion_item_element">
+                    <ion-text
+                      style="
+                        font-size: 16px;
+                        font-weight: 500;
+                        border-bottom: 1px solid #252525;
+                      "
+                      >Delivery Address</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      >Flat/House No. :
+                      {{allOrders.deliveryAddress.houseNumber}}</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      >{{allOrders.deliveryAddress.addressLineOne}}</ion-text
+                    >
+                  </div>
+                  <div class="ion_item_element">
+                    <ion-text
+                      *ngIf="allOrders.deliveryAddress.addressLineTwo"
+                      >{{allOrders.deliveryAddress.addressLineTwo}}</ion-text
+                    >
+                  </div>
+                </div>
+              </div>
+              <div class="progress_container_all_orders">
+                <div>
+                  <div class="payment_pending" *ngIf="!allOrders.paymentStatus">
+                    <span style="font-size: 12px;">Payment Status</span>
+                    <span style="font-size: 14px;padding-top: 5px;">PENDING</span>
+                    <span style="font-size: 14px;padding-top: 5px;">&#8377; {{allOrders.selectedItemsTotalPrice}}</span>
+                  </div>
+                  <div class="payment_complete" *ngIf="allOrders.paymentStatus">
+                    <span style="font-size: 12px;">Payment Status</span>
+                    <span style="font-size: 14px;padding-top: 5px;">COMPLETE</span>
+                    <span style="font-size: 14px;padding-top: 5px;">&#8377; {{allOrders.selectedItemsTotalPrice}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ion-item>
+          <ion-item *ngIf="!allOrders.paymentStatus">
+            <div  class="payment_status_bar">
+              <ion-button
+                *ngIf="!allOrders.paymentStatus"
+                color="warning"
+                (click)="markPaymentComplete(allOrders.orderId)"
+                expand="block"
+              >
+                MARK PAYMENT COMPLETE
+              </ion-button>
+            </div>
+          </ion-item>
+          <div *ngIf="allOrders.paymentStatus" class="payment_complete_div">
+          </div>
+        </ion-list>
+    </div>
+      <!-- No Orders Yet -->
+      <div
+        *ngIf="!showAllOrders && allOrdersArray.length == 0"
+        class="active_orders_content_empty"
+      >
+        No Orders till now.
+      </div>
+
+      <div
+        *ngIf="showAllOrders && allOrdersArray.length == 0"
+        class="active_orders_content_empty"
+      >
+        No Orders till now.
+      </div>
+    </ion-row>
+
+  </ion-grid>
 </ion-content>

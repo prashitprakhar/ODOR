@@ -9,6 +9,9 @@ export const environment = {
     userAuth : "http://localhost:3000/users/",
     adminFunctions : "http://localhost:3000/admin/",
     shopFunctions : "http://localhost:3000/shop/"
+    // userAuth : "https://orderitapi.herokuapp.com/users/",
+    // adminFunctions : "https://orderitapi.herokuapp.com/admin/",
+    // shopFunctions : "https://orderitapi.herokuapp.com/shop/"
   }
 };
 
