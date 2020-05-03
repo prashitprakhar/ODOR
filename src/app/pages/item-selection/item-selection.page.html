@@ -16,11 +16,11 @@
   <div *ngIf="!networkStatus">
     <ion-label>No Network</ion-label>
   </div>
-      <ion-fab horizontal="start" vertical="bottom" slot="fixed" *ngIf="networkStatus">
+      <!-- <ion-fab horizontal="start" vertical="bottom" slot="fixed" *ngIf="networkStatus">
     <ion-fab-button color="danger" (click)="addCustomOrders()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
-  </ion-fab>
+  </ion-fab> -->
 
   <ion-fab horizontal="end" vertical="top" slot="fixed" edge *ngIf="networkStatus">
       <ion-fab-button color="dark" (click)="searchItem()">
@@ -28,7 +28,7 @@
       </ion-fab-button>
     </ion-fab>
   <!-- Main content area -->
-  <div *ngIf="selectedShopOfferedItems && networkStatus">
+  <div *ngIf="(selectedShopOfferedItems || shopProfile) && networkStatus">
   <ion-grid class="ion-no-padding">
     <ion-row>
       <ion-col
@@ -75,6 +75,10 @@
       </ion-col>
     </ion-row>
     <ion-row>
+      <div class="no_data" *ngIf="!selectedShopOfferedItems">
+        Currently No Items In Shop
+      </div>
+      <div class="data_available">
       <form
         #selectableItemsForm="ngForm"
         class="ion-no-padding"
@@ -141,10 +145,11 @@
           </ion-virtual-scroll>
         </ion-col>
       </form>
+      </div>
     </ion-row>
   </ion-grid>
 </div>
-  <div *ngIf="!selectedShopOfferedItems && networkStatus">
+  <div *ngIf="!selectedShopOfferedItems && !shopProfile && networkStatus">
     <div class="ion-padding custom-skeleton">
       <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
       <ion-skeleton-text animated></ion-skeleton-text>

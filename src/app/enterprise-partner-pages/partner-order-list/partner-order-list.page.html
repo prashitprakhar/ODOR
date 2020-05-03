@@ -177,7 +177,7 @@
       <div
         *ngIf="isAllOrdersDataLoaded && allActiveOrders.length > 0"
         class="active_orders_content"
-      >
+      ><!--allOrders-->
         <ion-list
           *ngFor="let acitveOrders of allActiveOrders"
           approxItemHeight="70px;"
@@ -533,7 +533,14 @@
 
       <div
         *ngIf="!showCompletedOrders && allCompletedOrders.length == 0"
-        class="all_orders_content"
+        class="active_orders_content_empty"
+      >
+        No Orders till now.
+      </div>
+
+      <div
+        *ngIf="showCompletedOrders && allCompletedOrders.length == 0"
+        class="active_orders_content_empty"
       >
         No Orders till now.
       </div>
@@ -769,7 +776,14 @@
       <!-- No Orders Yet -->
       <div
         *ngIf="!showAllOrders && allOrdersArray.length == 0"
-        class="all_orders_content"
+        class="active_orders_content_empty"
+      >
+        No Orders till now.
+      </div>
+
+      <div
+        *ngIf="showAllOrders && allOrdersArray.length == 0"
+        class="active_orders_content_empty"
       >
         No Orders till now.
       </div>

@@ -547,7 +547,7 @@ export class OrderDetailsPage implements OnInit, OnDestroy {
           customItemsEstimatedPrice: 0,
           estimatedDeliveryTime:
             this.deliveryTimeService.getManipulatedDeliveryTime()
-              .deliveryTime1KTo2K + "mins",
+              .deliveryTime7KTo8K + "mins",
           estimatedDeliveryDateTimeFull: this.deliveryDateTime,
           deliveryAddress: this.deliveryAddress,
           deliveryDate: date,

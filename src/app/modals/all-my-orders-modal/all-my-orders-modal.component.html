@@ -12,9 +12,19 @@
   </ion-header>
 
   <ion-content>
-    <ion-grid>
-      <ion-row>
-        <ion-col></ion-col>
-      </ion-row>
-    </ion-grid>
+    <div class="no_orders" *ngIf="myAllOrders.length === 0">
+      <ion-label>You haven't ordered anything till now.</ion-label>
+    </div>
+    <div class="orders_present" *ngIf="myAllOrders.length > 0">
+      <ion-list *ngFor="let order of myAllOrders">
+        <ion-item>
+          <div class="order_header">
+            <ion-label>Order Status : {{order.orderStatus}}</ion-label>
+          </div>
+          <div class="order_header">
+            <ion-label>Order Status : {{order.orderStatus}}</ion-label>
+          </div>
+        </ion-item>
+      </ion-list>
+    </div>
   </ion-content>

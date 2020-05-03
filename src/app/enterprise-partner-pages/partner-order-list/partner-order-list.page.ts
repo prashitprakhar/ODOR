@@ -19,7 +19,6 @@ export class PartnerOrderListPage implements OnInit {
   public showCompletedOrders: boolean = false;
   public allOrders: any[] = [];
   public allActiveOrders: any[] = [];
-  // public allCompletedOrders: any[] = [];
   public isActiveOrdersSelected: boolean = true;
   public isAllOrdersSelected: boolean = false;
   public isCompletedOrdersSelected: boolean = false;
@@ -50,7 +49,6 @@ export class PartnerOrderListPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // console.log("Called $$$$$", this.allActiveOrders);
     this.allOrdersResponse = [];
     this.shopProfileService
       .getActiveOrders()
@@ -58,38 +56,41 @@ export class PartnerOrderListPage implements OnInit {
         this.allOrders = [];
         const ordersResp = allOrdersResponse;
         this.allOrdersResponse = allOrdersResponse;
-
-        // console.log("this.allOrdersResponse", this.allOrdersResponse);
         this.allOrders = allOrdersResponse;
-        ordersResp.forEach((eachUserElement) => {
-          // this.allOrders.push(eachUserElement.ordersList);
-          const ordersList = eachUserElement.ordersList;
-          this.allOrders = [...this.allOrders, ...ordersList];
-          this.allActiveOrders = [];
-          const activeOrdersList = this.allOrders.filter(
-            (eachOrderElement) =>
-              eachOrderElement.orderStatus === "PROGRESS" ||
-              eachOrderElement.orderStatus === "PACKED" ||
-              eachOrderElement.orderStatus === "OUTFORDELIVERY"
-          );
-          this.allActiveOrders = this.sortByService.sortOrdersByTimestamp(
-            activeOrdersList
-          );
+        if (ordersResp.length > 0) {
+          ordersResp.forEach((eachUserElement) => {
+            const ordersList = eachUserElement.ordersList;
+            this.allOrders = [...this.allOrders, ...ordersList];
+            this.allActiveOrders = [];
+            const activeOrdersList = this.allOrders.filter(
+              (eachOrderElement) =>
+                eachOrderElement.orderStatus === "PROGRESS" ||
+                eachOrderElement.orderStatus === "PACKED" ||
+                eachOrderElement.orderStatus === "OUTFORDELIVERY"
+            );
+            if (activeOrdersList.length > 0) {
+              this.allActiveOrders = this.sortByService.sortOrdersByTimestamp(
+                activeOrdersList
+              );
+            }
+            setTimeout(() => {
+              this.isAllOrdersDataLoaded = true;
+            }, 1000);
+          });
+        } else {
           setTimeout(() => {
             this.isAllOrdersDataLoaded = true;
           }, 1000);
-        });
-        // this.allOrders =
-        // console.log("All Active Orders ****#####", this.allActiveOrders);
+        }
       })
       .catch((err) => {
         this.allOrders = [];
-        this.isAllOrdersDataLoaded = false;
+        this.allActiveOrders = [];
+        this.isAllOrdersDataLoaded = true;
       });
   }
 
   doRefresh(event?) {
-    // console.log("Begin async operation");
     this.isAllOrdersDataLoaded = false;
     this.getUpdatedOrdersList(event);
   }
@@ -98,25 +99,33 @@ export class PartnerOrderListPage implements OnInit {
     const allOrdersResponse = await this.shopProfileService.getActiveOrders();
     this.allOrders = [];
     const ordersResp = allOrdersResponse;
-    ordersResp.forEach((eachUserElement) => {
-      const ordersList = eachUserElement.ordersList;
-      this.allOrders = [...this.allOrders, ...ordersList];
-      this.allActiveOrders = [];
-      const activeOrdersList = this.allOrders.filter(
-        (eachOrderElement) =>
-          eachOrderElement.orderStatus === "PROGRESS" ||
-          eachOrderElement.orderStatus === "PACKED" ||
-          eachOrderElement.orderStatus === "OUTFORDELIVERY"
-      );
-      this.allActiveOrders = this.sortByService.sortOrdersByTimestamp(
-        activeOrdersList
-      );
+    if (ordersResp.length > 0) {
+      ordersResp.forEach((eachUserElement) => {
+        const ordersList = eachUserElement.ordersList;
+        this.allOrders = [...this.allOrders, ...ordersList];
+        this.allActiveOrders = [];
+        const activeOrdersList = this.allOrders.filter(
+          (eachOrderElement) =>
+            eachOrderElement.orderStatus === "PROGRESS" ||
+            eachOrderElement.orderStatus === "PACKED" ||
+            eachOrderElement.orderStatus === "OUTFORDELIVERY"
+        );
+        if (activeOrdersList.length > 0) {
+          this.allActiveOrders = this.sortByService.sortOrdersByTimestamp(
+            activeOrdersList
+          );
+        }
+        setTimeout(() => {
+          event.target.complete();
+          this.isAllOrdersDataLoaded = true;
+        }, 1000);
+      });
+    } else {
       setTimeout(() => {
         event.target.complete();
         this.isAllOrdersDataLoaded = true;
       }, 1000);
-    });
-    // console.log("All Active Orders ****#####", this.allActiveOrders);
+    }
   }
 
   async getUpdatedOrdersListWithoutRefresh() {
@@ -133,16 +142,13 @@ export class PartnerOrderListPage implements OnInit {
           eachOrderElement.orderStatus === "PACKED" ||
           eachOrderElement.orderStatus === "OUTFORDELIVERY"
       );
-      this.allActiveOrders = this.sortByService.sortOrdersByTimestamp(
-        activeOrdersList
-      );
+      if (activeOrdersList.length > 0) {
+        this.allActiveOrders = this.sortByService.sortOrdersByTimestamp(
+          activeOrdersList
+        );
+      }
       this.isAllOrdersDataLoaded = true;
-      // setTimeout(() => {
-      //   event.target.complete();
-      //   this.isAllOrdersDataLoaded = true;
-      // }, 1000);
     });
-    // console.log("All Active Orders ****#####", this.allActiveOrders);
   }
 
   segmentChanged($event) {
@@ -150,10 +156,9 @@ export class PartnerOrderListPage implements OnInit {
       this.isActiveOrdersSelected = true;
       this.isAllOrdersSelected = false;
       this.isCompletedOrdersSelected = false;
-      // this.allActiveOrders = [];
+      this.getUpdatedOrdersListWithoutRefresh();
     }
     if ($event.detail.value === "ALL_ORDERS") {
-      // console.log("ALl Orders");
       this.showAllOrders = false;
       this.isActiveOrdersSelected = false;
       this.isAllOrdersSelected = true;
@@ -161,7 +166,6 @@ export class PartnerOrderListPage implements OnInit {
       this.allOrdersDetails();
     }
     if ($event.detail.value === "COMPLETED_ORDERS") {
-      // console.log("Completed Orders");
       this.showCompletedOrders = false;
       this.isActiveOrdersSelected = false;
       this.isAllOrdersSelected = false;
@@ -173,10 +177,12 @@ export class PartnerOrderListPage implements OnInit {
   async getCompletedOrders() {
     this.allCompletedOrders = [];
     const completedOrders = await this.shopProfileService.getCompletedOrders();
-    completedOrders.forEach(eachOrder => {
+    completedOrders.forEach((eachOrder) => {
       this.allCompletedOrders = [...this.allCompletedOrders, ...eachOrder];
     });
-    this.allCompletedOrders = this.sortByService.sortLatestToOld(this.allCompletedOrders);
+    this.allCompletedOrders = this.sortByService.sortLatestToOld(
+      this.allCompletedOrders
+    );
     if (completedOrders) {
       setTimeout(() => {
         this.showCompletedOrders = true;
@@ -186,7 +192,6 @@ export class PartnerOrderListPage implements OnInit {
         this.showCompletedOrders = true;
       }, 1000);
     }
-    // console.log("Completed Orders @@@@@", this.allCompletedOrders);
   }
 
   async allOrdersDetails() {
@@ -195,7 +200,9 @@ export class PartnerOrderListPage implements OnInit {
     allOrdersForShop.forEach((eachOrder) => {
       this.allOrdersArray = [...this.allOrdersArray, ...eachOrder.ordersList];
     });
-    this.allOrdersArray = this.sortByService.sortLatestToOld(this.allOrdersArray);
+    this.allOrdersArray = this.sortByService.sortLatestToOld(
+      this.allOrdersArray
+    );
     if (allOrdersForShop) {
       setTimeout(() => {
         this.showAllOrders = true;
@@ -340,15 +347,14 @@ export class PartnerOrderListPage implements OnInit {
       },
       0);
     */
-    const totalAmountPayble = orderList.reduce(
-      (accumulator, item) => {
-        return accumulator + item.totalPrice;
-      },
-      0
-    );
+    const totalAmountPayble = orderList.reduce((accumulator, item) => {
+      return accumulator + item.totalPrice;
+    }, 0);
     const alert = this.markOrderOutForDeliveryAlertCtrl
       .create({
-        header: `Are you sure the Payment of Rs. ${this.payableAmount(orderId)} is complete ?`,
+        header: `Are you sure the Payment of Rs. ${this.payableAmount(
+          orderId
+        )} is complete ?`,
         buttons: [
           {
             text: "Yes",
@@ -395,7 +401,6 @@ export class PartnerOrderListPage implements OnInit {
         );
         if (updatedOrderStatus) {
           this.isAllOrdersDataLoaded = true;
-          // this.getUpdatedOrdersListWithoutRefresh();
           this.allOrdersDetails();
           loadingEl.dismiss();
         } else {
@@ -415,12 +420,9 @@ export class PartnerOrderListPage implements OnInit {
         orderList = currentOrder.orderedItemsList;
       }
     });
-    const totalAmountPayble = orderList.reduce(
-      (accumulator, item) => {
-        return accumulator + item.totalPrice;
-      },
-      0
-    );
+    const totalAmountPayble = orderList.reduce((accumulator, item) => {
+      return accumulator + item.totalPrice;
+    }, 0);
 
     return totalAmountPayble;
   }
@@ -488,11 +490,7 @@ export class PartnerOrderListPage implements OnInit {
   calculateRemianingTime(deliveryTime) {
     const deliveryDateTime: any = new Date(deliveryTime);
     const currentTime: any = new Date();
-    // const diffTime = Math.abs(currentTime - deliveryDateTime);
-    // console.log("deliveryDateTime ***", deliveryDateTime);
-    // console.log("currentTime ***", currentTime);
     const diffTime = deliveryDateTime - currentTime;
-    // console.log("diffTime diffTime", diffTime)
     const diffMinutes = Math.ceil(diffTime / (1000 * 60));
     return diffMinutes;
   }

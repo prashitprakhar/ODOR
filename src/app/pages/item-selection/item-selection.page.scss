@@ -52,3 +52,12 @@
 .item_in_stock {
   opacity: 1;
 }
+
+.no_data {
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  min-height: 20px;
+}

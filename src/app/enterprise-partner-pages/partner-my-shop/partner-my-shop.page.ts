@@ -176,7 +176,7 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
           shopId: this.shopId,
           shopOfferedItemsList: []
         };
-        this.shopProfile = null;
+        this.shopProfile = this.shopProfile;
       });
   }
 
