@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ShopItemSelectionService } from "src/app/services/shop-item-selection.service";
-import { IShopList } from "src/app/models/shop-list.model";
+// import { IShopList } from "src/app/models/shop-list.model";
 import { DeliveryTimeService } from "src/app/services/delivery-time.service";
 import { IStandardDeliveryTime } from "src/app/models/standard-delivery-time.model";
 import { Router } from "@angular/router";
@@ -11,12 +11,14 @@ import { NetworkService } from "src/app/shared/services/network.service";
 import { MessageService } from "src/app/shared/services/message.service";
 // tslint:disable-next-line: max-line-length
 import { NoInternetConnectivityModalComponent } from "src/app/shared/modals/no-internet-connectivity-modal/no-internet-connectivity-modal.component";
-import { GeoLocationService } from 'src/app/shared/services/geo-location.service';
+import { GeoLocationService } from "src/app/shared/services/geo-location.service";
+import { Plugins } from "@capacitor/core";
+import { IGeoSpatialDetails } from "src/app/models/geo-spatial.model";
 
 @Component({
   selector: "app-all-shops",
   templateUrl: "./all-shops.page.html",
-  styleUrls: ["./all-shops.page.scss"]
+  styleUrls: ["./all-shops.page.scss"],
 })
 export class AllShopsPage implements OnInit, OnDestroy {
   // public shopList: IShopList[];
@@ -29,7 +31,7 @@ export class AllShopsPage implements OnInit, OnDestroy {
 
   public slideOpts = {
     initialSlide: 0,
-    speed: 400
+    speed: 400,
   };
 
   constructor(
@@ -51,10 +53,10 @@ export class AllShopsPage implements OnInit, OnDestroy {
     // });
     // this.geoLocationService.getCurrentPosition();
     // this.geoLocationService.watchPosition();
-    this.geoLocationService.checkUserPermission();
+    // this.geoLocationService.checkUserPermission();
     this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
-    this.checkNetworkStatus();
-    this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {
+    // this.checkNetworkStatus();
+    this.shopItemSelectionService.getDeviceFCMToken().then((deviceFCMToken) => {
       this.deviceFCMToken = deviceFCMToken;
     });
     this.shopItemSelectionService.clearCurrentlySelectedShopDetails();
@@ -77,13 +79,13 @@ export class AllShopsPage implements OnInit, OnDestroy {
     this.noInternetConnModal
       .create({
         component: NoInternetConnectivityModalComponent,
-        id: "noInternetConnModal"
+        id: "noInternetConnModal",
       })
-      .then(loginModalEl => {
+      .then((loginModalEl) => {
         loginModalEl.present();
         return loginModalEl.onDidDismiss();
       })
-      .then(data => {
+      .then((data) => {
         console.log("No Network Conn modal closed");
         // if (data.role === "LOGIN_SUCCESS") {
         //   if (data.data === "ENTERPRISE_PARTNER") {
@@ -104,17 +106,17 @@ export class AllShopsPage implements OnInit, OnDestroy {
   checkNetworkStatus(event = null) {
     this.networkStatusSubs = this.networkService
       .checkNetworkStatus()
-      .subscribe(networkData => {
+      .subscribe((networkData) => {
         if (!networkData.connected) {
           this.networkStatus = false;
           this.messageService.sendNetworkStatusMessage({
-            NETWORK_CONNECTION: false
+            NETWORK_CONNECTION: false,
           });
           this.showNoInternetConnectionModal();
         } else {
           this.networkStatus = true;
           this.messageService.sendNetworkStatusMessage({
-            NETWORK_CONNECTION: true
+            NETWORK_CONNECTION: true,
           });
           this.fetchShopsList();
         }
@@ -124,23 +126,80 @@ export class AllShopsPage implements OnInit, OnDestroy {
   // [routerLink]="['/', 'homepage', 'tabs', 'selectShop', shop.shopId]"
   ionViewWillEnter() {
     this.checkNetworkStatus();
-    this.shopItemSelectionService.getDeviceFCMToken().then(deviceFCMToken => {
+    this.shopItemSelectionService.getDeviceFCMToken().then((deviceFCMToken) => {
       this.deviceFCMToken = deviceFCMToken;
     });
   }
 
-  fetchShopsList(event = null) {
+  async fetchShopsList(event = null) {
     // this.allShopListSubs = this.shopItemSelectionService.getAllShopList.subscribe(shops => {
     //   // console.log(" SHOPS FETCHED ********", shops);
     //   this.shopList = shops;
     //   this.handleRefresher(event);
     // });
     // this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
-    this.shopItemSelectionService.getAllShopsList.then(allShops => {
-      this.shopList = allShops;
-      this.handleRefresher(event);
-    });
+    // this.geoLocationService.checkUserPermission().then(() => {
+    Plugins.Storage.get({ key: "geoSpatialData" })
+      .then((geoSpatialData) => {
+        console.log("geoSpatialData geoSpatialData", geoSpatialData);
+        const parsedGeoData: IGeoSpatialDetails = JSON.parse(
+          geoSpatialData.value
+        );
+        if (parsedGeoData) {
+          console.log("222222");
+          const coordinates = parsedGeoData.location.coordinates;
+          this.shopItemSelectionService
+            .getRelevantShopsList(coordinates)
+            .then((allShops) => {
+              this.shopList = allShops;
+              this.handleRefresher(event);
+            });
+          // this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
+        } else {
+          console.log("333333");
+          this.geoLocationService
+            .checkUserPermission()
+            .then(() => {
+              console.log("444444");
+              Plugins.Storage.get({ key: "geoSpatialData" }).then(
+                (geoSpatialDataNew) => {
+                  const parsedGeoDataNew: IGeoSpatialDetails = JSON.parse(
+                    geoSpatialDataNew.value
+                  );
+                  if (parsedGeoDataNew) {
+                    const coordinates = parsedGeoDataNew.location.coordinates;
+                    this.shopItemSelectionService
+                      .getRelevantShopsList(coordinates)
+                      .then((allShops) => {
+                        this.shopList = allShops;
+                        this.handleRefresher(event);
+                      });
+                  } else {
+                    console.log("55555");
+                    this.shopItemSelectionService.getAllShopsList.then(
+                      (allShops) => {
+                        this.shopList = allShops;
+                        this.handleRefresher(event);
+                      }
+                    );
+                  }
+                }
+              );
+            })
+            .catch((err) => {});
+          // this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
+        }
+      })
+      .catch((err) => {
+        console.log("111111", err);
+        this.shopItemSelectionService.getAllShopsList.then((allShops) => {
+          this.shopList = allShops;
+          this.handleRefresher(event);
+        });
+      });
+
     this.currentDeliveryTimeSchedule = this.deliveryTimeService.getManipulatedDeliveryTime();
+    // })
   }
 
   doRefresh(event) {
@@ -187,13 +246,13 @@ export class AllShopsPage implements OnInit, OnDestroy {
               text: "OK",
               role: "cancel",
               cssClass: "secondary",
-              handler: cancel => {
+              handler: (cancel) => {
                 // console.log("Shop is closed");
-              }
-            }
-          ]
+              },
+            },
+          ],
         })
-        .then(alertEl => {
+        .then((alertEl) => {
           alertEl.present();
         });
     }

@@ -29,6 +29,7 @@ import { Platform } from "@ionic/angular";
 import { FCM } from "capacitor-fcm";
 import { IUserMobileDetails } from 'src/app/models/user-mobile-details-model';
 import { CommonUtilityService } from 'src/app/shared/services/common-utility.service';
+import { GeoLocationService } from 'src/app/shared/services/geo-location.service';
 
 const fcm = new FCM();
 
@@ -58,7 +59,8 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
     private itemAvailabilirtAlertCtrl: AlertController,
     private sortByService: SortByService,
     private platform: Platform,
-    private commonUtilityService: CommonUtilityService
+    private commonUtilityService: CommonUtilityService,
+    private geoLocationService: GeoLocationService
   ) {}
 
   ngOnInit() {
@@ -70,6 +72,22 @@ export class PartnerMyShopPage implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
+    this.geoLocationService.checkShopLocationDetails()
+      .then(data => {
+        console.log("DATA FROM GEOSPATIAL API", data);
+        if (data) {
+          if (data.location.coordinates.length > 0) {
+            console.log("data available", data.location.coordinates);
+          }
+        } else {
+          // console.log("No Data Available");
+          // When the user is new or he has chosen not to save his data;
+          this.geoLocationService.checkUserPermission('ENTERPRISE_PARTNER');
+        }
+      })
+      .catch(err => {
+        console.log("Error Occured in Fetching coordinates", err);
+      });
     /*
      ** Push Notification Code Goes Here
      */

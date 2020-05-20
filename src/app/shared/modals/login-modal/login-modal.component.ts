@@ -67,7 +67,7 @@ export class LoginModalComponent implements OnInit, OnDestroy {
   }
 
   checkAndUpdateCartItemsInDB(dbCartData) {
-    console.log("dbCartData", dbCartData);
+    // console.log("dbCartData", dbCartData);
     if (dbCartData) {
     }
   }

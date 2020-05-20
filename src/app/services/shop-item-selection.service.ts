@@ -48,6 +48,14 @@ export class ShopItemSelectionService {
     return this.httpAPIService.getAPI(url);
   }
 
+  async getRelevantShopsList(coordinates: any[]): Promise<any> {
+    const url = `${this.shopAPI}getAllRelevantShops`;
+    const payload = {
+      coordinates
+    };
+    return this.httpAPIService.postAPI(url, payload);
+  }
+
   async getDeviceFCMToken(): Promise<string> {
     const deviceFCMToken = await Plugins.Storage.get({ key: "user_fcm_token"});
     const parsedDeviceFCMToken = JSON.parse(deviceFCMToken.value);

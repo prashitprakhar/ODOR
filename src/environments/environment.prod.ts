@@ -4,6 +4,7 @@ export const environment = {
   internalAPI : {
     userAuth : "https://orderitapi.herokuapp.com/users/",
     adminFunctions : "https://orderitapi.herokuapp.com/admin/",
-    shopFunctions : "https://orderitapi.herokuapp.com/shop/"
+    shopFunctions : "https://orderitapi.herokuapp.com/shop/",
+    geoStatialFunctions : "https://orderitapi.herokuapp.com/geoSpatial/"
   }
 };

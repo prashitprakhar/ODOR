@@ -8,7 +8,8 @@ export const environment = {
   internalAPI : {
     userAuth : "http://localhost:3000/users/",
     adminFunctions : "http://localhost:3000/admin/",
-    shopFunctions : "http://localhost:3000/shop/"
+    shopFunctions : "http://localhost:3000/shop/",
+    geoStatialFunctions : "http://localhost:3000/geoSpatial/"
     // userAuth : "https://orderitapi.herokuapp.com/users/",
     // adminFunctions : "https://orderitapi.herokuapp.com/admin/",
     // shopFunctions : "https://orderitapi.herokuapp.com/shop/"
